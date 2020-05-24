@@ -1,6 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Administration_Tools_Win.Resources"
+                    xmlns:local="clr-namespace:Administration_Tools.Resources"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
     <sys:String x:Key="UI_MainWindow_Title">B2B Market - Панель администратора</sys:String>
+    <sys:String x:Key="UI_MainWindow_SuppliersButton">Поставщики</sys:String>
+
+    <sys:String x:Key="UI_Suppliers_ListViewHeader">Список поставщиков:</sys:String>
 </ResourceDictionary>

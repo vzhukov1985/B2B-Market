@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,17 +10,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Administration_Tools.ViewModels;
 
-namespace Administration_Tools_Win
+namespace Administration_Tools_Win.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for Suppliers.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Suppliers : Page
     {
-        public MainWindow()
+        public Suppliers()
         {
             InitializeComponent();
+            DataContext = new SuppliersVM();
         }
     }
 }
