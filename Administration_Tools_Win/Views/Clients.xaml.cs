@@ -11,19 +11,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Administration_Tools.ViewModels;
-using Administration_Tools_Win.Services;
 
 namespace Administration_Tools_Win.Views
 {
     /// <summary>
-    /// Interaction logic for Suppliers.xaml
+    /// Interaction logic for Clients.xaml
     /// </summary>
-    public partial class Suppliers : Page
+    public partial class Clients : Page
     {
-        public Suppliers()
+        public Clients()
         {
             InitializeComponent();
-            DataContext = new SuppliersVM(new WindowsDialogService());
+            DataContext = new ClientsVM();
         }
     }
 }

@@ -117,11 +117,68 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="UI_AddContractWithClientDlg_AddClient" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="UI_AddContractWithClientDlg_Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="UI_AddContractWithClientDlg_ClientsListHeader" xml:space="preserve">
+    <value>Список доступных клиентов:</value>
+  </data>
+  <data name="UI_AddContractWithClientDlg_Title" xml:space="preserve">
+    <value>Добавить договор клиента...</value>
+  </data>
+  <data name="UI_Clients_AddClient" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="UI_Clients_Address_Field" xml:space="preserve">
+    <value>Адрес:</value>
+  </data>
+  <data name="UI_Clients_BIN_Field" xml:space="preserve">
+    <value>БИН:</value>
+  </data>
+  <data name="UI_Clients_ClientsListHeader" xml:space="preserve">
+    <value>Список клиентов:</value>
+  </data>
+  <data name="UI_Clients_ContractsListHeader" xml:space="preserve">
+    <value>Договора с поставщиками:</value>
+  </data>
+  <data name="UI_Clients_Email_Field" xml:space="preserve">
+    <value>e-mail:</value>
+  </data>
+  <data name="UI_Clients_FullName_Field" xml:space="preserve">
+    <value>Полное название:</value>
+  </data>
+  <data name="UI_Clients_Id_Field" xml:space="preserve">
+    <value>ID:</value>
+  </data>
+  <data name="UI_Clients_Phone_Field" xml:space="preserve">
+    <value>Тел.:</value>
+  </data>
+  <data name="UI_Clients_RemoveClient" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="UI_Clients_SaveChanges" xml:space="preserve">
+    <value>Сохранить изменения</value>
+  </data>
+  <data name="UI_Clients_ShortName_Field" xml:space="preserve">
+    <value>Короткое имя:</value>
+  </data>
+  <data name="UI_Clients_UpdateClientsListButton" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="UI_MainWindow_ClientsButton" xml:space="preserve">
+    <value>Клиенты</value>
+  </data>
   <data name="UI_MainWindow_SuppliersButton" xml:space="preserve">
     <value>Поставщики</value>
   </data>
   <data name="UI_MainWindow_Title" xml:space="preserve">
     <value>B2B Market - Панель администратора</value>
+  </data>
+  <data name="UI_Suppliers_AddContract" xml:space="preserve">
+    <value>Добавить</value>
   </data>
   <data name="UI_Suppliers_Address_Field" xml:space="preserve">
     <value>Адрес:</value>
@@ -131,6 +188,9 @@
   </data>
   <data name="UI_Suppliers_BIN_Field" xml:space="preserve">
     <value>БИН:</value>
+  </data>
+  <data name="UI_Suppliers_ContractsListHeader" xml:space="preserve">
+    <value>Договора с клиентами:</value>
   </data>
   <data name="UI_Suppliers_Email_Field" xml:space="preserve">
     <value>e-mail:</value>
@@ -143,6 +203,9 @@
   </data>
   <data name="UI_Suppliers_Phone_Field" xml:space="preserve">
     <value>Тел.:</value>
+  </data>
+  <data name="UI_Suppliers_RemoveContract" xml:space="preserve">
+    <value>Удалить</value>
   </data>
   <data name="UI_Suppliers_RemoveSupplier" xml:space="preserve">
     <value>Удалить</value>

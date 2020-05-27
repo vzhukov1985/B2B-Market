@@ -9,7 +9,7 @@ using System.Configuration;
 
 namespace Administration_Tools.Models
 {
-    class SuppliersDbContext: DbContext
+    class ClientsDbContext : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -21,8 +21,12 @@ namespace Administration_Tools.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Contract>().HasKey(k => new { k.ClientId, k.SupplierId });
+
+            modelBuilder.Entity<Contract>().HasOne(c => c.Client).WithMany(cc => cc.Contracts).HasForeignKey(c => c.ClientId);
+            modelBuilder.Entity<Contract>().HasOne(s => s.Supplier).WithMany(sc => sc.Contracts).HasForeignKey(s => s.SupplierId);
         }
 
-        public virtual DbSet<Supplier> Suppliers { get; set; }
+        public virtual DbSet<Client> Clients { get; set; }
     }
 }

@@ -24,5 +24,15 @@ namespace Administration_Tools_Win.Views
         {
             InitializeComponent();
         }
+
+        private void SuppliersButton_Click(object sender, RoutedEventArgs e)
+        {
+            frmMainFrame.Content = new Suppliers();
+        }
+
+        private void ClientsButton_Click(object sender, RoutedEventArgs e)
+        {
+            frmMainFrame.Content = new Clients();
+        }
     }
 }

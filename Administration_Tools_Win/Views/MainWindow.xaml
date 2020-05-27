@@ -14,9 +14,10 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Content="{x:Static resx:UILang.UI_MainWindow_SuppliersButton}" Width="100" Height="35"/>
+            <Button Content="{x:Static resx:UILang.UI_MainWindow_SuppliersButton}" Width="100" Height="35" Click="SuppliersButton_Click"/>
+            <Button Content="{x:Static resx:UILang.UI_MainWindow_ClientsButton}" Width="100" Height="35" Click="ClientsButton_Click"/>
         </StackPanel>
 
-        <Frame Grid.Row="1"  Source="Suppliers.xaml"/>
+        <Frame x:Name="frmMainFrame" Grid.Row="1"  Source="Suppliers.xaml" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

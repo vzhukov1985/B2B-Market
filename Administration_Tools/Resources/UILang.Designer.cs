@@ -61,6 +61,168 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
+        public static string UI_AddContractWithClientDlg_AddClient {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithClientDlg_AddClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отмена.
+        /// </summary>
+        public static string UI_AddContractWithClientDlg_Cancel {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithClientDlg_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Список доступных клиентов:.
+        /// </summary>
+        public static string UI_AddContractWithClientDlg_ClientsListHeader {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithClientDlg_ClientsListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить договор клиента....
+        /// </summary>
+        public static string UI_AddContractWithClientDlg_Title {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithClientDlg_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
+        public static string UI_Clients_AddClient {
+            get {
+                return ResourceManager.GetString("UI_Clients_AddClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Адрес:.
+        /// </summary>
+        public static string UI_Clients_Address_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_Address_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to БИН:.
+        /// </summary>
+        public static string UI_Clients_BIN_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_BIN_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Список клиентов:.
+        /// </summary>
+        public static string UI_Clients_ClientsListHeader {
+            get {
+                return ResourceManager.GetString("UI_Clients_ClientsListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Договора с поставщиками:.
+        /// </summary>
+        public static string UI_Clients_ContractsListHeader {
+            get {
+                return ResourceManager.GetString("UI_Clients_ContractsListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to e-mail:.
+        /// </summary>
+        public static string UI_Clients_Email_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_Email_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Полное название:.
+        /// </summary>
+        public static string UI_Clients_FullName_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_FullName_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ID:.
+        /// </summary>
+        public static string UI_Clients_Id_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_Id_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тел.:.
+        /// </summary>
+        public static string UI_Clients_Phone_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_Phone_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        public static string UI_Clients_RemoveClient {
+            get {
+                return ResourceManager.GetString("UI_Clients_RemoveClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сохранить изменения.
+        /// </summary>
+        public static string UI_Clients_SaveChanges {
+            get {
+                return ResourceManager.GetString("UI_Clients_SaveChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Короткое имя:.
+        /// </summary>
+        public static string UI_Clients_ShortName_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_ShortName_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить.
+        /// </summary>
+        public static string UI_Clients_UpdateClientsListButton {
+            get {
+                return ResourceManager.GetString("UI_Clients_UpdateClientsListButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Клиенты.
+        /// </summary>
+        public static string UI_MainWindow_ClientsButton {
+            get {
+                return ResourceManager.GetString("UI_MainWindow_ClientsButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Поставщики.
         /// </summary>
         public static string UI_MainWindow_SuppliersButton {
@@ -75,6 +237,15 @@ namespace Administration_Tools.Resources {
         public static string UI_MainWindow_Title {
             get {
                 return ResourceManager.GetString("UI_MainWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
+        public static string UI_Suppliers_AddContract {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_AddContract", resourceCulture);
             }
         }
         
@@ -102,6 +273,15 @@ namespace Administration_Tools.Resources {
         public static string UI_Suppliers_BIN_Field {
             get {
                 return ResourceManager.GetString("UI_Suppliers_BIN_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Договора с клиентами:.
+        /// </summary>
+        public static string UI_Suppliers_ContractsListHeader {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_ContractsListHeader", resourceCulture);
             }
         }
         
@@ -138,6 +318,15 @@ namespace Administration_Tools.Resources {
         public static string UI_Suppliers_Phone_Field {
             get {
                 return ResourceManager.GetString("UI_Suppliers_Phone_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        public static string UI_Suppliers_RemoveContract {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_RemoveContract", resourceCulture);
             }
         }
         

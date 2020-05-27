@@ -10,10 +10,4 @@
     <ProjectReference Include="..\Administration_Tools\Administration_Tools.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Resources\UILang.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-
 </Project>

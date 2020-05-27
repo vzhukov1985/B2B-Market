@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
-    
-    public class Supplier : INotifyPropertyChanged
+
+    public class Client : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
@@ -109,11 +109,6 @@ namespace Core.Models
             }
         }
 
-        public Supplier()
-        {
-            _contracts = new List<Contract>();
-            Contracts = new List<Contract>();
-        }
-
     }
 }
+

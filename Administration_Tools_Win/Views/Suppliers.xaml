@@ -29,7 +29,7 @@
         </StackPanel>
         
         
-        <StackPanel Grid.Column="1" Orientation="Vertical">
+        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="20,0,0,0">
             <TextBlock Text="{Binding SelectedSupplier.ShortName}" FontSize="20" FontWeight="Bold"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_Id_Field}"/>
@@ -59,7 +59,19 @@
                 <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_Email_Field}"/>
                 <TextBox Text="{Binding SelectedSupplier.Email}" Width="200"/>
             </StackPanel>
-            <Button Content="{x:Static resx:UILang.UI_Suppliers_SaveChanges}" Width="150" Command="{Binding SaveSupplierChangesCommand}" HorizontalAlignment="Left"/>
+            <Button Content="{x:Static resx:UILang.UI_Suppliers_SaveChanges}" Width="200" Margin="0,20,0,20" HorizontalAlignment="Left" Command="{Binding SaveSupplierChangesCommand}"/>
+            <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_ContractsListHeader}" HorizontalAlignment="Left"/>
+            <ListView ItemsSource="{Binding SelectedSupplier.Contracts}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Client.ShortName}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="{x:Static resx:UILang.UI_Suppliers_AddContract}" Width="100" Command="{Binding AddContractCommand}"/>
+                <Button Content="{x:Static resx:UILang.UI_Suppliers_RemoveContract}" Width="100" Command="{Binding RemoveContractCommand}"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

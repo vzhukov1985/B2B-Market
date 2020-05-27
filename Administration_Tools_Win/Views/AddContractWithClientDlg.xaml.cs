@@ -8,22 +8,24 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Administration_Tools.ViewModels;
-using Administration_Tools_Win.Services;
 
 namespace Administration_Tools_Win.Views
 {
     /// <summary>
-    /// Interaction logic for Suppliers.xaml
+    /// Interaction logic for AddContractWithClientDlg.xaml
     /// </summary>
-    public partial class Suppliers : Page
+    public partial class AddContractWithClientDlg : Window
     {
-        public Suppliers()
+        public AddContractWithClientDlg()
         {
             InitializeComponent();
-            DataContext = new SuppliersVM(new WindowsDialogService());
+        }
+
+        private void AddContract_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }
