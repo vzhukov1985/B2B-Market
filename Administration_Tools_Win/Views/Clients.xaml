@@ -3,12 +3,30 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
       xmlns:resx="clr-namespace:Administration_Tools.Resources;assembly=Administration_Tools"
       xmlns:local="clr-namespace:Administration_Tools_Win.Views"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
-      Title="Clients">
+      x:Name="ClientsPage" Title="None">
 
+    <Page.Resources>
+
+        <CollectionViewSource x:Key="ClientsCollection" Source="{Binding Clients}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="ShortName"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource x:Key="ClientContractsCollection" Source="{Binding SelectedClient.Contracts}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Supplier.ShortName"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+    </Page.Resources>
+    
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -16,7 +34,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0">
             <TextBlock Text="{x:Static resx:UILang.UI_Clients_ClientsListHeader}"/>
-            <ListView ItemsSource="{Binding Clients}" Width="200" Height="400" HorizontalAlignment="Left" SelectedItem="{Binding SelectedClient}">
+            <ListView ItemsSource="{Binding Source={StaticResource ClientsCollection}}" Width="200" Height="400" HorizontalAlignment="Left" SelectedItem="{Binding SelectedClient}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=ShortName}"/>
@@ -29,7 +47,7 @@
         </StackPanel>
 
 
-        <StackPanel Grid.Column="1" Orientation="Vertical">
+        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="20,0,0,0">
             <TextBlock Text="{Binding SelectedClient.ShortName}" FontSize="20" FontWeight="Bold"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Clients_Id_Field}"/>
@@ -59,7 +77,20 @@
                 <TextBlock Text="{x:Static resx:UILang.UI_Clients_Email_Field}"/>
                 <TextBox Text="{Binding SelectedClient.Email}" Width="200"/>
             </StackPanel>
-            <Button Content="{x:Static resx:UILang.UI_Clients_SaveChanges}" Width="150" Command="{Binding SaveClientChangesCommand}" HorizontalAlignment="Left"/>
+            <Button Content="{x:Static resx:UILang.UI_Clients_SaveChanges}" Width="200" Margin="0,20,0,20" HorizontalAlignment="Left" Command="{Binding SaveClientChangesCommand}"/>
+            <TextBlock Text="{x:Static resx:UILang.UI_Clients_ContractsListHeader}" HorizontalAlignment="Left"/>
+            <ListView ItemsSource="{Binding Source={StaticResource ClientContractsCollection}}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Supplier.ShortName}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="{x:Static resx:UILang.UI_Clients_AddContract}" Width="100" Command="{Binding AddContractCommand}"/>
+                <Button Content="{x:Static resx:UILang.UI_Clients_RemoveContract}" Width="100" Command="{Binding RemoveContractCommand}"/>
+            </StackPanel>
+            <Button Content="{x:Static resx:UILang.UI_Clients_UsersManagement}" Width="200" Margin="0,30,0,0" HorizontalAlignment="Left" Command="{Binding ShowClientUsersPageCommand}"/>
         </StackPanel>
     </Grid>
 </Page>

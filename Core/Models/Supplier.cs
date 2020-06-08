@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.ObjectModel;
 
 namespace Core.Models
 {
@@ -14,15 +15,12 @@ namespace Core.Models
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private int _id;
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        private Guid _id;
         [Key]
-        public int Id
+        public Guid Id
         {
             get { return _id; }
             set
@@ -98,8 +96,8 @@ namespace Core.Models
             }
         }
 
-        private List<Contract> _contracts;
-        public List<Contract> Contracts
+        private ObservableCollection<Contract> _contracts;
+        public ObservableCollection<Contract> Contracts
         {
             get { return _contracts; }
             set
@@ -111,8 +109,7 @@ namespace Core.Models
 
         public Supplier()
         {
-            _contracts = new List<Contract>();
-            Contracts = new List<Contract>();
+            Contracts = new ObservableCollection<Contract>();
         }
 
     }

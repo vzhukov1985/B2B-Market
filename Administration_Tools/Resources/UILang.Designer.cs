@@ -88,7 +88,7 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Добавить договор клиента....
+        ///   Looks up a localized string similar to Добавить договор с клиентом....
         /// </summary>
         public static string UI_AddContractWithClientDlg_Title {
             get {
@@ -99,9 +99,54 @@ namespace Administration_Tools.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Добавить.
         /// </summary>
+        public static string UI_AddContractWithSupplierDlg_AddSupplier {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithSupplierDlg_AddSupplier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отмена.
+        /// </summary>
+        public static string UI_AddContractWithSupplierDlg_Cancel {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithSupplierDlg_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Список доступных поставщиков:.
+        /// </summary>
+        public static string UI_AddContractWithSupplierDlg_SuppliersListHeader {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithSupplierDlg_SuppliersListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить договор с поставщиком....
+        /// </summary>
+        public static string UI_AddContractWithSupplierDlg_Title {
+            get {
+                return ResourceManager.GetString("UI_AddContractWithSupplierDlg_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
         public static string UI_Clients_AddClient {
             get {
                 return ResourceManager.GetString("UI_Clients_AddClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
+        public static string UI_Clients_AddContract {
+            get {
+                return ResourceManager.GetString("UI_Clients_AddContract", resourceCulture);
             }
         }
         
@@ -187,6 +232,15 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        public static string UI_Clients_RemoveContract {
+            get {
+                return ResourceManager.GetString("UI_Clients_RemoveContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Сохранить изменения.
         /// </summary>
         public static string UI_Clients_SaveChanges {
@@ -210,6 +264,141 @@ namespace Administration_Tools.Resources {
         public static string UI_Clients_UpdateClientsListButton {
             get {
                 return ResourceManager.GetString("UI_Clients_UpdateClientsListButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Управление пользователями.
+        /// </summary>
+        public static string UI_Clients_UsersManagement {
+            get {
+                return ResourceManager.GetString("UI_Clients_UsersManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
+        public static string UI_ClientUsers_AddUser {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_AddUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ID:.
+        /// </summary>
+        public static string UI_ClientUsers_Id_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_Id_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Временный пароль:.
+        /// </summary>
+        public static string UI_ClientUsers_InitialPassword_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_InitialPassword_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Администратор.
+        /// </summary>
+        public static string UI_ClientUsers_IsAdmin_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_IsAdmin_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Логин:.
+        /// </summary>
+        public static string UI_ClientUsers_Login_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_Login_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Имя:.
+        /// </summary>
+        public static string UI_ClientUsers_Name_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_Name_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Хэш пароля:.
+        /// </summary>
+        public static string UI_ClientUsers_PasswordHash_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_PasswordHash_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        public static string UI_ClientUsers_RemoveUser {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_RemoveUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сбросить пароль.
+        /// </summary>
+        public static string UI_ClientUsers_ResetPassword {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_ResetPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сохранить изменения:.
+        /// </summary>
+        public static string UI_ClientUsers_SaveChanges {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_SaveChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Фамилия:.
+        /// </summary>
+        public static string UI_ClientUsers_SurName_Field {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_SurName_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить.
+        /// </summary>
+        public static string UI_ClientUsers_UpdateUsersListButton {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_UpdateUsersListButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Пользователи клиента &quot;.
+        /// </summary>
+        public static string UI_ClientUsers_UsersListHeader {
+            get {
+                return ResourceManager.GetString("UI_ClientUsers_UsersListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка.
+        /// </summary>
+        public static string UI_ErrorDlg_Caption {
+            get {
+                return ResourceManager.GetString("UI_ErrorDlg_Caption", resourceCulture);
             }
         }
         

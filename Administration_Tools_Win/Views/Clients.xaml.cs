@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Administration_Tools.ViewModels;
+using Administration_Tools_Win.Services;
 
 namespace Administration_Tools_Win.Views
 {
@@ -22,7 +23,7 @@ namespace Administration_Tools_Win.Views
         public Clients()
         {
             InitializeComponent();
-            DataContext = new ClientsVM();
+            DataContext = new ClientsVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService());
         }
     }
 }

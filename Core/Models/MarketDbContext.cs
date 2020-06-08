@@ -30,5 +30,6 @@ namespace Core.Models
         public virtual DbSet<Supplier> Suppliers { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<Contract> Contracts { get; set; }
+        public virtual DbSet<ClientUser> ClientsUsers { get; set; }
     }
 }

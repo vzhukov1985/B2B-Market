@@ -127,9 +127,24 @@
     <value>Список доступных клиентов:</value>
   </data>
   <data name="UI_AddContractWithClientDlg_Title" xml:space="preserve">
-    <value>Добавить договор клиента...</value>
+    <value>Добавить договор с клиентом...</value>
+  </data>
+  <data name="UI_AddContractWithSupplierDlg_AddSupplier" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="UI_AddContractWithSupplierDlg_Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="UI_AddContractWithSupplierDlg_SuppliersListHeader" xml:space="preserve">
+    <value>Список доступных поставщиков:</value>
+  </data>
+  <data name="UI_AddContractWithSupplierDlg_Title" xml:space="preserve">
+    <value>Добавить договор с поставщиком...</value>
   </data>
   <data name="UI_Clients_AddClient" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="UI_Clients_AddContract" xml:space="preserve">
     <value>Добавить</value>
   </data>
   <data name="UI_Clients_Address_Field" xml:space="preserve">
@@ -159,6 +174,9 @@
   <data name="UI_Clients_RemoveClient" xml:space="preserve">
     <value>Удалить</value>
   </data>
+  <data name="UI_Clients_RemoveContract" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
   <data name="UI_Clients_SaveChanges" xml:space="preserve">
     <value>Сохранить изменения</value>
   </data>
@@ -167,6 +185,51 @@
   </data>
   <data name="UI_Clients_UpdateClientsListButton" xml:space="preserve">
     <value>Обновить</value>
+  </data>
+  <data name="UI_Clients_UsersManagement" xml:space="preserve">
+    <value>Управление пользователями</value>
+  </data>
+  <data name="UI_ClientUsers_AddUser" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="UI_ClientUsers_Id_Field" xml:space="preserve">
+    <value>ID:</value>
+  </data>
+  <data name="UI_ClientUsers_InitialPassword_Field" xml:space="preserve">
+    <value>Временный пароль:</value>
+  </data>
+  <data name="UI_ClientUsers_IsAdmin_Field" xml:space="preserve">
+    <value>Администратор</value>
+  </data>
+  <data name="UI_ClientUsers_Login_Field" xml:space="preserve">
+    <value>Логин:</value>
+  </data>
+  <data name="UI_ClientUsers_Name_Field" xml:space="preserve">
+    <value>Имя:</value>
+  </data>
+  <data name="UI_ClientUsers_PasswordHash_Field" xml:space="preserve">
+    <value>Хэш пароля:</value>
+  </data>
+  <data name="UI_ClientUsers_RemoveUser" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="UI_ClientUsers_ResetPassword" xml:space="preserve">
+    <value>Сбросить пароль</value>
+  </data>
+  <data name="UI_ClientUsers_SaveChanges" xml:space="preserve">
+    <value>Сохранить изменения:</value>
+  </data>
+  <data name="UI_ClientUsers_SurName_Field" xml:space="preserve">
+    <value>Фамилия:</value>
+  </data>
+  <data name="UI_ClientUsers_UpdateUsersListButton" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="UI_ClientUsers_UsersListHeader" xml:space="preserve">
+    <value>Пользователи клиента "</value>
+  </data>
+  <data name="UI_ErrorDlg_Caption" xml:space="preserve">
+    <value>Ошибка</value>
   </data>
   <data name="UI_MainWindow_ClientsButton" xml:space="preserve">
     <value>Клиенты</value>

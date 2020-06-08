@@ -3,11 +3,29 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
       xmlns:resx="clr-namespace:Administration_Tools.Resources;assembly=Administration_Tools"
       xmlns:local="clr-namespace:Administration_Tools_Win.Views"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
-      Title="{DynamicResource UI_MainWindow_SuppliersButton}">
+      Title="None">
+
+    <Page.Resources>
+        
+        <CollectionViewSource x:Key="SuppliersCollection" Source="{Binding Suppliers}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="ShortName"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+        
+        <CollectionViewSource x:Key="SupplierContractsCollection" Source="{Binding SelectedSupplier.Contracts}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Client.ShortName"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    
+    </Page.Resources>
+
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -16,7 +34,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0">
             <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_SuppliersListHeader}"/>
-            <ListView ItemsSource="{Binding Suppliers}" Width="200" Height="400" HorizontalAlignment="Left" SelectedItem="{Binding SelectedSupplier}">
+            <ListView ItemsSource="{Binding Source={StaticResource SuppliersCollection}}" Width="200" Height="400" HorizontalAlignment="Left" SelectedItem="{Binding SelectedSupplier}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=ShortName}"/>
@@ -27,8 +45,8 @@
             <Button Content="{x:Static resx:UILang.UI_Suppliers_RemoveSupplier}" Width="200" HorizontalAlignment="Left" Command="{Binding RemoveSupplierCommand}"/>
             <Button Content="{x:Static resx:UILang.UI_Suppliers_UpdateSuppliersListButton}" Width="200" HorizontalAlignment="Left" Command="{Binding UpdateSuppliersListCommand}"/>
         </StackPanel>
-        
-        
+
+
         <StackPanel Grid.Column="1" Orientation="Vertical" Margin="20,0,0,0">
             <TextBlock Text="{Binding SelectedSupplier.ShortName}" FontSize="20" FontWeight="Bold"/>
             <StackPanel Orientation="Horizontal">
@@ -61,7 +79,7 @@
             </StackPanel>
             <Button Content="{x:Static resx:UILang.UI_Suppliers_SaveChanges}" Width="200" Margin="0,20,0,20" HorizontalAlignment="Left" Command="{Binding SaveSupplierChangesCommand}"/>
             <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_ContractsListHeader}" HorizontalAlignment="Left"/>
-            <ListView ItemsSource="{Binding SelectedSupplier.Contracts}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">
+            <ListView ItemsSource="{Binding Source={StaticResource SupplierContractsCollection}}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=Client.ShortName}"/>

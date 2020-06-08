@@ -13,12 +13,11 @@ namespace Core.Models
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-
-        private int _clientId;
-        public int ClientId
+        private Guid _clientId;
+        [Key, Column(Order = 0)]
+        public Guid ClientId
         {
             get { return _clientId; }
             set
@@ -29,6 +28,7 @@ namespace Core.Models
         }
 
         private Client client;
+        [Key, Column(Order = 1)]
         public Client Client
         {
             get { return client; }
@@ -39,8 +39,8 @@ namespace Core.Models
             }
         }
 
-        private int _supplierId;
-        public int SupplierId
+        private Guid _supplierId;
+        public Guid SupplierId
         {
             get { return _supplierId; }
             set

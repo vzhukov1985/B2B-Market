@@ -4,29 +4,27 @@ using System.Text;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Core.Models;
-using Administration_Tools.Models;
 using System.Linq;
 using System.Collections.ObjectModel;
-using Core.Helpers;
+using Core.Services;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Administration_Tools.Helpers;
+using Administration_Tools.Services;
 
 namespace Administration_Tools.ViewModels
 {
-    public class SuppliersVM : INotifyPropertyChanged
+    public class SuppliersVM<CommandType> : INotifyPropertyChanged where CommandType : IRelayCommand, new()
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private IDialogService DialogService;
+        private readonly IDialogService DialogService;
 
-        private List<Supplier> _suppliers;
-        public List<Supplier> Suppliers
+        private ObservableCollection<Supplier> _suppliers;
+        public ObservableCollection<Supplier> Suppliers
         {
             get { return _suppliers; }
             set
@@ -62,7 +60,7 @@ namespace Administration_Tools.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                Suppliers = db.Suppliers.Include(_ => _.Contracts).ThenInclude(_ => _.Client).OrderBy(_ => _.ShortName).ToList();
+                Suppliers = new ObservableCollection<Supplier>(db.Suppliers.Include(_ => _.Contracts).ThenInclude(_ => _.Client).ToList());
             }
         }
 
@@ -75,30 +73,29 @@ namespace Administration_Tools.ViewModels
                     db.Suppliers.Update(SelectedSupplier);
                 }
                 db.SaveChanges();
-                UpdateSuppliersListCommand.Execute(null);
             }
-
         }
 
         public void AddSupplier()
         {
+            Supplier NewSupplier = new Supplier
+            {
+                Id = Guid.NewGuid(),
+                ShortName = "Новый Поставщик",
+                FullName = "Новый Поставщик",
+                BIN = "0",
+                Address = "Не указан",
+                Phone = "Нет",
+                Email = "Нет"
+            };
+
             using (MarketDbContext db = new MarketDbContext())
             {
-                Supplier NewSupplier = new Supplier
-                {
-
-                    ShortName = "Новый Поставщик",
-                    FullName = "Новый Поставщик",
-                    BIN = "0",
-                    Address = "Не указан",
-                    Phone = "Нет",
-                    Email = "Нет"
-                };
                 db.Suppliers.Add(NewSupplier);
                 db.SaveChanges();
-                UpdateSuppliersListCommand.Execute(null);
-                SelectedSupplier = NewSupplier;
             }
+            Suppliers.Add(NewSupplier);
+            SelectedSupplier = NewSupplier;
         }
 
         public void RemoveSupplier()
@@ -107,27 +104,27 @@ namespace Administration_Tools.ViewModels
             {
                 db.Suppliers.Remove(SelectedSupplier);
                 db.SaveChanges();
-                UpdateSuppliersListCommand.Execute(null);
-                SelectedSupplier = null;
             }
-
+            Suppliers.Remove(SelectedSupplier);
         }
+
         public void AddContract()
         {
             using (MarketDbContext db = new MarketDbContext())
             {
                 if (SelectedSupplier == null)
                     return;
-                List<Client> AvailableClients = db.Clients.Include(cc => cc.Contracts).Where(dd => !dd.Contracts.Any(ee => ee.SupplierId == SelectedSupplier.Id)).ToList();
-                
-                
+
+                ObservableCollection<Client> AvailableClients = new ObservableCollection<Client>(db.Clients.Include(cc => cc.Contracts).Where(dd => !dd.Contracts.Any(ee => ee.SupplierId == SelectedSupplier.Id)).ToList());
+
                 Client ClientToAdd = DialogService.AddContractWithClientDlg(AvailableClients);
                 if (ClientToAdd != null)
                 {
-                    db.Contracts.Add(new Contract() { ClientId = ClientToAdd.Id, SupplierId = SelectedSupplier.Id });
+                    Contract NewContract = new Contract() { ClientId = ClientToAdd.Id, SupplierId = SelectedSupplier.Id };
+                    db.Contracts.Add(NewContract);
                     db.SaveChanges();
+                    SelectedSupplier.Contracts.Add(NewContract);
                 }
-                UpdateSuppliersListCommand.Execute(null);
             }
         }
 
@@ -139,32 +136,36 @@ namespace Administration_Tools.ViewModels
                 {
                     db.Contracts.Remove(SelectedContract);
                     db.SaveChanges();
+                    SelectedSupplier.Contracts.Remove(SelectedContract);
                 }
             }
-            UpdateSuppliersListCommand.Execute(null);
         }
 
-        public RelayCommand UpdateSuppliersListCommand { get; }
-        public RelayCommand SaveSupplierChangesCommand { get; }
+        public CommandType UpdateSuppliersListCommand { get; }
+        public CommandType SaveSupplierChangesCommand { get; }
+        public CommandType AddSupplierCommand { get; }
+        public CommandType RemoveSupplierCommand { get; }
 
-        public RelayCommand AddSupplierCommand { get; }
-        public RelayCommand RemoveSupplierCommand { get; }
-
-        public RelayCommand AddContractCommand { get; }
-
-        public RelayCommand RemoveContractCommand { get; }
+        public CommandType AddContractCommand { get; }
+        public CommandType RemoveContractCommand { get; }
 
         public SuppliersVM(IDialogService dialogService)
         {
             DialogService = dialogService;
 
-            UpdateSuppliersListCommand = new RelayCommand(_ => { UpdateSuppliersList(); });
-            SaveSupplierChangesCommand = new RelayCommand(_ => { SaveSupplierChanges(); }, _ => { return SelectedSupplier != null; });
-            AddSupplierCommand = new RelayCommand(_ => { AddSupplier(); });
-            RemoveSupplierCommand = new RelayCommand(_ => { RemoveSupplier(); }, _ => SelectedSupplier != null);
+            UpdateSuppliersListCommand = new CommandType();
+            UpdateSuppliersListCommand.Create(_ => { UpdateSuppliersList(); });
+            SaveSupplierChangesCommand = new CommandType();
+            SaveSupplierChangesCommand.Create(_ => { SaveSupplierChanges(); }, _ => { return SelectedSupplier != null; });
+            AddSupplierCommand = new CommandType();
+            AddSupplierCommand.Create(_ => { AddSupplier(); });
+            RemoveSupplierCommand = new CommandType();
+            RemoveSupplierCommand.Create(_ => { RemoveSupplier(); }, _ => SelectedSupplier != null);
 
-            AddContractCommand = new RelayCommand(_ => { AddContract(); }, _ => SelectedSupplier != null);
-            RemoveContractCommand = new RelayCommand(_ => { RemoveContract(); }, _ => (SelectedSupplier != null) && (SelectedContract != null));
+            AddContractCommand = new CommandType();
+            AddContractCommand.Create(_ => { AddContract(); }, _ => SelectedSupplier != null);
+            RemoveContractCommand = new CommandType();
+            RemoveContractCommand.Create(_ => { RemoveContract(); }, _ => (SelectedSupplier != null) && (SelectedContract != null));
 
             UpdateSuppliersListCommand.Execute(null);
         }

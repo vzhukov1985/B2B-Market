@@ -4,25 +4,28 @@ using System.Text;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Core.Models;
-using Administration_Tools.Models;
 using System.Linq;
 using System.Collections.ObjectModel;
-using Core.Helpers;
+using Core.Services;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Administration_Tools.Services;
 
 namespace Administration_Tools.ViewModels
 {
-    public class ClientsVM : INotifyPropertyChanged
+    public class ClientsVM<CommandType> : INotifyPropertyChanged where CommandType: IRelayCommand, new()
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private List<Client> _clients;
-        public List<Client> Clients
+        private readonly IDialogService DialogService;
+        private readonly IPageService PageService;
+
+        private ObservableCollection<Client> _clients;
+        public ObservableCollection<Client> Clients
         {
             get { return _clients; }
             set
@@ -43,76 +46,134 @@ namespace Administration_Tools.ViewModels
             }
         }
 
+        private Contract _selectedContract;
+        public Contract SelectedContract
+        {
+            get { return _selectedContract; }
+            set
+            {
+                _selectedContract = value;
+                OnPropertyChanged("SelectedContract");
+            }
+        }
 
         public void UpdateClientsList()
         {
-            using (ClientsDbContext db = new ClientsDbContext())
+            using (MarketDbContext db = new MarketDbContext())
             {
-                Clients = db.Clients.OrderBy(s => s.ShortName).ToList();
+                Clients = new ObservableCollection<Client>(db.Clients.Include(_ => _.Contracts).ThenInclude(_ => _.Supplier).ToList());
             }
         }
 
         public void SaveClientChanges()
         {
-            using (ClientsDbContext db = new ClientsDbContext())
+            using (MarketDbContext db = new MarketDbContext())
             {
                 if (SelectedClient != null)
                 {
                     db.Clients.Update(SelectedClient);
                 }
                 db.SaveChanges();
-                UpdateClientsListCommand.Execute(null);
             }
-
         }
 
         public void AddClient()
         {
-            using (ClientsDbContext db = new ClientsDbContext())
+            Client NewClient = new Client
             {
-                Client NewClient = new Client
-                {
+                Id = Guid.NewGuid(),
+                ShortName = "Новый Клиент",
+                FullName = "Новый Клиент",
+                BIN = "0",
+                Address = "Не указан",
+                Phone = "Нет",
+                Email = "Нет"
+            };
 
-                    ShortName = "Новый Клиент",
-                    FullName = "Новый Клиент",
-                    BIN = "0",
-                    Address = "Не указан",
-                    Phone = "Нет",
-                    Email = "Нет"
-                };
+            using (MarketDbContext db = new MarketDbContext())
+            {
                 db.Clients.Add(NewClient);
                 db.SaveChanges();
-                UpdateClientsListCommand.Execute(null);
-                SelectedClient = NewClient;
             }
+            Clients.Add(NewClient);
+            SelectedClient = NewClient;
         }
 
         public void RemoveClient()
         {
-            using (ClientsDbContext db = new ClientsDbContext())
+            using (MarketDbContext db = new MarketDbContext())
             {
                 db.Clients.Remove(SelectedClient);
                 db.SaveChanges();
-                UpdateClientsListCommand.Execute(null);
-                SelectedClient = null;
             }
-
+            Clients.Remove(SelectedClient);
         }
 
-
-        public RelayCommand UpdateClientsListCommand { get; }
-        public RelayCommand SaveClientChangesCommand { get; }
-
-        public RelayCommand AddClientCommand { get; }
-        public RelayCommand RemoveClientCommand { get; set; }
-
-        public ClientsVM()
+        public void AddContract()
         {
-            UpdateClientsListCommand = new RelayCommand(_ => { UpdateClientsList(); });
-            SaveClientChangesCommand = new RelayCommand(_ => { SaveClientChanges(); });
-            AddClientCommand = new RelayCommand(_ => { AddClient(); });
-            RemoveClientCommand = new RelayCommand(_ => { RemoveClient(); });
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                if (SelectedClient == null)
+                    return;
 
+                ObservableCollection<Supplier> AvailableSuppliers = new ObservableCollection<Supplier>(db.Suppliers.Include(cc => cc.Contracts).Where(dd => !dd.Contracts.Any(ee => ee.ClientId == SelectedClient.Id)).ToList());
+
+                Supplier SupplierToAdd = DialogService.AddContractWithSupplierDlg(AvailableSuppliers);
+                if (SupplierToAdd != null)
+                {
+                    Contract NewContract = new Contract() { SupplierId = SupplierToAdd.Id, ClientId = SelectedClient.Id };
+                    db.Contracts.Add(NewContract);
+                    db.SaveChanges();
+                    SelectedClient.Contracts.Add(NewContract);
+                }
+            }
+        }
+
+        public void RemoveContract()
+        {
+            if (SelectedContract != null)
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    db.Contracts.Remove(SelectedContract);
+                    db.SaveChanges();
+                    SelectedClient.Contracts.Remove(SelectedContract);
+                }
+            }
+        }
+       
+        public CommandType UpdateClientsListCommand { get; }
+        public CommandType SaveClientChangesCommand { get; }
+        public CommandType AddClientCommand { get; }
+        public CommandType RemoveClientCommand { get; set; }
+
+        public CommandType AddContractCommand { get; }
+        public CommandType RemoveContractCommand { get; }
+
+        public CommandType ShowClientUsersPageCommand { get; }
+
+        public ClientsVM(IPageService pageService, IDialogService dialogService)
+        {
+            DialogService = dialogService;
+            PageService = pageService;
+
+            UpdateClientsListCommand = new CommandType();
+            UpdateClientsListCommand.Create(_ => { UpdateClientsList(); });
+            SaveClientChangesCommand = new CommandType();
+            SaveClientChangesCommand.Create(_ => { SaveClientChanges(); }, _ => { return SelectedClient != null; });
+            AddClientCommand = new CommandType();
+            AddClientCommand.Create(_ => { AddClient(); });
+            RemoveClientCommand = new CommandType();
+            RemoveClientCommand.Create(_ => { RemoveClient(); }, _ => SelectedClient != null);
+
+            AddContractCommand = new CommandType();
+            AddContractCommand.Create(_ => { AddContract(); }, _ => SelectedClient != null);
+            RemoveContractCommand = new CommandType();
+            RemoveContractCommand.Create(_ => { RemoveContract(); }, _ => (SelectedClient != null) && (SelectedContract != null));
+
+            ShowClientUsersPageCommand = new CommandType();
+            ShowClientUsersPageCommand.Create(_ => { PageService.ShowClientUsersPage(SelectedClient, dialogService); }, _ => SelectedClient != null);
+            
             UpdateClientsListCommand.Execute(null);
         }
     }

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Core.Models;
 using System.Collections.ObjectModel;
-using System.Linq;
+
 
 namespace Administration_Tools.ViewModels
 {
@@ -14,12 +14,11 @@ namespace Administration_Tools.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private List<Client> _availableClients;
-        public List<Client> AvailableClients
+        private ObservableCollection<Client> _availableClients;
+        public ObservableCollection<Client> AvailableClients
         {
             get { return _availableClients; }
             set
@@ -41,12 +40,9 @@ namespace Administration_Tools.ViewModels
         }
 
 
-
-        public AddContractWithClientVM(List<Client> AvailableClients)
+        public AddContractWithClientVM(ObservableCollection<Client> AvailableClients)
         {
             this.AvailableClients = AvailableClients;
         }
-
-
     }
 }
