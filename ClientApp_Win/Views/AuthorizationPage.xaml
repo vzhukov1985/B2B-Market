@@ -1,0 +1,42 @@
+﻿<Page x:Class="ClientApp_Win.Views.AuthorizationPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:resx="clr-namespace:ClientApp.Resources;assembly=ClientApp"
+      xmlns:ctrl="clr-namespace:ClientApp_Win.Controls"
+      xmlns:local="clr-namespace:ClientApp_Win.Views"
+      xmlns:conv="clr-namespace:ClientApp_Win.Converters"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="560"
+      Title="LoginPage">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="0.6*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{x:Static resx:UILang.UI_AuthPage_AuthorizationHeader}" FontSize="45" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static resx:UILang.UI_AuthPage_LoginField}" FontSize="20" FontWeight="DemiBold" Margin="0,0,5,0" HorizontalAlignment="Right"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Width="200" FontSize="20" Margin="0,0,0,5" Text="{Binding Login}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static resx:UILang.UI_AuthPage_PasswordField}" FontSize="20" FontWeight="DemiBold" VerticalAlignment="Center" Margin="0,0,5,0" />
+            <PasswordBox x:Name="pwdBox" Grid.Row="1" Grid.Column="1" Width="200" FontSize="20" Margin="0,5,0,0"/>
+        </Grid>
+        <!--<ctrl:LoadingSpinner x:Name="LoadingSpinner" Grid.Row="1" Visibility="{Binding IsLoadingSpinnerVisible, Converter={StaticResource BoolToVisibility}}"/>-->
+        <Button Grid.Row="2" Content="{x:Static resx:UILang.UI_AuthPage_Enter}" Width="180" Height="40" VerticalAlignment="Top" FontSize="20" FontWeight="DemiBold" Click="EnterButton_Click"/>
+    </Grid>
+</Page>

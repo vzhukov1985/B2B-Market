@@ -61,6 +61,15 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Пользователь с таким логином уже существует. Измените логин..
+        /// </summary>
+        public static string Error_LoginExists {
+            get {
+                return ResourceManager.GetString("Error_LoginExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Добавить.
         /// </summary>
         public static string UI_AddContractWithClientDlg_AddClient {
@@ -480,6 +489,15 @@ namespace Administration_Tools.Resources {
         public static string UI_Suppliers_Email_Field {
             get {
                 return ResourceManager.GetString("UI_Suppliers_Email_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FTP-доступ:.
+        /// </summary>
+        public static string UI_Suppliers_FTPAccess_Field {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_FTPAccess_Field", resourceCulture);
             }
         }
         

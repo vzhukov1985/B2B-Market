@@ -96,6 +96,18 @@ namespace Core.Models
             }
         }
 
+        private string _ftpAccess;
+        public string FTPAccess
+        {
+            get { return _ftpAccess; }
+            set
+            {
+                _ftpAccess = value;
+                OnPropertyChanged("FTPAccess");
+            }
+        }
+
+
         private ObservableCollection<Contract> _contracts;
         public ObservableCollection<Contract> Contracts
         {
@@ -104,6 +116,17 @@ namespace Core.Models
             {
                 _contracts = value;
                 OnPropertyChanged("Contracts");
+            }
+        }
+
+        private ObservableCollection<Offer> _offers;
+        public ObservableCollection<Offer> Offers
+        {
+            get { return _offers; }
+            set
+            {
+                _offers = value;
+                OnPropertyChanged("Offers");
             }
         }
 

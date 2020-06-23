@@ -9,6 +9,8 @@ using Core.Services;
 using Core.Models;
 using Administration_Tools.Services;
 using System.Diagnostics;
+using System.Resources;
+using System.Reflection;
 
 namespace Administration_Tools.ViewModels
 {
@@ -74,7 +76,8 @@ namespace Administration_Tools.ViewModels
 				{
 					if (Authentication.IsLoginAlreadyExists(SelectedUser.Login, SelectedUser.Id))
 					{
-						DialogService.ShowErrorDlg("Пользователь с таким логином уже существует. Измените логин");
+						ResourceManager rm = new ResourceManager("Administration_Tools.Resources.UILang", Assembly.GetExecutingAssembly());
+						DialogService.ShowErrorDlg(rm.GetString("Error_LoginExists"));
 						return;
 					}
 
@@ -94,8 +97,7 @@ namespace Administration_Tools.ViewModels
 				SurName = "User",
 				IsAdmin = false,
 				Login = Authentication.GenerateUniqueLogin(),
-				InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength),
-				IsPasswordWasReset = true,
+				InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength)
 			};
 			newUser.PasswordHash = Authentication.HashPassword(newUser.InitialPassword);
 
@@ -126,7 +128,6 @@ namespace Administration_Tools.ViewModels
 				{
 					SelectedUser.InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength);
 					SelectedUser.PasswordHash = Authentication.HashPassword(SelectedUser.InitialPassword);
-					SelectedUser.IsPasswordWasReset = true;
 					db.ClientsUsers.Update(SelectedUser);
 				}
 				db.SaveChanges();

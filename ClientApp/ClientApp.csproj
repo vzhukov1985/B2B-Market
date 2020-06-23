@@ -1,15 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
+    <None Remove="Resources\Checked.png" />
+    <None Remove="Resources\Favorite_Off.png" />
+    <None Remove="Resources\Favorite_On.png" />
+    <None Remove="Resources\qwe.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Favorite_On.png" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Checked.png" />
+    <Resource Include="Resources\Favorite_Off.png" />
+    <Resource Include="Resources\qwe.png" />
   </ItemGroup>
 
   <ItemGroup>

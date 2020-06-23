@@ -9,7 +9,7 @@ namespace Core.Models
     public static class Authentication
     {
         private static readonly string hardcodedSalt = "q98`Рsd~вя$";
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
         public static bool IsLoginAlreadyExists(string loginToCheck, Guid userId)
         {
             using (MarketDbContext db = new MarketDbContext())

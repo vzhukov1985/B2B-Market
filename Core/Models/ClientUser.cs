@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
@@ -38,7 +39,19 @@ namespace Core.Models
 			}
 		}
 
-		private string _name;
+        private Client _client;
+        public Client Client
+        {
+            get { return _client; }
+            set
+            {
+                _client = value;
+                OnPropertyChanged("Client");
+            }
+        }
+
+
+        private string _name;
 		public string Name
 		{
 			get { return _name; }
@@ -93,17 +106,6 @@ namespace Core.Models
 			}
 		}
 
-		private bool _isPasswordWasReset;
-		public bool IsPasswordWasReset
-		{
-			get { return _isPasswordWasReset; }
-			set
-			{
-				_isPasswordWasReset = value;
-				OnPropertyChanged("IsPasswordWasReset");
-			}
-		}
-
 		private string _initialPassword;
 		public string InitialPassword
 		{
@@ -114,5 +116,16 @@ namespace Core.Models
 				OnPropertyChanged("InitialPassword");
 			}
 		}
-	}
+
+        private ObservableCollection<Favorite> _favoriteProducts;
+        public ObservableCollection<Favorite> FavoriteProducts
+        {
+            get { return _favoriteProducts; }
+            set
+            {
+                _favoriteProducts = value;
+                OnPropertyChanged("FavoriteProducts");
+            }
+        }
+    }
 }

@@ -107,6 +107,17 @@ namespace Core.Models
             }
         }
 
+        private ObservableCollection<ClientUser> _users;
+        public ObservableCollection<ClientUser> Users
+        {
+            get { return _users; }
+            set
+            {
+                _users = value;
+                OnPropertyChanged("Users");
+            }
+        }
+
         public Client()
         {
             Contracts = new ObservableCollection<Contract>();
