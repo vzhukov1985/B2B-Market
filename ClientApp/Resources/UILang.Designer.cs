@@ -63,9 +63,19 @@ namespace ClientApp.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        public static byte[] Checked {
+        public static byte[] Contracted {
             get {
-                object obj = ResourceManager.GetObject("Checked", resourceCulture);
+                object obj = ResourceManager.GetObject("Contracted", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] EmptyPicture {
+            get {
+                object obj = ResourceManager.GetObject("EmptyPicture", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -89,11 +99,72 @@ namespace ClientApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to as.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        public static string qw {
+        public static byte[] Minus_Disabled {
             get {
-                return ResourceManager.GetString("qw", resourceCulture);
+                object obj = ResourceManager.GetObject("Minus_Disabled", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Minus_Enabled {
+            get {
+                object obj = ResourceManager.GetObject("Minus_Enabled", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Navigation_Back {
+            get {
+                object obj = ResourceManager.GetObject("Navigation_Back", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Navigation_Forward_Gray {
+            get {
+                object obj = ResourceManager.GetObject("Navigation_Forward_Gray", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Plus_Disabled {
+            get {
+                object obj = ResourceManager.GetObject("Plus_Disabled", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Plus_Enabled {
+            get {
+                object obj = ResourceManager.GetObject("Plus_Enabled", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Search {
+            get {
+                object obj = ResourceManager.GetObject("Search", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -130,6 +201,15 @@ namespace ClientApp.Resources {
         public static string UI_AuthPage_PasswordField {
             get {
                 return ResourceManager.GetString("UI_AuthPage_PasswordField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Все товары.
+        /// </summary>
+        public static string UI_CategoriesSubPage_AllProducts {
+            get {
+                return ResourceManager.GetString("UI_CategoriesSubPage_AllProducts", resourceCulture);
             }
         }
         
@@ -217,11 +297,174 @@ namespace ClientApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to История заказов.
+        /// </summary>
+        public static string UI_MainPage_ArchivedRequestsButton {
+            get {
+                return ResourceManager.GetString("UI_MainPage_ArchivedRequestsButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Текущая заявка.
+        /// </summary>
+        public static string UI_MainPage_CurrentRequestButton {
+            get {
+                return ResourceManager.GetString("UI_MainPage_CurrentRequestButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Избранное.
+        /// </summary>
+        public static string UI_MainPage_FavoritesButton {
+            get {
+                return ResourceManager.GetString("UI_MainPage_FavoritesButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Главная.
+        /// </summary>
+        public static string UI_MainPage_MainButton {
+            get {
+                return ResourceManager.GetString("UI_MainPage_MainButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поиск.
+        /// </summary>
+        public static string UI_MainPage_SearchButton {
+            get {
+                return ResourceManager.GetString("UI_MainPage_SearchButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Договора с нами.
+        /// </summary>
+        public static string UI_MainSubPage_AllContractedSuppliers {
+            get {
+                return ResourceManager.GetString("UI_MainSubPage_AllContractedSuppliers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to КАТЕГОРИИ.
+        /// </summary>
+        public static string UI_MainSubPage_Categories {
+            get {
+                return ResourceManager.GetString("UI_MainSubPage_Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ПОСТАВЩИКИ.
+        /// </summary>
+        public static string UI_MainSubPage_Suppliers {
+            get {
+                return ResourceManager.GetString("UI_MainSubPage_Suppliers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добро пожаловать в B2B Market, .
+        /// </summary>
+        public static string UI_MainSubPage_Welcome {
+            get {
+                return ResourceManager.GetString("UI_MainSubPage_Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to B2B Market.
         /// </summary>
         public static string UI_MainWindow_Title {
             get {
                 return ResourceManager.GetString("UI_MainWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Внимание!.
+        /// </summary>
+        public static string UI_ProductSubPage_HasChangesDlgCaption {
+            get {
+                return ResourceManager.GetString("UI_ProductSubPage_HasChangesDlgCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Внимание! Изменения, которые вы сделали, не сохранены и будут сброшены при переходе с этой страницы.
+        /// </summary>
+        public static string UI_ProductSubPage_HasChangesDlgText {
+            get {
+                return ResourceManager.GetString("UI_ProductSubPage_HasChangesDlgText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ПРЕДЛОЖЕНИЯ.
+        /// </summary>
+        public static string UI_ProductSubPage_Offers {
+            get {
+                return ResourceManager.GetString("UI_ProductSubPage_Offers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ВНЕСТИ ИЗМЕНЕНИЯ В ЗАЯВКУ.
+        /// </summary>
+        public static string UI_ProductSubPage_UpdateCurrentRequest {
+            get {
+                return ResourceManager.GetString("UI_ProductSubPage_UpdateCurrentRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to по категориям.
+        /// </summary>
+        public static string UI_RequestSubPage_GroupingByCategories {
+            get {
+                return ResourceManager.GetString("UI_RequestSubPage_GroupingByCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to по поставщикам.
+        /// </summary>
+        public static string UI_RequestSubPage_GroupingBySuppliers {
+            get {
+                return ResourceManager.GetString("UI_RequestSubPage_GroupingBySuppliers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Результаты поиска.
+        /// </summary>
+        public static string UI_SearchSubPage_SearchResults {
+            get {
+                return ResourceManager.GetString("UI_SearchSubPage_SearchResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поиск товара.
+        /// </summary>
+        public static string UI_SubPages_SearchHint {
+            get {
+                return ResourceManager.GetString("UI_SubPages_SearchHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] UserSettings {
+            get {
+                object obj = ResourceManager.GetObject("UserSettings", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

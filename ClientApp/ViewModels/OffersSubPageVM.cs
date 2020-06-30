@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using ClientApp.Services;
+using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -20,6 +21,8 @@ namespace ClientApp.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+
+        private readonly IPageService PageService;
 
         private ClientUser _user;
         public ClientUser User
@@ -43,94 +46,99 @@ namespace ClientApp.ViewModels
             }
         }
 
-        private ObservableCollection<Supplier> _contractedSuppliers;
-        public ObservableCollection<Supplier> ContractedSuppliers
+        private ObservableCollection<Guid> _contractedSuppliersIds;
+        public ObservableCollection<Guid> ContractedSuppliersIds
         {
-            get { return _contractedSuppliers; }
+            get { return _contractedSuppliersIds; }
             set
             {
-                _contractedSuppliers = value;
-                OnPropertyChanged("ContractedSuppliers");
+                _contractedSuppliersIds = value;
+                OnPropertyChanged("ContractedSuppliersIds");
             }
         }
 
-        private ObservableCollection<Product> _favoriteProducts;
-        public ObservableCollection<Product> FavoriteProducts
+        private ObservableCollection<Guid> _favoriteProductsIds;
+        public ObservableCollection<Guid> FavoriteProductsIds
         {
-            get { return _favoriteProducts; }
+            get { return _favoriteProductsIds; }
             set
             {
-                _favoriteProducts = value;
-                OnPropertyChanged("FavoriteProducts");
+                _favoriteProductsIds = value;
+                OnPropertyChanged("FavoriteProductsIds");
             }
         }
 
-        private void AddRemoveProductToFavourites(Product selectedProduct)
+        private string _title;
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                OnPropertyChanged("Title");
+            }
+        }
+
+        private async void QueryDb(bool ShowFavoritesOnly = false, List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")
         {
             using (MarketDbContext db = new MarketDbContext())
             {
+                ContractedSuppliersIds = new ObservableCollection<Guid>(User.Client.Contracts.Select(p => p.Supplier.Id).ToList());
 
-                if (selectedProduct.IsFavoriteForUser)
-                {
-                    selectedProduct.IsFavoriteForUser = false;
-                    Favorite favoriteToRemove=db.Favorites.Where(f => (f.ClientUserId == User.Id) && (f.ProductId == selectedProduct.Id)).FirstOrDefault();
-                    db.Favorites.Remove(favoriteToRemove);
-                }
-                else
-                {
-                    selectedProduct.IsFavoriteForUser = true;
-                    db.Favorites.Add(new Favorite
-                    {
-                        ClientUserId = User.Id,
-                        ProductId = selectedProduct.Id
-                    });
-                }
-                db.SaveChanges();
-            }
-        }
-
-        public CommandType AddRemoveProductToFavouritesCommand { get; }
-
-        public OffersSubPageVM(ClientUser user)
-        {
-            User = user;
-            AddRemoveProductToFavouritesCommand = new CommandType();
-            AddRemoveProductToFavouritesCommand.Create(p => { AddRemoveProductToFavourites((Product)p); });
-
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                ContractedSuppliers = new ObservableCollection<Supplier>(db.Suppliers
-                    .Include(cc => cc.Contracts)
-                    .Where(dd => dd.Contracts.Any(ee => ee.ClientId == User.ClientId))
-                    .ToList());
-
-                FavoriteProducts = new ObservableCollection<Product>(db.Products
-                    .Include(p => p.Favorites)
-                    .Where(p => p.Favorites.Any(f => f.ClientUserId == User.Id))
-                    .ToList());
-
-                 Products = new ObservableCollection<Product>(db.Products
+                FavoriteProductsIds = new ObservableCollection<Guid>(User.FavoriteProducts.Select(f => f.Product.Id).ToList());
+                
+                Products = new ObservableCollection<Product>(await db.Products
                      .Include(p => p.Offers)
                      .ThenInclude(o => o.QuantityUnit)
                      .Include(p => p.Offers)
                      .ThenInclude(o => o.Supplier)
+                     .Include(p => p.ExtraProperties)
+                     .ThenInclude(pr => pr.PropertyType)
                      .Include(p => p.VolumeUnit)
                      .Include(p => p.VolumeType)
                      .Include(p => p.Category)
-                     .OrderByDescending(p => p.Offers.Any(o => ContractedSuppliers.Contains(o.Supplier)))
+                     .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
+                     .Where(p => supplierFilter == null ? true : p.Offers.Select(of => of.SupplierId).Any(id => supplierFilter.Contains(id)))
+                     .Where(p => ShowFavoritesOnly ? FavoriteProductsIds.Contains(p.Id) : true)
+                     .Where(p => searchText == "" ? true : (p.Name.Contains(searchText)) || (p.Category.Name.Contains(searchText)))
+                     .OrderByDescending(p => p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)))
                      .ThenBy(p => p.Category.Name)
                      .ThenBy(p => p.Name)
-                     .ToList()
+                     .ToListAsync()
                      );
+            }
 
-                foreach (Product product in Products)
-                {
-                    product.IsOfContractedSupplier = product.Offers.Any(o => ContractedSuppliers.Contains(o.Supplier));
-                    product.IsFavoriteForUser = FavoriteProducts.Contains(product);
-                    product.BestRetailPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliers.Contains(o.Supplier)).ThenByDescending(o => o.RetailPrice).FirstOrDefault();
-                    product.BestDiscountPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliers.Contains(o.Supplier)).ThenByDescending(o => o.DiscountPrice).FirstOrDefault();
-                }
+            foreach (Product product in Products)
+            {
+                product.IsOfContractedSupplier = product.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id));
+                product.IsFavoriteForUser = FavoriteProductsIds.Contains(product.Id);
+                product.BestRetailPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.RetailPrice).FirstOrDefault();
+                product.BestDiscountPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.DiscountPrice).FirstOrDefault();
             }
         }
+
+        public CommandType ShowSearchSubPageCommand { get; }
+        public CommandType AddRemoveProductToFavouritesCommand { get; }
+        public CommandType ShowProductCommand { get; }
+
+        public CommandType NavigationBackCommand { get; }
+
+        public OffersSubPageVM(ClientUser user, IPageService pageService, string title, bool ShowFavoritesOnly = false, List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")
+        {
+            PageService = pageService;
+            Title = title;
+            User = user;
+
+            ShowSearchSubPageCommand = new CommandType();
+            ShowSearchSubPageCommand.Create(_ => PageService.ShowSearchSubPage(User));
+            AddRemoveProductToFavouritesCommand = new CommandType();
+            AddRemoveProductToFavouritesCommand.Create(p => MarketDbContext.AddRemoveProductToFavourites((Product)p, User));
+            ShowProductCommand = new CommandType();
+            ShowProductCommand.Create(p => PageService.ShowProductSubPage(User, (Product)p));
+            NavigationBackCommand = new CommandType();
+            NavigationBackCommand.Create(_ => PageService.SubPageNavigationBack());
+
+            QueryDb(ShowFavoritesOnly, categoryFilter, supplierFilter, searchText);
+      }
     }
 }

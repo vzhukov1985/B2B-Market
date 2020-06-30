@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using ClientApp.ViewModels;
 using ClientApp_Win;
 using ClientApp_Win.Services;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace ClientApp_Win.Views
 {

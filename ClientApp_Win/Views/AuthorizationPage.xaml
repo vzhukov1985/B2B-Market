@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:resx="clr-namespace:ClientApp.Resources;assembly=ClientApp"
+      xmlns:resxcore="clr-namespace:Core.Resources;assembly=Core"
       xmlns:ctrl="clr-namespace:ClientApp_Win.Controls"
       xmlns:local="clr-namespace:ClientApp_Win.Views"
       xmlns:conv="clr-namespace:ClientApp_Win.Converters"
@@ -17,11 +18,14 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="500"/>
             <RowDefinition Height="0.6*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        
         <TextBlock Grid.Row="0" Text="{x:Static resx:UILang.UI_AuthPage_AuthorizationHeader}" FontSize="45" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        <Image Source="{Binding Source={x:Static resxcore:CoreResources.Market_Logo}}" Height="300" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
         <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -32,11 +36,11 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static resx:UILang.UI_AuthPage_LoginField}" FontSize="20" FontWeight="DemiBold" Margin="0,0,5,0" HorizontalAlignment="Right"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Width="200" FontSize="20" Margin="0,0,0,5" Text="{Binding Login}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Width="200" FontSize="20" Margin="0,0,0,5" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static resx:UILang.UI_AuthPage_PasswordField}" FontSize="20" FontWeight="DemiBold" VerticalAlignment="Center" Margin="0,0,5,0" />
             <PasswordBox x:Name="pwdBox" Grid.Row="1" Grid.Column="1" Width="200" FontSize="20" Margin="0,5,0,0"/>
         </Grid>
         <!--<ctrl:LoadingSpinner x:Name="LoadingSpinner" Grid.Row="1" Visibility="{Binding IsLoadingSpinnerVisible, Converter={StaticResource BoolToVisibility}}"/>-->
-        <Button Grid.Row="2" Content="{x:Static resx:UILang.UI_AuthPage_Enter}" Width="180" Height="40" VerticalAlignment="Top" FontSize="20" FontWeight="DemiBold" Click="EnterButton_Click"/>
+        <Button Grid.Row="2" Content="{x:Static resx:UILang.UI_AuthPage_Enter}" Style="{StaticResource BlueButton}" Width="180" Height="50" VerticalAlignment="Top" FontSize="20" FontWeight="DemiBold" Click="EnterButton_Click" IsDefault="True"/>
     </Grid>
 </Page>

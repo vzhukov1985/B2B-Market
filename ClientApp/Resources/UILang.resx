@@ -118,8 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Checked" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Checked.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Contracted" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Contracted.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="EmptyPicture" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>EmptyPicture.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Error_BadLoginPassword" xml:space="preserve">
     <value>Неверный логин или пароль</value>
@@ -127,8 +130,26 @@
   <data name="Error_PasswordsAreNotTheSame" xml:space="preserve">
     <value>Введенные пароли не совпадают. Проверьте ввод.</value>
   </data>
-  <data name="qw" xml:space="preserve">
-    <value>as</value>
+  <data name="Minus_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Minus_Disabled.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Minus_Enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Minus_Enabled.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Navigation_Back" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Navigation_Back.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Navigation_Forward_Gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Navigation_Forward_Gray.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Plus_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Plus_Disabled.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Plus_Enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Plus_Enabled.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Search" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Search.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UI_AuthPage_AuthorizationHeader" xml:space="preserve">
     <value>Авторизация</value>
@@ -141,6 +162,9 @@
   </data>
   <data name="UI_AuthPage_PasswordField" xml:space="preserve">
     <value>Пароль:</value>
+  </data>
+  <data name="UI_CategoriesSubPage_AllProducts" xml:space="preserve">
+    <value>Все товары</value>
   </data>
   <data name="UI_ErrorDlg_Caption" xml:space="preserve">
     <value>Ошибка</value>
@@ -169,7 +193,61 @@
   <data name="UI_Image_Favorite_On" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Favorite_On.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="UI_MainPage_ArchivedRequestsButton" xml:space="preserve">
+    <value>История заказов</value>
+  </data>
+  <data name="UI_MainPage_CurrentRequestButton" xml:space="preserve">
+    <value>Текущая заявка</value>
+  </data>
+  <data name="UI_MainPage_FavoritesButton" xml:space="preserve">
+    <value>Избранное</value>
+  </data>
+  <data name="UI_MainPage_MainButton" xml:space="preserve">
+    <value>Главная</value>
+  </data>
+  <data name="UI_MainPage_SearchButton" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="UI_MainSubPage_AllContractedSuppliers" xml:space="preserve">
+    <value>Договора с нами</value>
+  </data>
+  <data name="UI_MainSubPage_Categories" xml:space="preserve">
+    <value>КАТЕГОРИИ</value>
+  </data>
+  <data name="UI_MainSubPage_Suppliers" xml:space="preserve">
+    <value>ПОСТАВЩИКИ</value>
+  </data>
+  <data name="UI_MainSubPage_Welcome" xml:space="preserve">
+    <value>Добро пожаловать в B2B Market, </value>
+  </data>
   <data name="UI_MainWindow_Title" xml:space="preserve">
     <value>B2B Market</value>
+  </data>
+  <data name="UI_ProductSubPage_HasChangesDlgCaption" xml:space="preserve">
+    <value>Внимание!</value>
+  </data>
+  <data name="UI_ProductSubPage_HasChangesDlgText" xml:space="preserve">
+    <value>Внимание! Изменения, которые вы сделали, не сохранены и будут сброшены при переходе с этой страницы</value>
+  </data>
+  <data name="UI_ProductSubPage_Offers" xml:space="preserve">
+    <value>ПРЕДЛОЖЕНИЯ</value>
+  </data>
+  <data name="UI_ProductSubPage_UpdateCurrentRequest" xml:space="preserve">
+    <value>ВНЕСТИ ИЗМЕНЕНИЯ В ЗАЯВКУ</value>
+  </data>
+  <data name="UI_RequestSubPage_GroupingByCategories" xml:space="preserve">
+    <value>по категориям</value>
+  </data>
+  <data name="UI_RequestSubPage_GroupingBySuppliers" xml:space="preserve">
+    <value>по поставщикам</value>
+  </data>
+  <data name="UI_SearchSubPage_SearchResults" xml:space="preserve">
+    <value>Результаты поиска</value>
+  </data>
+  <data name="UI_SubPages_SearchHint" xml:space="preserve">
+    <value>Поиск товара</value>
+  </data>
+  <data name="UserSettings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>UserSettings.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

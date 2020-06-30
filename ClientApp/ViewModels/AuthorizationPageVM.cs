@@ -59,11 +59,11 @@ namespace ClientApp.ViewModels
 			}
 		}
 
-		public void Authorize(string password)
+		public async void Authorize(string password)
 		{
 			using (MarketDbContext db = new MarketDbContext())
 			{
-				ClientUser user = db.ClientsUsers.Where(o => o.Login == Login).FirstOrDefault();
+				ClientUser user = await db.ClientsUsers.Where(o => o.Login == Login).FirstOrDefaultAsync();
 				if ((user != null) && (Authentication.CheckPassword(password, user.PasswordHash)))
 				{
 					if (password == user.InitialPassword)
@@ -82,6 +82,7 @@ namespace ClientApp.ViewModels
 		}
 
 		public CommandType AuthorizeCommand { get; }
+		public CommandType PreLoadLibrariesCommand { get; }
 
 		public AuthorizationPageVM(IPageService pageService, IDialogService dialogService)
 		{

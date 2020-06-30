@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Market_Logo.png" />
+    <None Remove="Resources\Order_Completed.png" />
+    <None Remove="Resources\Order_Pending.png" />
+    <None Remove="Resources\Order_Rejected.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
@@ -12,11 +19,30 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Market_Logo.png" />
+    <Resource Include="Resources\Order_Completed.png" />
+    <Resource Include="Resources\Order_Pending.png" />
+    <Resource Include="Resources\Order_Rejected.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\CoreResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CoreResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

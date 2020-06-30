@@ -86,7 +86,8 @@ namespace Administration_Tools.ViewModels
                 BIN = "0",
                 Address = "Не указан",
                 Phone = "Нет",
-                Email = "Нет"
+                Email = "Нет",
+                FTPAccess = ""
             };
 
             using (MarketDbContext db = new MarketDbContext())

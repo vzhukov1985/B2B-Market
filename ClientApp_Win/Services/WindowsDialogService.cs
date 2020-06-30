@@ -6,6 +6,7 @@ using ClientApp.Services;
 using Core.Models;
 using System.Resources;
 using System.Reflection;
+using System.Windows;
 
 namespace ClientApp_Win.Services
 {
@@ -14,7 +15,14 @@ namespace ClientApp_Win.Services
 
         public void ShowErrorDlg(string Text)
         {
-            System.Windows.MessageBox.Show(Text, ClientAppResourceManager.GetString("UI_ErrorDlg_Caption"));
+            MessageBox.Show(Text, ClientAppResourceManager.GetString("UI_ErrorDlg_Caption"));
+        }
+
+        public bool ShowOkCancelDialog(string text, string caption)
+        {
+            if (MessageBox.Show(text, caption, MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                return true;
+            return false;
         }
     }
 }

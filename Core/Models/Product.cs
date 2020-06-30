@@ -118,6 +118,19 @@ namespace Core.Models
             }
         }
 
+        private ObservableCollection<ProductExtraProperty> _extraProperties;
+        public ObservableCollection<ProductExtraProperty> ExtraProperties
+        {
+            get { return _extraProperties; }
+            set
+            {
+                _extraProperties = value;
+                OnPropertyChanged("ExtraProperties");
+            }
+        }
+
+
+
         private ObservableCollection<Favorite> _favorites;
         public ObservableCollection<Favorite> Favorites
         {

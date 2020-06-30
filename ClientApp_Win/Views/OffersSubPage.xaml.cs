@@ -23,5 +23,10 @@ namespace ClientApp_Win.Views
         {
             InitializeComponent();
         }
+
+        private void Favourite_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

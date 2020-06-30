@@ -10,130 +10,126 @@
       mc:Ignorable="d" 
       d:DesignHeight="741" d:DesignWidth="560" MinWidth="10"
       Title="OffersSubPage" x:Name="wndOffers">
+
     <Page.Resources>
-        <Style x:Key="LvItemStyle" TargetType="ListViewItem">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <Border x:Name="border" Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="Disabled" />
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="SelectionStates">
-                                    <VisualState x:Name="Unselected" />
-                                    <VisualState x:Name="Selected">
-                                        <Storyboard>
-                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
-                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                <EasingColorKeyFrame KeyTime="0" Value="Transparent" />
-                                            </ColorAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="SelectedUnfocused">
-                                        <Storyboard>
-                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
-                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                <EasingColorKeyFrame KeyTime="0" Value="Transparent" />
-                                            </ColorAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <ContentPresenter/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- *** -->
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <conv:BoolToDiscountPriceColorConverter x:Key="BoolToDiscountPriceColorConverter"/>
+        <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
     </Page.Resources>
 
     <Grid>
-        <ListView ItemsSource="{Binding Products}"  ItemContainerStyle="{StaticResource LvItemStyle}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-                            <Image Grid.Column="0" Source="{Binding Path=Picture}" Height="150" Width="150" />
-                            <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.Checked}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5" Visibility="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Image>
 
-                            <Grid Grid.Column="1" Margin="15,25,5,20">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="0.33*"/>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Image>
 
-                                <TextBlock Grid.Row="0" Text="{Binding Path=Name}" HorizontalAlignment="Left" MaxWidth="295" FontSize="15" FontWeight="DemiBold" TextWrapping="Wrap"/>
+        <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="19" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                                <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,5,0,10">
-                                    <TextBlock Text="{Binding Path=Category.Name}"/>
-                                    <TextBlock>
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
-                                                <Binding Path="VolumeType"/>
-                                                <Binding Path="Volume"/>
-                                                <Binding Path="VolumeUnit"/>
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                </StackPanel>
+        <Grid x:Name="DataGrid" Grid.Row="1">
+            <ListView ItemsSource="{Binding Products}" ItemContainerStyle="{StaticResource LvItemStyle}" Height="{Binding ElementName=DataGrid, Path=ActualHeight}" ScrollViewer.CanContentScroll="False" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
+                                <Image Grid.Column="0" Source="{Binding Path=Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" Height="150" Width="150" RenderOptions.BitmapScalingMode="Fant" />
+                                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.Contracted}}" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5" Visibility="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToVisibilityConverter}}" RenderOptions.BitmapScalingMode="Fant"/>
+
+                                <Grid Grid.Column="1" Margin="15,25,5,20">
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="0.33*"/>
                                         <RowDefinition/>
-                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Column="0" Grid.Row="0" FontSize="16" FontWeight="Bold" VerticalAlignment="Center">
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0:G20} тг/{1}">
-                                                <Binding Path="BestRetailPriceOffer.RetailPrice"/>
-                                                <Binding Path="BestRetailPriceOffer.QuantityUnit"/>
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                    <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="{Binding Path=BestRetailPriceOffer.Supplier.ShortName}" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToDiscountPriceColorConverter}}"/>
-                                    
-                                    <TextBlock Grid.Column="1" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToDiscountPriceColorConverter}}">
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0:G20} тг/{1}">
-                                                <Binding Path="BestDiscountPriceOffer.DiscountPrice"/>
-                                                <Binding Path="BestDiscountPriceOffer.QuantityUnit"/>
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
 
-                                    <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Text="{Binding Path=BestDiscountPriceOffer.Supplier.ShortName}" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToDiscountPriceColorConverter}}"/>
+                                    <TextBlock Grid.Row="0" Text="{Binding Path=Name}" HorizontalAlignment="Left" MaxWidth="295" FontSize="15" FontWeight="DemiBold" TextWrapping="Wrap"/>
+
+                                    <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,5,0,10">
+                                        <TextBlock Text="{Binding Path=Category.Name}"/>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
+                                                    <Binding Path="VolumeType"/>
+                                                    <Binding Path="Volume"/>
+                                                    <Binding Path="VolumeUnit"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="16" FontWeight="Bold" VerticalAlignment="Center">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                                    <Binding Path="BestRetailPriceOffer.RetailPrice"/>
+                                                    <Binding Path="BestRetailPriceOffer.QuantityUnit"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="{Binding Path=BestRetailPriceOffer.Supplier.ShortName}" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"/>
+
+                                        <TextBlock Grid.Column="1" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                                    <Binding Path="BestDiscountPriceOffer.DiscountPrice"/>
+                                                    <Binding Path="BestDiscountPriceOffer.QuantityUnit"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+
+                                        <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Text="{Binding Path=BestDiscountPriceOffer.Supplier.ShortName}" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"/>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
 
-                            <Image Grid.Column="2" Grid.RowSpan="2" Source="{Binding Path=IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}" Height="38" VerticalAlignment="Top" Margin="0,17,18,0" HorizontalAlignment="Left">
+                                <Image Grid.Column="2" Grid.RowSpan="2" Source="{Binding Path=IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}" Height="38" VerticalAlignment="Top" Margin="0,17,18,0" HorizontalAlignment="Left" MouseLeftButtonDown="Favourite_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
+                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.AddRemoveProductToFavouritesCommand, ElementName=wndOffers}" CommandParameter="{Binding Path=.}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Image>
+
                                 <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="MouseLeftButtonUp">
-                                        <i:InvokeCommandAction Command="{Binding Path=DataContext.AddRemoveProductToFavouritesCommand, ElementName=wndOffers}" CommandParameter="{Binding Path=.}"/>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding Path=DataContext.ShowProductCommand, ElementName=wndOffers}" CommandParameter="{Binding Path=.}"/>
                                     </i:EventTrigger>
-                                </i:Interaction.Triggers> 
-                            </Image>
+                                </i:Interaction.Triggers>
 
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </Page>

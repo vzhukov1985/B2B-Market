@@ -61,7 +61,11 @@ namespace Administration_Tools.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                Clients = new ObservableCollection<Client>(db.Clients.Include(_ => _.Contracts).ThenInclude(_ => _.Supplier).ToList());
+                Clients = new ObservableCollection<Client>(db.Clients
+                    .Include(_ => _.Contracts)
+                    .ThenInclude(_ => _.Supplier)
+                    .Include(c => c.Users)
+                    .ToList());
             }
         }
 

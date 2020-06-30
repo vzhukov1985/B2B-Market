@@ -118,6 +118,18 @@ namespace Core.Models
             }
         }
 
+        private ObservableCollection<CurrentOrder> _currentOrders;
+        public ObservableCollection<CurrentOrder> CurrentOrders
+        {
+            get { return _currentOrders; }
+            set
+            {
+                _currentOrders = value;
+                OnPropertyChanged("CurrentOrders");
+            }
+        }
+
+
         public Client()
         {
             Contracts = new ObservableCollection<Contract>();

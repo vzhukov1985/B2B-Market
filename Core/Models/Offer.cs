@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -13,6 +14,18 @@ namespace Core.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+
+        private Guid _id;
+        public Guid Id
+        {
+            get { return _id; }
+            set
+            {
+                _id = value;
+                OnPropertyChanged("Id");
+            }
+        }
+
 
         private Guid _productId;
         public Guid ProductId
@@ -80,14 +93,14 @@ namespace Core.Models
             }
         }
 
-        private int _quantity;
-        public int Quantity
+        private int _remains;
+        public int Remains
         {
-            get { return _quantity; }
+            get { return _remains; }
             set
             {
-                _quantity = value;
-                OnPropertyChanged("Quantity");
+                _remains = value;
+                OnPropertyChanged("Remains");
             }
         }
 

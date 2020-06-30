@@ -37,5 +37,28 @@ namespace Core.Models
                 OnPropertyChanged("Name");
             }
         }
+
+        private Guid _midCategoryId;
+        public Guid MidCategoryId
+        {
+            get { return _midCategoryId; }
+            set
+            {
+                _midCategoryId = value;
+                OnPropertyChanged("MidCategoryId");
+            }
+        }
+
+        private MidCategory _midCategory;
+        public MidCategory MidCategory
+        {
+            get { return _midCategory; }
+            set
+            {
+                _midCategory = value;
+                OnPropertyChanged("MidCategory");
+            }
+        }
+
     }
 }

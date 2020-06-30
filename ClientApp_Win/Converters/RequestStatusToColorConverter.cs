@@ -8,11 +8,18 @@ using System.Windows.Media;
 
 namespace ClientApp_Win.Converters
 {
-    public class BoolToDiscountPriceColorConverter: IValueConverter
+    public class RequestStatusToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-                return (bool)value ? new SolidColorBrush(Color.FromRgb(0, 128, 0)) : new SolidColorBrush(Color.FromRgb(128, 0, 0));
+            return ((string)value) switch
+            {
+                "SENT" => new SolidColorBrush(Color.FromRgb(103, 181, 28)),
+                "PENDING" => new SolidColorBrush(Color.FromRgb(11, 0, 201)),
+                "REJECTED" => new SolidColorBrush(Color.FromRgb(190, 0, 0)),
+                "ACCEPTED" => new SolidColorBrush(Color.FromRgb(103, 181, 28)),
+                _ => new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+            };
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

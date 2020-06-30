@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -15,6 +16,7 @@ namespace Core.Models
         }
 
         private Guid _id;
+        [Key]
         public Guid Id
         {
             get { return _id; }

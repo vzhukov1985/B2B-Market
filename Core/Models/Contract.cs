@@ -16,7 +16,6 @@ namespace Core.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         private Guid _clientId;
-        [Key, Column(Order = 0)]
         public Guid ClientId
         {
             get { return _clientId; }
@@ -28,7 +27,6 @@ namespace Core.Models
         }
 
         private Client client;
-        [Key, Column(Order = 1)]
         public Client Client
         {
             get { return client; }

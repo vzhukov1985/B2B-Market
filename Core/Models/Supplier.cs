@@ -130,6 +130,28 @@ namespace Core.Models
             }
         }
 
+        [NotMapped]
+        public byte[] Picture
+        {
+            get
+            {
+                return FTPManager.GetSupplierPicture(FTPAccess);
+            }
+        }
+
+        private bool _isContractedWithClient;
+        [NotMapped]
+        public bool IsContractedWithClient
+        {
+            get { return _isContractedWithClient; }
+            set
+            {
+                _isContractedWithClient = value;
+                OnPropertyChanged("IsContractedWithClient");
+            }
+        }
+
+
         public Supplier()
         {
             Contracts = new ObservableCollection<Contract>();
