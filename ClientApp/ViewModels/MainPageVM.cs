@@ -37,7 +37,8 @@ namespace ClientApp.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                User = db.ClientsUsers.Where(u => u.Login == user.Login)
+                User = db.ClientsUsers
+                    .Where(u => u.Login == user.Login)
                     .Include(u => u.FavoriteProducts)
                     .ThenInclude(f => f.Product)
                     .Include(u => u.Client)
@@ -65,7 +66,6 @@ namespace ClientApp.ViewModels
         public MainPageVM(ClientUser user, IPageService pageService)
         {
             PageService = pageService;
-
             ShowMainSubPageCommand = new CommandType();
             ShowMainSubPageCommand.Create(_ => PageService.ShowMainSubPage(User));
             ShowSearchSubPageCommand = new CommandType();

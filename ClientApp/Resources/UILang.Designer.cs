@@ -101,6 +101,26 @@ namespace ClientApp.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] Favorite_White {
+            get {
+                object obj = ResourceManager.GetObject("Favorite_White", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Home {
+            get {
+                object obj = ResourceManager.GetObject("Home", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] Minus_Disabled {
             get {
                 object obj = ResourceManager.GetObject("Minus_Disabled", resourceCulture);
@@ -141,6 +161,26 @@ namespace ClientApp.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] Order_White {
+            get {
+                object obj = ResourceManager.GetObject("Order_White", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] OrdersHistory_White {
+            get {
+                object obj = ResourceManager.GetObject("OrdersHistory_White", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] Plus_Disabled {
             get {
                 object obj = ResourceManager.GetObject("Plus_Disabled", resourceCulture);
@@ -164,6 +204,26 @@ namespace ClientApp.Resources {
         public static byte[] Search {
             get {
                 object obj = ResourceManager.GetObject("Search", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Search_White {
+            get {
+                object obj = ResourceManager.GetObject("Search_White", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Share {
+            get {
+                object obj = ResourceManager.GetObject("Share", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -387,6 +447,15 @@ namespace ClientApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ОПИСАНИЕ.
+        /// </summary>
+        public static string UI_ProductSubPage_Description {
+            get {
+                return ResourceManager.GetString("UI_ProductSubPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Внимание!.
         /// </summary>
         public static string UI_ProductSubPage_HasChangesDlgCaption {
@@ -423,6 +492,15 @@ namespace ClientApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Подтвердить заявки.
+        /// </summary>
+        public static string UI_RequestConfirmSubPage_Header {
+            get {
+                return ResourceManager.GetString("UI_RequestConfirmSubPage_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to по категориям.
         /// </summary>
         public static string UI_RequestSubPage_GroupingByCategories {
@@ -437,6 +515,15 @@ namespace ClientApp.Resources {
         public static string UI_RequestSubPage_GroupingBySuppliers {
             get {
                 return ResourceManager.GetString("UI_RequestSubPage_GroupingBySuppliers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Подтвердить.
+        /// </summary>
+        public static string UI_RequestSubPage_ProceedRequestButton {
+            get {
+                return ResourceManager.GetString("UI_RequestSubPage_ProceedRequestButton", resourceCulture);
             }
         }
         
@@ -464,6 +551,16 @@ namespace ClientApp.Resources {
         public static byte[] UserSettings {
             get {
                 object obj = ResourceManager.GetObject("UserSettings", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] X_Black {
+            get {
+                object obj = ResourceManager.GetObject("X_Black", resourceCulture);
                 return ((byte[])(obj));
             }
         }

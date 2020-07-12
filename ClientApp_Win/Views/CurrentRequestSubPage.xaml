@@ -17,6 +17,7 @@
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
         <conv:BoolToGroupingButtonContentConverter x:Key="BoolToGroupingButtonContentConverter"/>
+        <conv:ProductOrderAndRemainsStateToTextConverter x:Key="ProductOrderAndRemainsStateToTextConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -62,7 +63,34 @@
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0" Background="LightGray">
-                                <TextBlock Grid.Row="0" Text="{Binding Name}" FontSize="18" FontWeight="DemiBold" Margin="7,3,0,3"/>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" VerticalAlignment="Center" >
+                                    <CheckBox.LayoutTransform>
+                                        <ScaleTransform ScaleX="1.6" ScaleY="1.6"/>
+                                    </CheckBox.LayoutTransform>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Checked">
+                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.CategoriesSelectionChangedCommand, ElementName=pgRequest}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="Unchecked">
+                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.CategoriesSelectionChangedCommand, ElementName=pgRequest}"/>
+                                        </i:EventTrigger>            
+                                    </i:Interaction.Triggers>
+                                </CheckBox>
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="18" FontWeight="DemiBold" Margin="7,3,0,3"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Subtotal, StringFormat='Сумма: {0:G20} тг'}" FontSize="18" FontWeight="DemiBold" Margin="0,3,7,3"/>
+                                <Image Grid.Column="3" Source="{Binding Source={x:Static resx:UILang.X_Black}}" Width="19" Margin="0,0,17,0" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
+                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.RemoveProductsCategoryCommand, ElementName=pgRequest}" CommandParameter="{Binding Path=.}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Image>
                             </Grid>
 
                             <ItemsControl Grid.Row="1" ItemsSource="{Binding Products}">
@@ -83,6 +111,7 @@
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="0.33*"/>
                                                         <RowDefinition/>
+                                                        <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
 
@@ -113,8 +142,9 @@
                                                                     <TextBlock Grid.Column="0" Text="{Binding Supplier.ShortName}" Foreground="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}" FontSize="15"/>
                                                                     <TextBlock Grid.Column="1" Foreground="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}" FontSize="15" FontWeight="DemiBold" HorizontalAlignment="Right">
                                                                         <TextBlock.Text>
-                                                                            <MultiBinding  StringFormat="{}{0} x {1:G20} тг">
+                                                                            <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
                                                                                 <Binding Path="OrderQuantity"/>
+                                                                                <Binding Path="QuantityUnit"/>
                                                                                 <Binding Path="PriceForClient"/>
                                                                             </MultiBinding>
                                                                         </TextBlock.Text>
@@ -124,15 +154,33 @@
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
+
+                                                    <TextBlock Grid.Row="3" Text="{Binding Path=OrderAndRemainsState, Converter={StaticResource ProductOrderAndRemainsStateToTextConverter}}" HorizontalAlignment="Center" Foreground="Red" TextWrapping="Wrap" Width="325" Margin="0,7,0,7"/>
                                                 </Grid>
 
-                                                <Image Grid.Column="2" Grid.RowSpan="2" Source="{Binding Path=IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}" Height="38" VerticalAlignment="Top" Margin="0,17,18,0" HorizontalAlignment="Left" MouseLeftButtonDown="Favourite_MouseDown" RenderOptions.BitmapScalingMode="Fant">
-                                                    <i:Interaction.Triggers>
-                                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
-                                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.AddRemoveProductToFavouritesCommand, ElementName=pgRequest}" CommandParameter="{Binding Path=.}"/>
-                                                        </i:EventTrigger>
-                                                    </i:Interaction.Triggers>
-                                                </Image>
+
+                                                <Grid Grid.Column="2">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="62"/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+
+                                                    <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.X_Black}}" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,15,17,0" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
+                                                                <i:InvokeCommandAction Command="{Binding Path=DataContext.RemoveProductCommand, ElementName=pgRequest}" CommandParameter="{Binding Path=.}"/>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </Image>
+
+                                                    <Image Grid.Row="1" Source="{Binding Path=IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}" Height="38" VerticalAlignment="Top" Margin="0,0,7,0" HorizontalAlignment="Right" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
+                                                                <i:InvokeCommandAction Command="{Binding Path=DataContext.AddRemoveProductToFavouritesCommand, ElementName=pgRequest}" CommandParameter="{Binding Path=.}"/>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </Image>
+                                                </Grid>
 
                                                 <i:Interaction.Triggers>
                                                     <i:EventTrigger EventName="MouseLeftButtonDown">
@@ -159,19 +207,19 @@
                 <ColumnDefinition Width="220"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Vertical">
+            <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
                 <TextBlock Text="Итого:" FontSize="20" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <TextBlock Text="{Binding TotalSum, StringFormat='{}{0:G20} тг'}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
                 
             </StackPanel>
             
-            <StackPanel Grid.Column="1" Orientation="Vertical">
+            <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                 <TextBlock Text="{Binding ItemsCount, StringFormat='{}{0} товаров'}" FontSize="15" HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding ProductsNamesCount, StringFormat='{}{0} наименований'}" FontSize="15" HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding SuppliersCount, StringFormat='{}{0} поставщиков'}" FontSize="15" HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <Button Grid.Column="2" Content="Отправить заявки" Style="{StaticResource BlueButton}" Command="{Binding ProceedRequestCommand}" FontSize="19" FontWeight="DemiBold" Width="200" Height="50"/>
+            <Button Grid.Column="2" Content="{x:Static resx:UILang.UI_RequestSubPage_ProceedRequestButton}" Style="{StaticResource BlueButton}" Command="{Binding ProceedRequestCommand}" FontSize="19" FontWeight="DemiBold" Width="200" Height="50"/>
 
         </Grid>
 

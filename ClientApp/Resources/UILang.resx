@@ -130,6 +130,12 @@
   <data name="Error_PasswordsAreNotTheSame" xml:space="preserve">
     <value>Введенные пароли не совпадают. Проверьте ввод.</value>
   </data>
+  <data name="Favorite_White" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Favorite_White.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Home" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Home.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Minus_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Minus_Disabled.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -142,6 +148,12 @@
   <data name="Navigation_Forward_Gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Navigation_Forward_Gray.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="OrdersHistory_White" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>OrdersHistory_White.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Order_White" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Order_White.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Plus_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Plus_Disabled.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -150,6 +162,12 @@
   </data>
   <data name="Search" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Search.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Search_White" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Search_White.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Share" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Share.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UI_AuthPage_AuthorizationHeader" xml:space="preserve">
     <value>Авторизация</value>
@@ -223,6 +241,9 @@
   <data name="UI_MainWindow_Title" xml:space="preserve">
     <value>B2B Market</value>
   </data>
+  <data name="UI_ProductSubPage_Description" xml:space="preserve">
+    <value>ОПИСАНИЕ</value>
+  </data>
   <data name="UI_ProductSubPage_HasChangesDlgCaption" xml:space="preserve">
     <value>Внимание!</value>
   </data>
@@ -235,11 +256,17 @@
   <data name="UI_ProductSubPage_UpdateCurrentRequest" xml:space="preserve">
     <value>ВНЕСТИ ИЗМЕНЕНИЯ В ЗАЯВКУ</value>
   </data>
+  <data name="UI_RequestConfirmSubPage_Header" xml:space="preserve">
+    <value>Подтвердить заявки</value>
+  </data>
   <data name="UI_RequestSubPage_GroupingByCategories" xml:space="preserve">
     <value>по категориям</value>
   </data>
   <data name="UI_RequestSubPage_GroupingBySuppliers" xml:space="preserve">
     <value>по поставщикам</value>
+  </data>
+  <data name="UI_RequestSubPage_ProceedRequestButton" xml:space="preserve">
+    <value>Подтвердить</value>
   </data>
   <data name="UI_SearchSubPage_SearchResults" xml:space="preserve">
     <value>Результаты поиска</value>
@@ -249,5 +276,8 @@
   </data>
   <data name="UserSettings" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>UserSettings.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="X_Black" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>X_Black.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

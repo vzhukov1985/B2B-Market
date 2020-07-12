@@ -39,6 +39,10 @@
         </Setter>
     </Style>
 
+    <SolidColorBrush x:Key="B2B_BlueColor" Color="#248ef4"/>
+    <SolidColorBrush x:Key="B2B_WhiteColor" Color="White"/>
+    <SolidColorBrush x:Key="B2B_InactiveColor" Color="#7f7f7f"/>
+
     <Style x:Key="BorderlessButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -50,7 +54,7 @@
                             <SolidColorBrush x:Name="BorderBrush" Color="Transparent"/>
                         </Border.Background>
 
-                        <Grid Margin="4" Background="{TemplateBinding Background}">
+                        <Grid Background="{TemplateBinding Background}">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="0,0,0,0"/>
                         </Grid>
                     </Border>
@@ -60,11 +64,11 @@
     </Style>
 
     <Style x:Key="BlueButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BorderlessButton}">
-        <Setter Property="Background" Value="#248ef4"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="{StaticResource B2B_BlueColor}"/>
+        <Setter Property="Foreground" Value="{StaticResource B2B_WhiteColor}"/>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="#7f7f7f"/>
+                <Setter Property="Background" Value="{StaticResource B2B_InactiveColor}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

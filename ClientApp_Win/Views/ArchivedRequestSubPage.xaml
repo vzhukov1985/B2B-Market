@@ -14,13 +14,26 @@
     <Page.Resources>
         <conv:RequestStatusTextConverter x:Key="RequestStatusTextConverter"/>
         <conv:RequestStatusToColorConverter x:Key="RequestStatusToColorConverter"/>
+
+        <LinearGradientBrush x:Key="DashedBorder" MappingMode="Absolute"
+                     SpreadMethod="Repeat"
+                     StartPoint="0,0.5"
+                     EndPoint="4,0.5">
+            <GradientStop Offset="0"
+                  Color="#40000000" />
+            <GradientStop Offset="0.5"
+                  Color="#40000000" />
+            <GradientStop Offset="0.501"
+                  Color="Transparent" />
+        </LinearGradientBrush>
+
     </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition />
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
@@ -33,6 +46,8 @@
         </Image>
 
         <TextBlock Text="{Binding Title}" FontSize="19" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+
 
         <Grid x:Name="DataGrid" Grid.Row="1">
             <ListView ItemsSource="{Binding OrdersGroup}"  ItemContainerStyle="{StaticResource LvItemStyle}" Height="{Binding ElementName=DataGrid, Path=ActualHeight}" ScrollViewer.CanContentScroll="False" ScrollViewer.VerticalScrollBarVisibility="Hidden">
@@ -59,7 +74,7 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <Image Grid.Column="0" Source="{Binding Path=Product.Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" Height="150" Width="150" RenderOptions.BitmapScalingMode="Fant" />
+                                                <Image Grid.Column="0" Source="{Binding Path=Product.Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" Height="80" Width="80" RenderOptions.BitmapScalingMode="Fant" />
 
                                                 <Grid Grid.Column="1" Margin="15,25,5,20">
                                                     <Grid.RowDefinitions>
@@ -70,8 +85,8 @@
                                                     <TextBlock Grid.Row="0" Text="{Binding Path=Product.Name}" HorizontalAlignment="Left" MaxWidth="295" FontSize="15" FontWeight="DemiBold" TextWrapping="Wrap"/>
 
                                                     <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,5,0,10">
-                                                        <TextBlock Text="{Binding Path=Product.Category.Name}" FontSize="15"/>
-                                                        <TextBlock FontSize="15">
+                                                        <TextBlock Text="{Binding Path=Product.Category.Name}" FontSize="13"/>
+                                                        <TextBlock FontSize="13">
                                                             <TextBlock.Text>
                                                                 <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
                                                                     <Binding Path="Product.VolumeType"/>
@@ -82,7 +97,7 @@
                                                         </TextBlock>
                                                     </StackPanel>
 
-                                                    <TextBlock Grid.Row="1" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,15,0">
+                                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                                                         <TextBlock.Text>
                                                             <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
                                                                 <Binding Path="Quantity"/>
@@ -105,10 +120,10 @@
         </Grid>
 
         <Border Grid.Row="1" BorderThickness="0,0,0,5" BorderBrush="LightGray"/>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="240"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
@@ -131,8 +146,19 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="{Binding Request.ItemsQuantity, StringFormat='{}{0} товаров'}" FontSize="15" HorizontalAlignment="Center"/>
-                <TextBlock Text="{Binding Request.ProductsQuantity, StringFormat='{}{0} наименований'}" FontSize="15" HorizontalAlignment="Center"/>
+                <TextBlock  FontSize="12" HorizontalAlignment="Center">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} товаров, {1} наименований">
+                            <Binding Path="Request.ItemsQuantity"/>
+                            <Binding Path="Request.ProductsQuantity"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock Text="{Binding Request.DeliveryTime, StringFormat='Доставка: {0:dd.MM.yyyy - HH:mm}'}" FontSize="12" HorizontalAlignment="Center"/>
+                <TextBlock Text="Комментарии:" FontSize="12" HorizontalAlignment="Center"/>
+                <Border BorderThickness="1" BorderBrush="{StaticResource DashedBorder}" CornerRadius="6" Padding="2,2,2,2">
+                    <TextBlock Text="{Binding Request.Comments}" FontSize="12" HorizontalAlignment="Center" Width="208" TextWrapping="Wrap" />
+                </Border>
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,15,0">

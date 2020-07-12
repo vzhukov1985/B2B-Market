@@ -88,8 +88,14 @@ namespace ClientApp_Win.Services
 
         public void ShowCurrentRequestSubPage(ClientUser user)
         {
-            CurrentRequestSubPage crSubPage = new CurrentRequestSubPage { DataContext = new CurrentRequestSubPageVM<RelayCommand>(user, new WindowsPageService()) };
+            CurrentRequestSubPage crSubPage = new CurrentRequestSubPage { DataContext = new CurrentRequestSubPageVM<RelayCommand>(user, new WindowsPageService(), new WindowsDialogService()) };
             SubNavigationService.Navigate(crSubPage);
+        }
+
+        public void ShowCurrentRequestConfirmSubPage(ClientUser user, List<ArchivedRequest> requests)
+        {
+            CurrentRequestConfirmSubPage crcSubPage = new CurrentRequestConfirmSubPage { DataContext = new CurrentRequestConfirmSubPageVM<RelayCommand>(user, requests, new WindowsPageService(), new WindowsDialogService()) };
+            SubNavigationService.Navigate(crcSubPage);
         }
 
         public void ShowArchivedRequestsListSubPage(ClientUser user)

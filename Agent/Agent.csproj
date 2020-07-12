@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ClientApp\ClientApp.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 

@@ -10,24 +10,33 @@
     <None Remove="Resources\EmptyPicture.png" />
     <None Remove="Resources\Favorite_Off.png" />
     <None Remove="Resources\Favorite_On.png" />
+    <None Remove="Resources\Favorite_White.png" />
+    <None Remove="Resources\Home.png" />
     <None Remove="Resources\Iphone.png" />
     <None Remove="Resources\Minus_Disabled.png" />
     <None Remove="Resources\Minus_Enabled.png" />
     <None Remove="Resources\Navigation_Back.png" />
     <None Remove="Resources\Navigation_Forward_Gray.png" />
+    <None Remove="Resources\OrdersHistory_White.png" />
     <None Remove="Resources\Order_Completed.png" />
     <None Remove="Resources\Order_Pending.png" />
     <None Remove="Resources\Order_Rejected.png" />
+    <None Remove="Resources\Order_White.png" />
     <None Remove="Resources\Plus_Disabled.png" />
     <None Remove="Resources\Plus_Enabled.png" />
     <None Remove="Resources\qwe.png" />
     <None Remove="Resources\Search.png" />
+    <None Remove="Resources\Search_White.png" />
+    <None Remove="Resources\Share.png" />
     <None Remove="Resources\UserSettings.png" />
+    <None Remove="Resources\X_Black.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Resources\Contracted.png" />
     <Resource Include="Resources\EmptyPicture.png" />
+    <Resource Include="Resources\Favorite_White.png" />
+    <Resource Include="Resources\Home.png" />
     <Resource Include="Resources\Iphone.png" />
     <Resource Include="Resources\Minus_Disabled.png" />
     <Resource Include="Resources\Minus_Enabled.png" />
@@ -46,14 +55,19 @@
     <Resource Include="Resources\Checked.png" />
     <Resource Include="Resources\Favorite_Off.png" />
     <Resource Include="Resources\Navigation_Forward_Gray.png" />
+    <Resource Include="Resources\OrdersHistory_White.png" />
     <Resource Include="Resources\Order_Completed.png" />
     <Resource Include="Resources\Order_Pending.png" />
     <Resource Include="Resources\Order_Rejected.png" />
+    <Resource Include="Resources\Order_White.png" />
     <Resource Include="Resources\Plus_Disabled.png" />
     <Resource Include="Resources\Plus_Enabled.png" />
     <Resource Include="Resources\qwe.png" />
     <Resource Include="Resources\Search.png" />
+    <Resource Include="Resources\Search_White.png" />
+    <Resource Include="Resources\Share.png" />
     <Resource Include="Resources\UserSettings.png" />
+    <Resource Include="Resources\X_Black.png" />
   </ItemGroup>
 
   <ItemGroup>

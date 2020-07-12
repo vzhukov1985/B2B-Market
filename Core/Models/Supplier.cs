@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.ObjectModel;
+using Core.Services;
 
 namespace Core.Models
 {
@@ -63,6 +64,28 @@ namespace Core.Models
             }
         }
 
+        private string _country;
+        public string Country
+        {
+            get { return _country; }
+            set
+            {
+                _country = value;
+                OnPropertyChanged("Country");
+            }
+        }
+
+        private string _city;
+        public string City
+        {
+            get { return _city; }
+            set
+            {
+                _city = value;
+                OnPropertyChanged("City");
+            }
+        }
+
         private string _address;
         public string Address
         {
@@ -96,6 +119,28 @@ namespace Core.Models
             }
         }
 
+        private string _contactPersonName;
+        public string ContactPersonName
+        {
+            get { return _contactPersonName; }
+            set
+            {
+                _contactPersonName = value;
+                OnPropertyChanged("ContactPersonName");
+            }
+        }
+
+        private string _contactPersonPhone;
+        public string ContactPersonPhone
+        {
+            get { return _contactPersonPhone; }
+            set
+            {
+                _contactPersonPhone = value;
+                OnPropertyChanged("ContactPersonPhone");
+            }
+        }
+
         private string _ftpAccess;
         public string FTPAccess
         {
@@ -106,6 +151,18 @@ namespace Core.Models
                 OnPropertyChanged("FTPAccess");
             }
         }
+
+        private bool _isActive;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged("IsActive");
+            }
+        }
+
 
 
         private ObservableCollection<Contract> _contracts;

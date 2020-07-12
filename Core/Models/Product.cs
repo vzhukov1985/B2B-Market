@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -51,6 +52,18 @@ namespace Core.Models
                 OnPropertyChanged("Category");
             }
         }
+
+        private int _code;
+        public int Code
+        {
+            get { return _code; }
+            set
+            {
+                _code = value;
+                OnPropertyChanged("Code");
+            }
+        }
+
 
         private string _name;
         public string Name
@@ -115,6 +128,17 @@ namespace Core.Models
             {
                 _Volume = value;
                 OnPropertyChanged("Volume");
+            }
+        }
+
+        private ProductDescription _description;
+        public ProductDescription Description
+        {
+            get { return _description; }
+            set
+            {
+                _description = value;
+                OnPropertyChanged("Description");
             }
         }
 

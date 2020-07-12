@@ -63,6 +63,28 @@ namespace Core.Models
             }
         }
 
+        private string _country;
+        public string Country
+        {
+            get { return _country; }
+            set
+            {
+                _country = value;
+                OnPropertyChanged("Country");
+            }
+        }
+
+        private string _city;
+        public string City
+        {
+            get { return _city; }
+            set
+            {
+                _city = value;
+                OnPropertyChanged("City");
+            }
+        }
+
         private string _address;
         public string Address
         {
@@ -93,6 +115,28 @@ namespace Core.Models
             {
                 _email = value;
                 OnPropertyChanged("Email");
+            }
+        }
+
+        private string _contactPersonName;
+        public string ContactPersonName
+        {
+            get { return _contactPersonName; }
+            set
+            {
+                _contactPersonName = value;
+                OnPropertyChanged("ContactPersonName");
+            }
+        }
+
+        private string _contactPersonPhone;
+        public string ContactPersonPhone
+        {
+            get { return _contactPersonPhone; }
+            set
+            {
+                _contactPersonPhone = value;
+                OnPropertyChanged("ContactPersonPhone");
             }
         }
 

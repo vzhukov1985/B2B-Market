@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace ClientApp_Win.Views
 {
     /// <summary>
-    /// Interaction logic for CurrentRequestByProductsSubPageVM.xaml
+    /// Interaction logic for CurrentRequestConfirmSubPage.xaml
     /// </summary>
-    public partial class CurrentRequestSubPage : Page
+    public partial class CurrentRequestConfirmSubPage : Page
     {
-        public CurrentRequestSubPage()
+        public CurrentRequestConfirmSubPage()
         {
             InitializeComponent();
         }
@@ -27,7 +27,6 @@ namespace ClientApp_Win.Views
         {
             e.Handled = true;
         }
-
 
     }
 }

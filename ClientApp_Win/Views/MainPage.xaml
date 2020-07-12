@@ -11,13 +11,34 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Frame Grid.Row="0" x:Name="frmSubFrame"/>
+        <Border BorderThickness="0,0,0,3" BorderBrush="LightGray">
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="1" Height="80">
+                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.UserSettings}}" Height="25" HorizontalAlignment="Left" Margin="14,4,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant"/>
+                
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontWeight="DemiBold">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="B2B Market - {0} ({1})">
+                            <Binding Path="User.Client.FullName"/>
+                            <Binding Path="User.Name"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
+        </Border>
+
+        <Frame Grid.Row="1" x:Name="frmSubFrame"/>
+
+        <Grid Grid.Row="2" Height="80">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -25,11 +46,46 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>                
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="{x:Static resx:UILang.UI_MainPage_MainButton}" Command="{Binding ShowMainSubPageCommand}"/>
-            <Button Grid.Column="1" Content="{x:Static resx:UILang.UI_MainPage_SearchButton}" Command="{Binding ShowSearchSubPageCommand}"/>
-            <Button Grid.Column="2" Content="{x:Static resx:UILang.UI_MainPage_FavoritesButton}" Command="{Binding ShowFavoritesSubPageCommand}"/>
-            <Button Grid.Column="3" Content="{x:Static resx:UILang.UI_MainPage_CurrentRequestButton}" Command="{Binding ShowCurrentRequestSubPageCommand}"/>
-            <Button Grid.Column="4" Content="{x:Static resx:UILang.UI_MainPage_ArchivedRequestsButton}" Command="{Binding ShowArchivedRequestsSubPageCommand}"/>
+            <Button Style="{StaticResource BlueButton}" Grid.Column="0" Command="{Binding ShowMainSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:UILang.Home}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_MainButton}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="1" Style="{StaticResource BlueButton}" Command="{Binding ShowSearchSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:UILang.Search_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_SearchButton}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="2" Style="{StaticResource BlueButton}" Command="{Binding ShowFavoritesSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:UILang.Favorite_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_FavoritesButton}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="3" Style="{StaticResource BlueButton}" Command="{Binding ShowCurrentRequestSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:UILang.Order_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_CurrentRequestButton}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="4" Style="{StaticResource BlueButton}" Command="{Binding ShowArchivedRequestsSubPageCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:UILang.OrdersHistory_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_ArchivedRequestsButton}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
         </Grid>
     </Grid>
 </Page>

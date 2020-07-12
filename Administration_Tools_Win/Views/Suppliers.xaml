@@ -66,6 +66,14 @@
                 <TextBox Text="{Binding SelectedSupplier.BIN}" Width="200"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_Country_Field}"/>
+                <TextBox Text="{Binding SelectedSupplier.Country}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_City_Field}"/>
+                <TextBox Text="{Binding SelectedSupplier.City}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_Address_Field}"/>
                 <TextBox Text="{Binding SelectedSupplier.Address}" Width="200"/>
             </StackPanel>
@@ -78,9 +86,18 @@
                 <TextBox Text="{Binding SelectedSupplier.Email}" Width="200"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_ContactPersonName_Field}"/>
+                <TextBox Text="{Binding SelectedSupplier.ContactPersonName}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_ContactPersonPhone_Field}"/>
+                <TextBox Text="{Binding SelectedSupplier.ContactPersonPhone}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_FTPAccess_Field}"/>
                 <TextBox Text="{Binding SelectedSupplier.FTPAccess}" Width="300"/>
             </StackPanel>
+                <CheckBox IsChecked="{Binding SelectedSupplier.IsActive}" Content="{x:Static resx:UILang.UI_Suppliers_IsActive_Field}"/>
             <Button Content="{x:Static resx:UILang.UI_Suppliers_SaveChanges}" Width="200" Margin="0,20,0,20" HorizontalAlignment="Left" Command="{Binding SaveSupplierChangesCommand}"/>
             <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_ContractsListHeader}" HorizontalAlignment="Left"/>
             <ListView ItemsSource="{Binding Source={StaticResource SupplierContractsCollection}}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">

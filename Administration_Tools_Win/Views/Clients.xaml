@@ -66,6 +66,14 @@
                 <TextBox Text="{Binding SelectedClient.BIN}" Width="200"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Clients_Country_Field}"/>
+                <TextBox Text="{Binding SelectedClient.Country}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Clients_City_Field}"/>
+                <TextBox Text="{Binding SelectedClient.City}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Clients_Address_Field}"/>
                 <TextBox Text="{Binding SelectedClient.Address}" Width="200"/>
             </StackPanel>
@@ -77,6 +85,15 @@
                 <TextBlock Text="{x:Static resx:UILang.UI_Clients_Email_Field}"/>
                 <TextBox Text="{Binding SelectedClient.Email}" Width="200"/>
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Clients_ContactPersonName_Field}"/>
+                <TextBox Text="{Binding SelectedClient.ContactPersonName}" Width="200"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resx:UILang.UI_Clients_ContactPersonPhone_Field}"/>
+                <TextBox Text="{Binding SelectedClient.ContactPersonPhone}" Width="200"/>
+            </StackPanel>
+
             <Button Content="{x:Static resx:UILang.UI_Clients_SaveChanges}" Width="200" Margin="0,20,0,20" HorizontalAlignment="Left" Command="{Binding SaveClientChangesCommand}"/>
             <TextBlock Text="{x:Static resx:UILang.UI_Clients_ContractsListHeader}" HorizontalAlignment="Left"/>
             <ListView ItemsSource="{Binding Source={StaticResource ClientContractsCollection}}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">

@@ -2,6 +2,7 @@
 using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,16 +14,48 @@ using System.Text;
 
 namespace ClientApp.ViewModels
 {
+    public enum ProductOrderAndRemainsState
+    {
+        Ok,
+        OneSupplierNullRemains,
+        AllSuppliersNullRemains,
+        OneSupplierLessRemains,
+        OneOfSuppliersLessRemains
+    }
+
     public class ProductForRequestView : Product
     {
-        private ObservableCollection<OrderByUser> _orders;
-        public ObservableCollection<OrderByUser> Orders
+        private ObservableCollection<OfferWithOrder> _orders;
+        public ObservableCollection<OfferWithOrder> Orders
         {
             get { return _orders; }
             set
             {
                 _orders = value;
                 OnPropertyChanged("Orders");
+            }
+        }
+
+        public ProductOrderAndRemainsState OrderAndRemainsState
+        {
+            get
+            {
+                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false))
+                { 
+                    if (Orders.Count == 1)
+                        return ProductOrderAndRemainsState.OneSupplierNullRemains;
+                    else
+                        return ProductOrderAndRemainsState.AllSuppliersNullRemains;
+                }
+
+                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false))
+                {
+                    if (Orders.Count == 1)
+                        return ProductOrderAndRemainsState.OneSupplierLessRemains;
+                    else
+                        return ProductOrderAndRemainsState.OneOfSuppliersLessRemains;
+                }
+                return ProductOrderAndRemainsState.Ok;
             }
         }
 
@@ -60,6 +93,27 @@ namespace ClientApp.ViewModels
             }
         }
 
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                _isSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
+
+
+        public decimal Subtotal
+        {
+            get
+            {
+                return Products.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity));
+            }
+        }
+
+
         public CategoryForRequestView(TopCategory category)
         {
             this.Name = category.Name;
@@ -71,6 +125,10 @@ namespace ClientApp.ViewModels
         }
     }
 
+
+
+
+
     public class CurrentRequestSubPageVM<CommandType> : INotifyPropertyChanged where CommandType : IRelayCommand, new()
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -80,6 +138,7 @@ namespace ClientApp.ViewModels
         }
 
         private readonly IPageService PageService;
+        private readonly IDialogService DialogService;
 
         private ClientUser _user;
         public ClientUser User
@@ -111,6 +170,10 @@ namespace ClientApp.ViewModels
             {
                 _categories = value;
                 OnPropertyChanged("Categories");
+                OnPropertyChanged("ItemsCount");
+                OnPropertyChanged("ProductsNamesCount");
+                OnPropertyChanged("SuppliersCount");
+                OnPropertyChanged("TotalSum");
             }
         }
 
@@ -125,58 +188,69 @@ namespace ClientApp.ViewModels
             }
         }
 
-        private int _itemsCount;
         public int ItemsCount
         {
-            get { return _itemsCount; }
-            set
+            get 
             {
-                _itemsCount = value;
-                OnPropertyChanged("ItemsCount");
+                if (Categories != null)
+                    return Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity);
+                return 0;
             }
         }
 
-        private int _productNamesCount;
         public int ProductsNamesCount
         {
-            get { return _productNamesCount; }
-            set
+            get 
             {
-                _productNamesCount = value;
-                OnPropertyChanged("ProductsNamesCount");
+                if (Categories != null)
+                    return Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(o => o.ProductId).Count();
+                return 0;
             }
         }
 
-        private int _suppliersCount;
         public int SuppliersCount
         {
-            get { return _suppliersCount; }
-            set
-            {
-                _suppliersCount = value;
-                OnPropertyChanged("SuppliersCount");
+            get {
+                if (Categories != null)
+                    return Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(o => o.SupplierId).Count();
+                return 0;
             }
         }
 
-        private decimal _totalSum;
         public decimal TotalSum
         {
-            get { return _totalSum; }
-            set
+            get 
             {
-                _totalSum = value;
-                OnPropertyChanged("TotalSum");
+                if (Categories != null)
+                return Categories.Where(c => c.IsSelected).Sum(c => c.Products.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity)));
+                return 0;
             }
         }
 
-        private async void QueryDB()
+        public bool RequestIsReadyToProceed
+        {
+            get
+            {
+                if (Categories != null)
+                {
+                    var a = Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.Select(p => p.OrderAndRemainsState));
+
+                    return a.All(st => st == ProductOrderAndRemainsState.Ok) && User.IsAdmin && a.Count() > 0;
+                }
+                return false;
+            }
+        }
+
+        private async void ReloadRequestData(bool requeryProductsDB)
         {
             List<Guid> ContractedSuppliersIds = User.Client.Contracts.Select(p => p.Supplier.Id).ToList();
             List<Guid> FavoriteProductsIds = User.FavoriteProducts.Select(f => f.Product.Id).ToList();
 
-            Orders = User.Client.CurrentOrders.Select(o => new OrderByUser
+            Orders = User.Client.CurrentOrders.Select(o => new OfferWithOrder
             {
                 Id = o.OfferId,
+                SupplierProductCode = o.Offer.SupplierProductCode,
+                IsActive = o.Offer.IsActive,
                 SupplierId = o.Offer.SupplierId,
                 Supplier = o.Offer.Supplier,
                 ProductId = o.Offer.ProductId,
@@ -194,66 +268,81 @@ namespace ClientApp.ViewModels
 
             List<Guid> ProductIds = User.Client.CurrentOrders.Select(o => o.Offer.ProductId).Distinct().ToList();
 
-            using (MarketDbContext db = new MarketDbContext())
+            if (requeryProductsDB)
             {
-                ProductsFromDb = await db.Products
-                     .Include(p => p.Offers)
-                     .ThenInclude(o => o.QuantityUnit)
-                     .Include(p => p.Offers)
-                     .ThenInclude(o => o.Supplier)
-                     .Include(p => p.ExtraProperties)
-                     .ThenInclude(pr => pr.PropertyType)
-                     .Include(p => p.VolumeUnit)
-                     .Include(p => p.VolumeType)
-                     .Include(p => p.Category)
-                     .ThenInclude(pc => pc.MidCategory)
-                     .ThenInclude(mc => mc.TopCategory)
-                     .Where(p => ProductIds.Contains(p.Id))
-                     .OrderBy(p => p.Category.MidCategory.TopCategory.Name)
-                     .ThenBy(p => p.Category.Name)
-                     .ThenBy(p => p.Name)
-                     .ToListAsync();
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    ProductsFromDb = await db.Products
+                         .Include(p => p.Offers)
+                         .ThenInclude(o => o.QuantityUnit)
+                         .Include(p => p.Offers)
+                         .ThenInclude(o => o.Supplier)
+                         .Include(p => p.ExtraProperties)
+                         .ThenInclude(pr => pr.PropertyType)
+                         .Include(p => p.VolumeUnit)
+                         .Include(p => p.VolumeType)
+                         .Include(p => p.Category)
+                         .ThenInclude(pc => pc.MidCategory)
+                         .ThenInclude(mc => mc.TopCategory)
+                         .Where(p => ProductIds.Contains(p.Id))
+                         .OrderBy(p => p.Category.MidCategory.TopCategory.Name)
+                         .ThenBy(p => p.Category.Name)
+                         .ThenBy(p => p.Name)
+                         .ToListAsync();
+                }
+            }
+            else
+            {
+                ProductsFromDb = ProductsFromDb
+                         .Where(p => ProductIds.Contains(p.Id))
+                         .OrderBy(p => p.Category.MidCategory.TopCategory.Name)
+                         .ThenBy(p => p.Category.Name)
+                         .ThenBy(p => p.Name).ToList();
             }
 
             if (IsGroupingByCategories)
             {
                 Categories = new ObservableCollection<CategoryForRequestView>(ProductsFromDb.GroupBy(p => p.Category.MidCategory.TopCategory).Select(c => new CategoryForRequestView(c.Key)
                 {
+                    IsSelected = true,
                     Products = new ObservableCollection<ProductForRequestView>(ProductsFromDb.Where(p => p.Category.MidCategory.TopCategory.Id == c.Key.Id).Select(p => new ProductForRequestView(p)
                     {
-                        Orders = new ObservableCollection<OrderByUser>(Orders.Where(o => o.ProductId == p.Id).OrderByDescending(o => ContractedSuppliersIds.Contains(o.SupplierId))),
+                        Orders = new ObservableCollection<OfferWithOrder>(Orders.Where(o => o.ProductId == p.Id).OrderByDescending(o => ContractedSuppliersIds.Contains(o.SupplierId))),
                         IsOfContractedSupplier = p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)),
                         IsFavoriteForUser = FavoriteProductsIds.Contains(p.Id)
                     }))
-                }));
+                })) ;
             }
             else
             {
                 Categories = new ObservableCollection<CategoryForRequestView>(Orders.GroupBy(c => c.Supplier).OrderByDescending(c => ContractedSuppliersIds.Contains(c.Key.Id)).ThenBy(c => c.Key.ShortName).Select(c => new CategoryForRequestView(c.Key)
                 {
+                    IsSelected = true,
                     Products = new ObservableCollection<ProductForRequestView>(ProductsFromDb.
                     Where(p => p.Offers.Select(o => o.SupplierId).Contains(c.Key.Id) &&
                     Orders.Where(oo => oo.SupplierId == c.Key.Id).Select(oo => oo.ProductId).Contains(p.Id))
                     .Select(p => new ProductForRequestView(p)
                     {
-                        Orders = new ObservableCollection<OrderByUser>(Orders.Where(o => (o.ProductId == p.Id) && (o.SupplierId == c.Key.Id))),
+                        Orders = new ObservableCollection<OfferWithOrder>(Orders.Where(o => (o.ProductId == p.Id) && (o.SupplierId == c.Key.Id))),
                         IsOfContractedSupplier = p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)),
                         IsFavoriteForUser = FavoriteProductsIds.Contains(p.Id)
                     }))
                 }));
             }
-
-            ItemsCount = Orders.Sum(o => o.OrderQuantity);
-            ProductsNamesCount = Orders.GroupBy(o => o.ProductId).Count();
-            SuppliersCount = Orders.GroupBy(o => o.SupplierId).Count();
-            TotalSum = Orders.Sum(o => o.PriceForClient * o.OrderQuantity);
+            if (RequestIsReadyToProceed == true) return;
         }
 
         private void ProceedRequest()
         {
-            List<ArchivedRequest> requestsToAdd = Orders.GroupBy(c => c.Supplier).Select(s => new ArchivedRequest
+            int LastRequestCode;
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                LastRequestCode = db.ArchivedRequests.Max(r => r.Code);
+            }
+            List<ArchivedRequest> requestsToAdd = Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(c => c.Supplier).Select(s => new ArchivedRequest
             {
                 Id = new Guid(),
+                Client = User.Client,
                 ClientId = User.ClientId,
                 SenderName = User.Name,
                 SenderSurName = User.SurName,
@@ -262,6 +351,8 @@ namespace ClientApp.ViewModels
                 TotalPrice = Orders.Where(o => o.SupplierId == s.Key.Id).Sum(o => o.PriceForClient * o.OrderQuantity),
                 ArchivedSupplierId = s.Key.Id,
                 DateTimeSent = DateTime.Now,
+                DeliveryTime = DateTime.Today.AddDays(1) + new TimeSpan(10, 0, 0),
+                Comments = "",
                 ArchivedSupplier = new ArchivedSupplier
                 {
                     Id = s.Key.Id,
@@ -280,41 +371,77 @@ namespace ClientApp.ViewModels
                 Orders = new ObservableCollection<ArchivedOrder>(Orders.Where(o => o.SupplierId == s.Key.Id).Select(o => new ArchivedOrder
                 {
                     Id = new Guid(),
+                    OfferId = o.Id,
+                    SupplierProductCode = o.SupplierProductCode,
                     Price = o.PriceForClient,
                     QuantityUnit = o.QuantityUnit.ShortName,
                     Quantity = o.OrderQuantity,
                     ProductId = o.ProductId,
+                    Product = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault(),
                 }))
             }).ToList();
 
-            using (MarketDbContext db = new MarketDbContext())
+            foreach (ArchivedRequest request in requestsToAdd)
             {
-                var AvailableArchivedSuppliersIds = db.ArchivedSuppliers.Select(s => s.Id);
-
-                foreach (ArchivedRequest request in requestsToAdd)
-                {
-                    if (AvailableArchivedSuppliersIds.Contains(request.ArchivedSupplierId))
-                        db.Entry(request.ArchivedSupplier).State = EntityState.Unchanged;
-
-                    foreach (ArchivedOrder order in request.Orders)
-                        order.ArchivedRequestId = request.Id;
-
-                }
-                db.ArchivedRequests.AddRange(requestsToAdd);
-                db.CurrentOrders.RemoveRange(User.Client.CurrentOrders);
-                db.SaveChanges();
-
-                User.Client.CurrentOrders = new ObservableCollection<CurrentOrder>();
-                Orders = new List<OrderByUser>();
-                Categories = new ObservableCollection<CategoryForRequestView>();
-                ItemsCount = ProductsNamesCount = SuppliersCount = 0;
-                TotalSum = 0;
+                request.Code = LastRequestCode+1;
+                LastRequestCode++;
             }
 
+            PageService.ShowCurrentRequestConfirmSubPage(User, requestsToAdd);
 
         }
 
-        private List<OrderByUser> Orders;
+        private void RemoveProduct(ProductForRequestView selectedProduct)
+        {
+            string dialogText;
+            if (IsGroupingByCategories)
+                dialogText = "Вы действительно хотите удалить позицию от всех поставщиков?";
+            else
+                dialogText = "Вы действительно хотите удалить эту позицию от поставщика \"" + selectedProduct.Orders[0].Supplier.FullName + "\"?";
+
+            if (DialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false) return;
+
+            List<Guid> OffersToRemoveIds = selectedProduct.Orders.Select(od => od.Id).ToList();
+
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId));
+                db.SaveChanges();
+            }
+            foreach (CurrentOrder order in User.Client.CurrentOrders.ToList())
+            {
+                if (OffersToRemoveIds.Contains(order.OfferId) && order.ClientId == User.ClientId)
+                    User.Client.CurrentOrders.Remove(order);
+            }
+            ReloadRequestData(false);
+        }
+
+        private void RemoveProductsCategory(CategoryForRequestView selectedCategory)
+        {
+            string dialogText;
+            if (IsGroupingByCategories)
+                dialogText = "Вы действительно хотите все выбранные товары в категории \"" + selectedCategory.Name +"\"?";
+            else
+                dialogText = "Вы действительно хотите все выбранные товары от поставщика \"" + selectedCategory.Name + "\"?";
+
+            if (DialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false) return;
+
+            List<Guid> OffersToRemoveIds = selectedCategory.Products.SelectMany(p => p.Orders.Select(o => o.Id)).ToList();
+
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId));
+                db.SaveChanges();
+            }
+            foreach (CurrentOrder order in User.Client.CurrentOrders.ToList())
+            {
+                if (OffersToRemoveIds.Contains(order.OfferId) && order.ClientId == User.ClientId)
+                    User.Client.CurrentOrders.Remove(order);
+            }
+            ReloadRequestData(false);
+        }
+
+        private List<OfferWithOrder> Orders;
         private List<Product> ProductsFromDb;
 
         public CommandType ShowSearchSubPageCommand { get; }
@@ -323,13 +450,19 @@ namespace ClientApp.ViewModels
         public CommandType NavigationBackCommand { get; }
         public CommandType LoadCurrentRequestDataCommand { get; }
         public CommandType SwitchGroupingCommand { get; }
-        public CommandType ProceedRequestCommand { get; set; }
+        public CommandType ProceedRequestCommand { get; }
+
+        public CommandType RemoveProductCommand { get; }
+        public CommandType RemoveProductsCategoryCommand { get; }
+        public CommandType CategoriesSelectionChangedCommand { get; }
 
 
-        public CurrentRequestSubPageVM(ClientUser user, IPageService pageService)
+        public CurrentRequestSubPageVM(ClientUser user, IPageService pageService, IDialogService dialogService)
         {
             User = user;
             PageService = pageService;
+            DialogService = dialogService;
+
 
             ShowSearchSubPageCommand = new CommandType();
             ShowSearchSubPageCommand.Create(_ => PageService.ShowSearchSubPage(User));
@@ -340,11 +473,17 @@ namespace ClientApp.ViewModels
             NavigationBackCommand = new CommandType();
             NavigationBackCommand.Create(_ => PageService.SubPageNavigationBack());
             LoadCurrentRequestDataCommand = new CommandType();
-            LoadCurrentRequestDataCommand.Create(_ => QueryDB());
+            LoadCurrentRequestDataCommand.Create(_ => ReloadRequestData(true));
             SwitchGroupingCommand = new CommandType();
-            SwitchGroupingCommand.Create(_ => { IsGroupingByCategories = !IsGroupingByCategories; QueryDB(); });
+            SwitchGroupingCommand.Create(_ => { IsGroupingByCategories = !IsGroupingByCategories; ReloadRequestData(false); });
             ProceedRequestCommand = new CommandType();
-            ProceedRequestCommand.Create(_ => ProceedRequest(), _ => User.IsAdmin && (Orders.Count > 0));
+            ProceedRequestCommand.Create(_ => ProceedRequest(), _ => RequestIsReadyToProceed);
+            RemoveProductCommand = new CommandType();
+            RemoveProductCommand.Create(p => RemoveProduct((ProductForRequestView)p));
+            RemoveProductsCategoryCommand = new CommandType();
+            RemoveProductsCategoryCommand.Create(c => RemoveProductsCategory((CategoryForRequestView)c));
+            CategoriesSelectionChangedCommand = new CommandType();
+            CategoriesSelectionChangedCommand.Create(_ => { OnPropertyChanged("SuppliersCount"); OnPropertyChanged("ProductsNamesCount"); OnPropertyChanged("ItemsCount"); OnPropertyChanged("TotalSum"); });
         }
     }
 }

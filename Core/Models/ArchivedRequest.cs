@@ -154,6 +154,27 @@ namespace Core.Models
             }
         }
 
+        private DateTime _deliveryTime;
+        public DateTime DeliveryTime
+        {
+            get { return _deliveryTime; }
+            set
+            {
+                _deliveryTime = value;
+                OnPropertyChanged("DeliveryTime");
+            }
+        }
+
+        private string _comments;
+        public string Comments
+        {
+            get { return _comments; }
+            set
+            {
+                _comments = value;
+                OnPropertyChanged("Comments");
+            }
+        }
 
         private ObservableCollection<ArchivedOrder> _orders;
         public ObservableCollection<ArchivedOrder> Orders

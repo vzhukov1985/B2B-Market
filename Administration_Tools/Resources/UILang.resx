@@ -156,11 +156,23 @@
   <data name="UI_Clients_BIN_Field" xml:space="preserve">
     <value>БИН:</value>
   </data>
+  <data name="UI_Clients_City_Field" xml:space="preserve">
+    <value>Город:</value>
+  </data>
   <data name="UI_Clients_ClientsListHeader" xml:space="preserve">
     <value>Список клиентов:</value>
   </data>
+  <data name="UI_Clients_ContactPersonName_Field" xml:space="preserve">
+    <value>Ф.И.О. контактного лица</value>
+  </data>
+  <data name="UI_Clients_ContactPersonPhone_Field" xml:space="preserve">
+    <value>Тел. контактного лица</value>
+  </data>
   <data name="UI_Clients_ContractsListHeader" xml:space="preserve">
     <value>Договора с поставщиками:</value>
+  </data>
+  <data name="UI_Clients_Country_Field" xml:space="preserve">
+    <value>Страна:</value>
   </data>
   <data name="UI_Clients_Email_Field" xml:space="preserve">
     <value>e-mail:</value>
@@ -255,8 +267,20 @@
   <data name="UI_Suppliers_BIN_Field" xml:space="preserve">
     <value>БИН:</value>
   </data>
+  <data name="UI_Suppliers_City_Field" xml:space="preserve">
+    <value>Город:</value>
+  </data>
+  <data name="UI_Suppliers_ContactPersonName_Field" xml:space="preserve">
+    <value>Ф.И.О. контактного лица</value>
+  </data>
+  <data name="UI_Suppliers_ContactPersonPhone_Field" xml:space="preserve">
+    <value>Тел. контактного лица</value>
+  </data>
   <data name="UI_Suppliers_ContractsListHeader" xml:space="preserve">
     <value>Договора с клиентами:</value>
+  </data>
+  <data name="UI_Suppliers_Country_Field" xml:space="preserve">
+    <value>Страна:</value>
   </data>
   <data name="UI_Suppliers_Email_Field" xml:space="preserve">
     <value>e-mail:</value>
@@ -269,6 +293,9 @@
   </data>
   <data name="UI_Suppliers_Id_Field" xml:space="preserve">
     <value>ID:</value>
+  </data>
+  <data name="UI_Suppliers_IsActive_Field" xml:space="preserve">
+    <value>Активен</value>
   </data>
   <data name="UI_Suppliers_Phone_Field" xml:space="preserve">
     <value>Тел.:</value>

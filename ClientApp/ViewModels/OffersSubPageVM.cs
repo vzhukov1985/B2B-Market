@@ -92,11 +92,10 @@ namespace ClientApp.ViewModels
                      .ThenInclude(o => o.QuantityUnit)
                      .Include(p => p.Offers)
                      .ThenInclude(o => o.Supplier)
-                     .Include(p => p.ExtraProperties)
-                     .ThenInclude(pr => pr.PropertyType)
                      .Include(p => p.VolumeUnit)
                      .Include(p => p.VolumeType)
                      .Include(p => p.Category)
+                     .Where(p => p.Offers.Any(of => of.Supplier.IsActive == true && of.Remains > 0 && of.IsActive == true))
                      .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
                      .Where(p => supplierFilter == null ? true : p.Offers.Select(of => of.SupplierId).Any(id => supplierFilter.Contains(id)))
                      .Where(p => ShowFavoritesOnly ? FavoriteProductsIds.Contains(p.Id) : true)
@@ -120,7 +119,6 @@ namespace ClientApp.ViewModels
         public CommandType ShowSearchSubPageCommand { get; }
         public CommandType AddRemoveProductToFavouritesCommand { get; }
         public CommandType ShowProductCommand { get; }
-
         public CommandType NavigationBackCommand { get; }
 
         public OffersSubPageVM(ClientUser user, IPageService pageService, string title, bool ShowFavoritesOnly = false, List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")

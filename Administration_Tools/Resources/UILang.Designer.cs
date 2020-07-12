@@ -178,6 +178,15 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Город:.
+        /// </summary>
+        public static string UI_Clients_City_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_City_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Список клиентов:.
         /// </summary>
         public static string UI_Clients_ClientsListHeader {
@@ -187,11 +196,38 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ф.И.О. контактного лица.
+        /// </summary>
+        public static string UI_Clients_ContactPersonName_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_ContactPersonName_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тел. контактного лица.
+        /// </summary>
+        public static string UI_Clients_ContactPersonPhone_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_ContactPersonPhone_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Договора с поставщиками:.
         /// </summary>
         public static string UI_Clients_ContractsListHeader {
             get {
                 return ResourceManager.GetString("UI_Clients_ContractsListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Страна:.
+        /// </summary>
+        public static string UI_Clients_Country_Field {
+            get {
+                return ResourceManager.GetString("UI_Clients_Country_Field", resourceCulture);
             }
         }
         
@@ -475,11 +511,47 @@ namespace Administration_Tools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Город:.
+        /// </summary>
+        public static string UI_Suppliers_City_Field {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_City_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ф.И.О. контактного лица.
+        /// </summary>
+        public static string UI_Suppliers_ContactPersonName_Field {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_ContactPersonName_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тел. контактного лица.
+        /// </summary>
+        public static string UI_Suppliers_ContactPersonPhone_Field {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_ContactPersonPhone_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Договора с клиентами:.
         /// </summary>
         public static string UI_Suppliers_ContractsListHeader {
             get {
                 return ResourceManager.GetString("UI_Suppliers_ContractsListHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Страна:.
+        /// </summary>
+        public static string UI_Suppliers_Country_Field {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_Country_Field", resourceCulture);
             }
         }
         
@@ -516,6 +588,15 @@ namespace Administration_Tools.Resources {
         public static string UI_Suppliers_Id_Field {
             get {
                 return ResourceManager.GetString("UI_Suppliers_Id_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Активен.
+        /// </summary>
+        public static string UI_Suppliers_IsActive_Field {
+            get {
+                return ResourceManager.GetString("UI_Suppliers_IsActive_Field", resourceCulture);
             }
         }
         

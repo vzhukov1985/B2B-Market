@@ -101,6 +101,7 @@ namespace ClientApp.ViewModels
             Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplier.FullName;
             
             QueryDb();
+            
         }
     }
 }

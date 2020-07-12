@@ -38,6 +38,18 @@ namespace Core.Models
             }
         }
 
+        private string _supplierProductCode;
+        public string SupplierProductCode
+        {
+            get { return _supplierProductCode; }
+            set
+            {
+                _supplierProductCode = value;
+                OnPropertyChanged("SupplierProductCode");
+            }
+        }
+
+
         private Product _product;
         public Product Product
         {
@@ -125,5 +137,17 @@ namespace Core.Models
                 OnPropertyChanged("DiscountPrice");
             }
         }
+
+        private bool _isActive;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged("IsActive");
+            }
+        }
+
     }
 }

@@ -18,7 +18,6 @@
     <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -27,18 +26,10 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.UserSettings}}" Height="25" HorizontalAlignment="Left" Margin="14,4,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant"/>
-            <TextBlock Grid.Row="0" FontSize="19" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0}{1}!">
-                        <Binding Source="{x:Static resx:UILang.UI_MainSubPage_Welcome}"/>
-                        <Binding Path="User.Name"/>
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
+            
 
-            <Border Grid.Row="1" Background="LightGray" BorderBrush="White" BorderThickness="0,0,0,1"/>
-            <TextBox Grid.Row="1" Text="{x:Static resx:UILang.UI_SubPages_SearchHint}" Foreground="DarkGray" FontSize="17" Height="28" Margin="20,10,20,10" >
+            <Border Grid.Row="0" Background="LightGray" BorderBrush="White" BorderThickness="0,0,0,1"/>
+            <TextBox Grid.Row="0" Text="{x:Static resx:UILang.UI_SubPages_SearchHint}" Foreground="DarkGray" FontSize="17" Height="28" Margin="20,10,20,10" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                         <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
@@ -46,11 +37,11 @@
                 </i:Interaction.Triggers>
             </TextBox>
 
-            <Grid Grid.Row="2" Background="LightGray">
+            <Grid Grid.Row="1" Background="LightGray">
                 <TextBlock Text="{x:Static resx:UILang.UI_MainSubPage_Categories}" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
             </Grid>
 
-            <ItemsControl Grid.Row="3" ItemsSource="{Binding TopCategories}" Margin="0,0,0,0">
+            <ItemsControl Grid.Row="2" ItemsSource="{Binding TopCategories}" Margin="0,0,0,0">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
@@ -74,11 +65,11 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <Grid Grid.Row="4" Background="LightGray">
+            <Grid Grid.Row="3" Background="LightGray">
                 <TextBlock Text="{x:Static resx:UILang.UI_MainSubPage_Suppliers}" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
             </Grid>
 
-            <Border Grid.Row="5" BorderThickness="0,0,0,1" BorderBrush="LightGray">
+            <Border Grid.Row="4" BorderThickness="0,0,0,1" BorderBrush="LightGray">
                 <Grid Height="100">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180"/>
@@ -97,7 +88,7 @@
 
 
 
-            <ItemsControl Grid.Row="6" ItemsSource="{Binding Suppliers}" Margin="0,0,0,0">
+            <ItemsControl Grid.Row="5" ItemsSource="{Binding Suppliers}" Margin="0,0,0,0">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">

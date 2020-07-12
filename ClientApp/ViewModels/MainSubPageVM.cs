@@ -75,6 +75,7 @@ namespace ClientApp.ViewModels
                 TopCategories = new ObservableCollection<TopCategory>(await db.TopCategories.ToListAsync());
 
                 Suppliers = new ObservableCollection<Supplier>(await db.Suppliers
+                    .Where(s => s.IsActive == true)
                     .OrderByDescending(s => ContractedSuppliersIds.Count == 0 || ContractedSuppliersIds.Contains(s.Id))
                     .ThenBy(s => s.FullName)
                     .ToListAsync()); ;

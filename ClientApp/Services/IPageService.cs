@@ -24,6 +24,8 @@ namespace ClientApp.Services
         void ShowFavoritesSubPage(ClientUser user);
 
         void ShowCurrentRequestSubPage(ClientUser user);
+        void ShowCurrentRequestConfirmSubPage(ClientUser user, List<ArchivedRequest> requests);
+        
         void ShowArchivedRequestsListSubPage(ClientUser user);
         void ShowArchivedRequestSubPage(ClientUser user, ArchivedRequest request);
     }

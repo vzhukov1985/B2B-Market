@@ -33,6 +33,9 @@ namespace Core.Models
             modelBuilder.Entity<Contract>().HasOne(s => s.Supplier).WithMany(sc => sc.Contracts).HasForeignKey(s => s.SupplierId);
 
             modelBuilder.Entity<ClientUser>().HasOne(c => c.Client).WithMany(cc => cc.Users).HasForeignKey(u => u.ClientId);
+
+            modelBuilder.Entity<Product>().Property(p => p.Code).Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+            modelBuilder.Entity<Product>().HasOne(p => p.Description).WithOne().HasForeignKey<ProductDescription>(pd => pd.ProductId);
         }
 
         public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -56,6 +59,7 @@ namespace Core.Models
         public virtual DbSet<ArchivedOrder> ArchivedOrders { get; set; }
         public virtual DbSet<ArchivedSupplier> ArchivedSuppliers { get; set; }
         public virtual DbSet<ArchivedRequestsStatus> ArchivedRequestsStatuses { get; set; }
+        public virtual DbSet<ProductDescription> ProductDescriptions { get; set; }
 
         
         
