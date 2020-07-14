@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,17 +50,20 @@ namespace Core.Services
             xSupplierInfo.Add(new XElement("ShortName", supplier.ShortName));
             xSupplierInfo.Add(new XElement("FullName", supplier.FullName));
             xSupplierInfo.Add(new XElement("BIN", supplier.BIN));
+            xSupplierInfo.Add(new XElement("Country", supplier.Country));
+            xSupplierInfo.Add(new XElement("City", supplier.City));
             xSupplierInfo.Add(new XElement("Address", supplier.Address));
             xSupplierInfo.Add(new XElement("Phone", supplier.Phone));
             xSupplierInfo.Add(new XElement("EMail", supplier.Email));
-
+            xSupplierInfo.Add(new XElement("ContactPersonName", supplier.ContactPersonName));
+            xSupplierInfo.Add(new XElement("ContactPersonPhone", supplier.ContactPersonPhone));
 
             XElement xOffers = new XElement("Offers");
             foreach (Offer offer in offers)
             {
                 XElement xOffer = new XElement("Offer");
                 XAttribute xSupplierProductCode = new XAttribute("SupplierProductCode", offer.SupplierProductCode);
-                
+
                 XElement xProduct = new XElement("Product");
                 xProduct.Add(new XElement("Name", offer.Product.Name));
                 xProduct.Add(new XElement("Category", offer.Product.Category.Name));
@@ -107,6 +112,266 @@ namespace Core.Services
             xDoc.Save(fileName);
         }
 
+        public static void ProcessOffersXMLFromFile(string xmlFile, StreamWriter logFileStream)
+        {
+            XDocument xDoc = XDocument.Load(xmlFile);
+            XElement xExtraction = xDoc.Root;
+            XElement xSupplierInfo = xExtraction.Element("SupplierInfo");
+
+            Supplier supplier;
+
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                try
+                {
+                    supplier = db.Suppliers.Find(new Guid(xSupplierInfo.Attribute("Id").Value));
+                    if (supplier == null)
+                    {
+                        logFileStream.WriteLine("{0} - ERROR: Id \"{1}\" of supplier wasn't found in DB", DateTime.Now.ToString("G"), xSupplierInfo.Attribute("Id").Value);
+                        return;
+                    }
+                    supplier.ShortName = xSupplierInfo.Element("ShortName").Value;
+                    supplier.FullName = xSupplierInfo.Element("FullName").Value;
+                    supplier.BIN = xSupplierInfo.Element("BIN").Value;
+                    supplier.Country = xSupplierInfo.Element("Country").Value;
+                    supplier.City = xSupplierInfo.Element("City").Value;
+                    supplier.Address = xSupplierInfo.Element("Address").Value;
+                    supplier.Phone = xSupplierInfo.Element("Phone").Value;
+                    supplier.Email = xSupplierInfo.Element("EMail").Value;
+                    supplier.ContactPersonName = xSupplierInfo.Element("ContactPersonName").Value;
+                    supplier.ContactPersonPhone = xSupplierInfo.Element("ContactPersonPhone").Value;
+                    db.Suppliers.Update(supplier);
+                    if (db.SaveChanges() > 0)
+                        logFileStream.WriteLine("{0} - Info for supplier \"{1}\" was updated", DateTime.Now.ToString("G"), supplier.ShortName);
+                }
+                catch (Exception e)
+                {
+                    logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
+                    return;
+                }
+
+                IEnumerable<XElement> xOffers = xExtraction.Element("Offers").Elements("Offer");
+
+                IEnumerable<QuantityUnit> quantityUnits = db.QuantityUnits;
+                IEnumerable<ProductCategory> productCategories = db.ProductCategories;
+                IEnumerable<Offer> offers = db.Offers.Where(o => o.SupplierId == supplier.Id);
+                IEnumerable<Product> products = db.Products;
+                IEnumerable<ProductExtraPropertyType> extraPropertyTypes = db.ProductExtraPropertyTypes;
+                IEnumerable<ProductExtraProperty> extraProperties = db.ProductExtraProperties;
+                IEnumerable<VolumeType> volumeTypes = db.VolumeTypes;
+                IEnumerable<VolumeUnit> volumeUnits = db.VolumeUnits;
+
+                IEnumerable<MatchExtraPropertyType> matchExtraPropertyTypes = db.MatchExtraPropertyTypes.Where(mept => mept.SupplierId == supplier.Id);
+                IEnumerable<MatchProduct> matchProducts = db.MatchProducts.Where(mp => mp.SupplierId == supplier.Id);
+                IEnumerable<MatchProductCategory> matchProductCategories = db.MatchProductCategories.Where(mpc => mpc.SupplierId == supplier.Id);
+                IEnumerable<MatchQuantityUnit> matchQuantityUnits = db.MatchQuantityUnits.Where(mqu => mqu.SupplierId == supplier.Id);
+                IEnumerable<MatchVolumeType> matchVolumeTypes = db.MatchVolumeTypes.Where(mvt => mvt.SupplierId == supplier.Id);
+                IEnumerable<MatchVolumeUnit> matchVolumeUnits = db.MatchVolumeUnits.Where(mvu => mvu.SupplierId == supplier.Id);
+
+                int newProductsAdded = 0;
+                int newExtraPropertiesAdded = 0;
+                int newProductCategoriesAdded = 0;
+                int newVolumeTypesAdded = 0;
+                int newVolumeUnitsAdded = 0;
+                int newQuantityUnitsAdded = 0;
+
+                foreach (XElement xOffer in xOffers)
+                {
+                    try
+                    {
+                        XElement xProduct = xOffer.Element("Product");
+
+                        XElement xCategory = xProduct.Element("Category");
+                        MatchProductCategory matchProductCategory = matchProductCategories.Where(mpc => mpc.SupplierCategoryName == xCategory.Value).FirstOrDefault();
+                        ProductCategory productCategory;
+                        if (matchProductCategory == null)
+                        {
+                            productCategory = productCategories.Where(pc => pc.Name == xCategory.Value).FirstOrDefault();
+                            if (productCategory == null)
+                            {
+                                productCategory = new ProductCategory { Id = new Guid(), Name = xCategory.Value, MidCategoryId = new Guid("ccad6dcb-6dc8-4f62-a7ae-a904013e772a"), IsChecked = false }; //МидКатегория "Нет"
+                                db.ProductCategories.Add(productCategory);
+                                db.SaveChanges();
+                                newProductCategoriesAdded++;
+                            }
+                            db.MatchProductCategories.Add(new MatchProductCategory { SupplierId = supplier.Id, ProductCategoryId = productCategory.Id, SupplierCategoryName = xCategory.Value, IsChecked = false });
+                        }
+                        else
+                        {
+                            productCategory = productCategories.Where(pc => pc.Id == matchProductCategory.ProductCategoryId).FirstOrDefault();
+                        }
+                        
+
+                        XElement xVolumeType = xProduct.Element("VolumeType");
+                        MatchVolumeType matchVolumeType = matchVolumeTypes.Where(vt => vt.SupplierVolumeTypeName == xVolumeType.Value).FirstOrDefault();
+                        VolumeType volumeType;
+                        if (matchVolumeType == null)
+                        {
+                            volumeType = volumeTypes.Where(vt => vt.Name == xVolumeType.Value).FirstOrDefault();
+                            if (volumeType == null)
+                            {
+                                volumeType = new VolumeType { Id = new Guid(), Name = xVolumeType.Value, IsChecked = false };
+                                db.VolumeTypes.Add(volumeType);
+                                db.SaveChanges();
+                                newVolumeTypesAdded++;
+                            }
+                            db.MatchVolumeTypes.Add(new MatchVolumeType { SupplierId = supplier.Id, SupplierVolumeTypeName = xVolumeType.Value, VolumeTypeId = volumeType.Id, IsChecked = false });
+                        }
+                        else
+                        {
+                            volumeType = volumeTypes.Where(vt => vt.Id == matchVolumeType.VolumeTypeId).FirstOrDefault();
+                        }
+                        
+
+                        XElement xVolumeUnit = xProduct.Element("VolumeUnit");
+                        MatchVolumeUnit matchVolumeUnit = matchVolumeUnits.Where(mvu => mvu.SupplierVUShortName == xVolumeUnit.Attribute("ShortName").Value && mvu.SupplierVUFullName == xVolumeUnit.Attribute("FullName").Value).FirstOrDefault();
+                        VolumeUnit volumeUnit;
+                        if (matchVolumeUnit == null)
+                        {
+                            volumeUnit = volumeUnits.Where(vu => vu.ShortName == xVolumeUnit.Attribute("ShortName").Value && vu.FullName == xVolumeUnit.Attribute("FullName").Value).FirstOrDefault();
+                            if (volumeUnit == null)
+                            {
+                                volumeUnit = new VolumeUnit { Id = new Guid(), ShortName = xVolumeUnit.Attribute("ShortName").Value, FullName = xVolumeUnit.Attribute("FullName").Value, IsChecked = false };
+                                db.VolumeUnits.Add(volumeUnit);
+                                db.SaveChanges();
+                                newVolumeUnitsAdded++;
+                            }
+                            db.MatchVolumeUnits.Add(new MatchVolumeUnit { SupplierId = supplier.Id, SupplierVUShortName = xVolumeUnit.Attribute("ShortName").Value, SupplierVUFullName = xVolumeUnit.Attribute("FullName").Value, VolumeUnitId = volumeUnit.Id, IsChecked = false });
+                        }
+                        else
+                        {
+                            volumeUnit = volumeUnits.Where(vu => vu.Id == matchVolumeUnit.VolumeUnitId).FirstOrDefault();
+                        }
+                        
+
+                        XElement xQuantityUnit = xOffer.Element("QuantityUnit");
+
+                        MatchQuantityUnit matchQuantityUnit = matchQuantityUnits.Where(mqu => mqu.SupplierQUShortName == xQuantityUnit.Attribute("ShortName").Value && mqu.SupplierQUFullName == xQuantityUnit.Attribute("FullName").Value).FirstOrDefault();
+                        QuantityUnit quantityUnit;
+                        if (matchQuantityUnit == null)
+                        {
+                            quantityUnit = quantityUnits.Where(qu => qu.ShortName == xQuantityUnit.Attribute("ShortName").Value && qu.FullName == xQuantityUnit.Attribute("FullName").Value).FirstOrDefault();
+                            if (quantityUnit == null)
+                            {
+                                quantityUnit = new QuantityUnit { Id = new Guid(), ShortName = xQuantityUnit.Attribute("ShortName").Value, FullName = xQuantityUnit.Attribute("FullName").Value, IsChecked = false };
+                                db.QuantityUnits.Add(quantityUnit);
+                                db.SaveChanges();
+                                newQuantityUnitsAdded++;
+                            }
+                            db.MatchQuantityUnits.Add(new MatchQuantityUnit { SupplierId = supplier.Id, SupplierQUShortName = xQuantityUnit.Attribute("ShortName").Value, SupplierQUFullName = xQuantityUnit.Attribute("FullName").Value, QuantityUnitId = quantityUnit.Id, IsChecked = false });
+                        }
+                        else
+                        {
+                            quantityUnit = quantityUnits.Where(qu => qu.Id == matchQuantityUnit.QuantityUnitId).FirstOrDefault();
+                        }
+
+                        List<ProductExtraProperty> productExtraProperties = new List<ProductExtraProperty>();
+
+                        IEnumerable<XElement> xExtraProperties = xProduct.Element("ExtraProperties").Elements("ExtraProperty");
+                        foreach (XElement xExtraProperty in xExtraProperties)
+                        {
+                            MatchExtraPropertyType matchExtraPropertyType = matchExtraPropertyTypes.Where(mept => mept.SupplierEPTypeName == xExtraProperty.Attribute("Type").Value).FirstOrDefault();
+                            ProductExtraPropertyType productExtraPropertyType;
+                            if (matchExtraPropertyType == null)
+                            {
+                                productExtraPropertyType = extraPropertyTypes.Where(ept => ept.Name == xExtraProperty.Attribute("Type").Value).FirstOrDefault();
+                                if (productExtraPropertyType == null)
+                                {
+                                    productExtraPropertyType = new ProductExtraPropertyType { Id = new Guid(), Name = xExtraProperty.Attribute("Type").Value, IsChecked = false };
+                                    db.ProductExtraPropertyTypes.Add(productExtraPropertyType);
+                                    db.SaveChanges();
+                                    newExtraPropertiesAdded++;
+                                }
+                                db.MatchExtraPropertyTypes.Add(new MatchExtraPropertyType { SupplierId = supplier.Id, SupplierEPTypeName = xExtraProperty.Attribute("Type").Value, ExtraPropertyTypeId = productExtraPropertyType.Id, IsChecked = false });
+                            }
+                            else
+                            {
+                                productExtraPropertyType = extraPropertyTypes.Where(ept => ept.Id == matchExtraPropertyType.ExtraPropertyTypeId).FirstOrDefault();
+                            }
+                            productExtraProperties.Add(new ProductExtraProperty { ProductId = new Guid(), Product = null, PropertyType = null, PropertyTypeId = productExtraPropertyType.Id, Value = xExtraProperty.Attribute("Value").Value });
+                        }
+
+                        Product product;
+                        MatchProduct matchProduct = matchProducts.Where(mp => mp.SupplierId == supplier.Id && mp.SupplierProductCode == xOffer.Attribute("SupplierProductCode").Value).FirstOrDefault();
+                        if (matchProduct == null)
+                        {
+                            product = new Product { Id = new Guid(), CategoryId = productCategory.Id, Name = xProduct.Element("Name").Value, VolumeTypeId = volumeType.Id, VolumeUnitId = volumeUnit.Id, Volume = Convert.ToDecimal(xProduct.Element("Volume").Value, new System.Globalization.CultureInfo("en-US")), IsChecked = false };
+                            db.Products.Add(product);
+                            db.SaveChanges();
+                            db.MatchProducts.Add(new MatchProduct { SupplierId = supplier.Id, SupplierProductCode = xOffer.Attribute("SupplierProductCode").Value, ProductId = product.Id, IsChecked = false });
+                            newProductsAdded++;
+                        }
+                        else
+                        {
+                            product = products.Where(p => p.Id == matchProduct.ProductId).FirstOrDefault();
+                        }
+
+                        foreach (ProductExtraProperty productExtraProperty in productExtraProperties)
+                        {
+                            ProductExtraProperty property = extraProperties.Where(ep => ep.ProductId == product.Id && ep.PropertyTypeId == productExtraProperty.PropertyTypeId).FirstOrDefault();
+                            if (property == null)
+                            {
+                                productExtraProperty.ProductId = product.Id;
+                                db.ProductExtraProperties.Add(productExtraProperty);
+                            }
+                            else
+                            {
+                                property.Value = productExtraProperty.Value;
+                                db.ProductExtraProperties.Update(property);
+                            }
+                        }
+
+                        Offer offer = offers.Where(o => o.ProductId == product.Id && o.QuantityUnitId == quantityUnit.Id && o.SupplierProductCode == xOffer.Attribute("SupplierProductCode").Value).FirstOrDefault();
+                        if (offer == null)
+                        {
+                            offer = new Offer
+                            {
+                                Id = new Guid(),
+                                IsChecked = false,
+                                QuantityUnitId = quantityUnit.Id,
+                                SupplierId = supplier.Id,
+                                IsActive = true,
+                                SupplierProductCode = xOffer.Attribute("SupplierProductCode").Value,
+                                ProductId = product.Id,
+                                RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US")),
+                                DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US")),
+                                Remains = Convert.ToInt32(xOffer.Element("Remains").Value)
+                            };
+                            db.Offers.Add(offer);
+                        }
+                        else
+                        {
+                            offer.RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US"));
+                            offer.DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US"));
+                            offer.Remains = Convert.ToInt32(xOffer.Element("Remains").Value);
+                            db.Offers.Update(offer);
+                        }
+
+                        db.SaveChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
+                        return;
+                    }
+                }
+
+                if (newProductCategoriesAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new product categories were added", DateTime.Now.ToString("G"), newProductCategoriesAdded.ToString());
+                if (newVolumeTypesAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new volume types were added", DateTime.Now.ToString("G"), newVolumeTypesAdded.ToString());
+                if (newVolumeUnitsAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new volume units were added", DateTime.Now.ToString("G"), newVolumeUnitsAdded.ToString());
+                if (newQuantityUnitsAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new quantity units were added", DateTime.Now.ToString("G"), newQuantityUnitsAdded.ToString());
+                if (newExtraPropertiesAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new products' extra property types were added", DateTime.Now.ToString("G"), newExtraPropertiesAdded.ToString());
+                if (newProductsAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new products were added", DateTime.Now.ToString("G"), newProductsAdded.ToString());
+            }
+
+        }
+
         public static void RequestProductsDescription(List<Offer> offers, Guid supplierId)
         {
             Supplier supplier;
@@ -133,7 +398,7 @@ namespace Core.Services
             xDoc.Save("d://requestProductInfo.xml");
         }
 
-        public static void ProductsDescriptions(List <Offer> offers, Guid supplierId)
+        public static void ProductsDescriptions(List<Offer> offers, Guid supplierId)
         {
             Supplier supplier;
             using (MarketDbContext db = new MarketDbContext())
@@ -161,7 +426,7 @@ namespace Core.Services
             xDoc.Save("d://ProductDesc.xml");
         }
 
-        public static void SaveRequestXML(ArchivedRequest request, Stream stream)
+        public static void SaveRequestXMLToStream(ArchivedRequest request, Stream stream)
         {
             XDocument xDoc = new XDocument();
             XElement xRoot = new XElement("OrderFromB2BMarket");

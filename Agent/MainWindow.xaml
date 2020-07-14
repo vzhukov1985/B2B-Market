@@ -7,6 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="asd" Click="Button_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button x:Name="btExtractAllOffers" Content="Выгрузить все предложения из базы поставщикам" Click="btExtractAllOffers_Click"/>
+        <Button Grid.Row="1" x:Name="btUploadNewOffers" Content="Загрузить данные выгрузок" Click="btUploadNewOffers_Click"/>
     </Grid>
 </Window>

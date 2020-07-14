@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Core.Models
 {
-    public class VolumeType: INotifyPropertyChanged
+    public class MatchProduct: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -15,26 +14,36 @@ namespace Core.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private Guid _id;
-        [Key]
-        public Guid Id
+        private Guid _supplierId;
+        public Guid SupplierId
         {
-            get { return _id; }
+            get { return _supplierId; }
             set
             {
-                _id = value;
-                OnPropertyChanged("Id");
+                _supplierId = value;
+                OnPropertyChanged("SupplierId");
             }
         }
 
-        private string _name;
-        public string Name
+        private string _supplierProductCode;
+        public string SupplierProductCode
         {
-            get { return _name; }
+            get { return _supplierProductCode; }
             set
             {
-                _name = value;
-                OnPropertyChanged("Name");
+                _supplierProductCode = value;
+                OnPropertyChanged("SupplierProductCode");
+            }
+        }
+
+        private Guid _productId;
+        public Guid ProductId
+        {
+            get { return _productId; }
+            set
+            {
+                _productId = value;
+                OnPropertyChanged("ProductId");
             }
         }
 
@@ -50,9 +59,5 @@ namespace Core.Models
         }
 
 
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }

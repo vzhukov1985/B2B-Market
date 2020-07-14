@@ -40,7 +40,7 @@ namespace ClientApp.ViewModels
         {
             get
             {
-                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false))
+                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false || o.IsChecked == false))
                 { 
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierNullRemains;
@@ -48,7 +48,7 @@ namespace ClientApp.ViewModels
                         return ProductOrderAndRemainsState.AllSuppliersNullRemains;
                 }
 
-                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false))
+                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false || o.IsChecked == false))
                 {
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierLessRemains;
@@ -251,6 +251,7 @@ namespace ClientApp.ViewModels
                 Id = o.OfferId,
                 SupplierProductCode = o.Offer.SupplierProductCode,
                 IsActive = o.Offer.IsActive,
+                IsChecked = o.Offer.IsChecked,
                 SupplierId = o.Offer.SupplierId,
                 Supplier = o.Offer.Supplier,
                 ProductId = o.Offer.ProductId,
@@ -337,7 +338,7 @@ namespace ClientApp.ViewModels
             int LastRequestCode;
             using (MarketDbContext db = new MarketDbContext())
             {
-                LastRequestCode = db.ArchivedRequests.Max(r => r.Code);
+                LastRequestCode = db.ArchivedRequests.Count() > 0? db.ArchivedRequests.Max(r => r.Code): 0;
             }
             List<ArchivedRequest> requestsToAdd = Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(c => c.Supplier).Select(s => new ArchivedRequest
             {

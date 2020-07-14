@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -13,20 +14,22 @@ namespace Core.Services
     public static class FTPManager
     {
         private static readonly string AdminFTPAccessString = "ftp://B2BAdmin:B2BAdminPassword@192.168.1.1";
+        private static readonly string b2bDataDir = @"\\192.168.1.1\Media Server\B2B FTP Server";
+
 
         private static byte[] GetPictureFromFTP(string FTPAccessDir, string FileName)
         {
-             using (WebClient wc = new WebClient())
-             {
-                 try 
-                 {
-                     return wc.DownloadData(FTPAccessDir + "/" + FileName);
-                 }
-                 catch(WebException)                  
-                 {
-                     return null;
-                 }
-             }
+            using (WebClient wc = new WebClient())
+            {
+                try
+                {
+                    return wc.DownloadData(FTPAccessDir + "/" + FileName);
+                }
+                catch (WebException)
+                {
+                    return null;
+                }
+            }
         }
 
         public static byte[] GetProductPicture(Guid productGuid)
@@ -47,7 +50,7 @@ namespace Core.Services
 
         public static byte[] GetSupplierPicture(string FTPAccessString)
         {
-             return GetPictureFromFTP(FTPAccessString, "Logo.png");
+            return GetPictureFromFTP(FTPAccessString, "Logo.png");
 
             //TODO: * Direct disk access instead of ftp - Just for tests * - DELETE
             /*string path = "C:/Working Projects/B2B_Market/B2B FTP Server dummy/Suppliers/";
@@ -94,7 +97,7 @@ namespace Core.Services
             {
                 using (Stream ftpStream = ftpRequest.GetRequestStream())
                 {
-                    XMLProcessor.SaveRequestXML(request, ftpStream);
+                    XMLProcessor.SaveRequestXMLToStream(request, ftpStream);
                 }
                 return true;
             }
@@ -102,6 +105,33 @@ namespace Core.Services
             {
                 return false;
             }
+        }
+
+        public static void CheckAndUpdateSuppliersOffers()
+        {
+            StreamWriter logFileStream = new StreamWriter(b2bDataDir + @"\AgentLog.txt", true, System.Text.Encoding.UTF8);
+            logFileStream.WriteLine("****************** - " + DateTime.Now.ToString("G") + " - Process of checking for new extractions from suppliers started ******************");
+
+            List<string> suppliersDirectoriesList;
+            suppliersDirectoriesList = new DirectoryInfo(b2bDataDir + "\\Suppliers\\").GetDirectories().Select(f => f.Name).ToList();
+            logFileStream.WriteLine(DateTime.Now.ToString("G") + " - Found " + suppliersDirectoriesList.Count.ToString() + " supplier directories");
+
+            foreach (string supplierDirectory in suppliersDirectoriesList)
+            {
+                List<string> ExtractionsFileList = new DirectoryInfo(b2bDataDir + @"\Suppliers\" + supplierDirectory + @"\Offers").GetFiles().Select(f => f.Name).OrderBy(s => s).ToList(); //TODO Replace with foreach for every supplier
+                logFileStream.WriteLine(DateTime.Now.ToString("G") + " - Found " + ExtractionsFileList.Count.ToString() + " new extractions of supplier: " + supplierDirectory);
+
+
+                foreach (string ExtractionFileName in ExtractionsFileList)
+                {
+                    logFileStream.WriteLine(DateTime.Now.ToString("G") + " - Starting to process extraction " + supplierDirectory + ": " + ExtractionFileName);
+                    XMLProcessor.ProcessOffersXMLFromFile(b2bDataDir + @"\Suppliers\" + supplierDirectory + @"\Offers\" + ExtractionFileName, logFileStream);
+                }
+            }
+
+            logFileStream.WriteLine("****************** - " + DateTime.Now.ToString("G") + " - Process of checking for new extractions from suppliers finished ******************");
+            logFileStream.WriteLine();
+            logFileStream.Close();
         }
 
     }

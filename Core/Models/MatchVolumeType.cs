@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Core.Models
 {
-    public class ProductCategory: INotifyPropertyChanged
+    public class MatchVolumeType:INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -15,48 +14,48 @@ namespace Core.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private Guid _id;
-        [Key]
-        public Guid Id
+        private Guid _supplierId;
+        public Guid SupplierId
         {
-            get { return _id; }
+            get { return _supplierId; }
             set
             {
-                _id = value;
-                OnPropertyChanged("Id");
+                _supplierId = value;
+                OnPropertyChanged("SupplierId");
             }
         }
 
-        private string _name;
-        public string Name
+        private Supplier _supplier;
+        public Supplier Supplier
         {
-            get { return _name; }
+            get { return _supplier; }
             set
             {
-                _name = value;
-                OnPropertyChanged("Name");
+                _supplier = value;
+                OnPropertyChanged("Supplier");
             }
         }
 
-        private Guid _midCategoryId;
-        public Guid MidCategoryId
+
+        private string _supplierVolumeTypeName;
+        public string SupplierVolumeTypeName
         {
-            get { return _midCategoryId; }
+            get { return _supplierVolumeTypeName; }
             set
             {
-                _midCategoryId = value;
-                OnPropertyChanged("MidCategoryId");
+                _supplierVolumeTypeName = value;
+                OnPropertyChanged("SupplierVolumeTypeName");
             }
         }
 
-        private MidCategory _midCategory;
-        public MidCategory MidCategory
+        private Guid _volumeTypeId;
+        public Guid VolumeTypeId
         {
-            get { return _midCategory; }
+            get { return _volumeTypeId; }
             set
             {
-                _midCategory = value;
-                OnPropertyChanged("MidCategory");
+                _volumeTypeId = value;
+                OnPropertyChanged("VolumeTypeId");
             }
         }
 
@@ -70,6 +69,5 @@ namespace Core.Models
                 OnPropertyChanged("IsChecked");
             }
         }
-
     }
 }

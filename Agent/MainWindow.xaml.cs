@@ -28,17 +28,34 @@ namespace Agent
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        /*  List<Offer> offers = db.Offers
+      .Include(of => of.Product)
+      .Where(of => of.SupplierId == new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"))
+      .ToList();
+  //   XMLProcessor.RequestProductsDescription(offers, new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"));
+  XMLProcessor.ProductsDescriptions(offers, new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"));*/
+
+        private void btExtractAllOffers_Click(object sender, RoutedEventArgs e)
         {
            // XMLProcessor.ExtractAllProductsToXML("D://test.xml", new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"));
             using (MarketDbContext db = new MarketDbContext())
             {
-                List<Offer> offers = db.Offers
-                    .Include(of => of.Product)
-                    .Where(of => of.SupplierId == new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"))
-                    .ToList();
-                //   XMLProcessor.RequestProductsDescription(offers, new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"));
-                XMLProcessor.ProductsDescriptions(offers, new Guid("fe9e2725-96f9-4d88-ad08-e010953a1dfd"));
+
+                List <Supplier> suppliersList = db.Suppliers.ToList();
+                foreach(Supplier supplier in suppliersList)
+                {
+                    XMLProcessor.ExtractAllProductsToXML("d://Offers/" + supplier.ShortName + ".xml", supplier.Id);
+                }
+                
+
+            }
+        }
+
+        private void btUploadNewOffers_Click(object sender, RoutedEventArgs e)
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+               FTPManager.CheckAndUpdateSuppliersOffers();
             }
         }
     }

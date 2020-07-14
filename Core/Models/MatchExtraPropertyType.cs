@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Core.Models
 {
-    public class VolumeType: INotifyPropertyChanged
+    public class MatchExtraPropertyType: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -15,26 +14,36 @@ namespace Core.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private Guid _id;
-        [Key]
-        public Guid Id
+        private Guid _supplierId;
+        public Guid SupplierId
         {
-            get { return _id; }
+            get { return _supplierId; }
             set
             {
-                _id = value;
-                OnPropertyChanged("Id");
+                _supplierId = value;
+                OnPropertyChanged("SupplierId");
             }
         }
 
-        private string _name;
-        public string Name
+        private string _supplierEPTypeName;
+        public string SupplierEPTypeName
         {
-            get { return _name; }
+            get { return _supplierEPTypeName; }
             set
             {
-                _name = value;
-                OnPropertyChanged("Name");
+                _supplierEPTypeName = value;
+                OnPropertyChanged("SupplierEPTypeName");
+            }
+        }
+
+        private Guid _extraPropertyTypeId;
+        public Guid ExtraPropertyTypeId
+        {
+            get { return _extraPropertyTypeId; }
+            set
+            {
+                _extraPropertyTypeId = value;
+                OnPropertyChanged("ExtraPropertyTypeId");
             }
         }
 
@@ -47,12 +56,6 @@ namespace Core.Models
                 _isChecked = value;
                 OnPropertyChanged("IsChecked");
             }
-        }
-
-
-        public override string ToString()
-        {
-            return Name;
         }
     }
 }
