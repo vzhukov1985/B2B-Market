@@ -21,6 +21,7 @@ namespace OperatorApp.ViewModels
         }
 
         private readonly IPageService PageService;
+        private readonly IDialogService DialogService;
 
         private ObservableCollection<MatchVolumeType> _volumeTypesToMatch;
         public ObservableCollection<MatchVolumeType> VolumeTypesToMatch
@@ -44,7 +45,6 @@ namespace OperatorApp.ViewModels
             }
         }
 
-
         private bool _showUncheckedOnly;
         public bool ShowUncheckedOnly
         {
@@ -52,7 +52,7 @@ namespace OperatorApp.ViewModels
             set
             {
                 _showUncheckedOnly = value;
-                QueryDb(true);
+                QueryDb();
                 OnPropertyChanged("ShowUncheckedOnly");
             }
         }
@@ -75,8 +75,10 @@ namespace OperatorApp.ViewModels
             set
             {
                 _selectedMatchVolumeType = value;
+                
                 if (VolumeTypes != null && _selectedMatchVolumeType != null)
                     SelectedVolumeType = VolumeTypes.Where(vt => vt.Id == _selectedMatchVolumeType.VolumeTypeId).FirstOrDefault();
+
                 OnPropertyChanged("SelectedMatchVolumeType");
             }
         }
@@ -92,19 +94,30 @@ namespace OperatorApp.ViewModels
             }
         }
 
-        private string _searchText;
-        public string SearchText
+        private string _searchMatchVolumeTypesText;
+        public string SearchMatchVolumeTypesText
         {
-            get { return _searchText; }
+            get { return _searchMatchVolumeTypesText; }
             set
             {
-                _searchText = value;
-                OnPropertyChanged("SearchText");
+                _searchMatchVolumeTypesText = value;
+                OnPropertyChanged("SearchMatchVolumeTypesText");
+            }
+        }
+
+        private string _searchVolumeTypesText;
+        public string SearchVolumeTypesText
+        {
+            get { return _searchVolumeTypesText; }
+            set
+            {
+                _searchVolumeTypesText = value;
+                OnPropertyChanged("SearchVolumeTypesText");
             }
         }
 
 
-        private void MatchVolumeTypes()
+        private void UpdateTypesMatching()
         {
             using (MarketDbContext db = new MarketDbContext())
             {
@@ -121,77 +134,144 @@ namespace OperatorApp.ViewModels
             {
 
                 SelectedMatchVolumeType.VolumeTypeId = SelectedVolumeType.Id;
-                SelectedMatchVolumeType.IsChecked = true;
-                db.MatchVolumeTypes.Update(SelectedMatchVolumeType);
-                SelectedVolumeType.IsChecked = true;
-                db.VolumeTypes.Update(SelectedVolumeType);
-
-
-                var volumeTypeToRemove = VolumeTypes.Where(vt => vt.Name == SelectedMatchVolumeType.SupplierVolumeTypeName).FirstOrDefault();
-                if (volumeTypeToRemove != null)
+                if (SelectedMatchVolumeType.IsChecked == false)
                 {
-                    var howManyMatchedTypesReferToTypeToRemove = VolumeTypesToMatch.Where(mvt => mvt.VolumeTypeId == volumeTypeToRemove.Id).Count();
-                    if (howManyMatchedTypesReferToTypeToRemove == 0)
-                    {
-                        db.VolumeTypes.Remove(volumeTypeToRemove);
-                        VolumeTypes.Remove(volumeTypeToRemove);
-                    }
+                    SelectedMatchVolumeType.IsChecked = true;
+                    UncheckedCount--;
                 }
-                if (ShowUncheckedOnly)
-                    VolumeTypesToMatch.Remove(SelectedMatchVolumeType);
+                db.MatchVolumeTypes.Update(SelectedMatchVolumeType);
 
-                UncheckedCount = VolumeTypesToMatch.Where(mvt => mvt.IsChecked == false).Count();
-
+                if (SelectedVolumeType.IsChecked == false)
+                {
+                    SelectedVolumeType.IsChecked = true;
+                    db.VolumeTypes.Update(SelectedVolumeType);
+                }
                 db.SaveChanges();
             }
         }
 
 
-        public void QueryDb(bool reloadQuantityUnitsToMatch)
+        private async void MatchVolumeTypes()
         {
+            int newListItemIndex = VolumeTypesToMatch.IndexOf(SelectedMatchVolumeType);
             using (MarketDbContext db = new MarketDbContext())
             {
-
-                if (reloadQuantityUnitsToMatch)
+                VolumeType volumeTypeToRemove = await db.VolumeTypes.FindAsync(SelectedMatchVolumeType.VolumeTypeId);
+                if (await db.MatchVolumeTypes.Where(mvt => mvt.VolumeTypeId == volumeTypeToRemove.Id).CountAsync() == 1 && volumeTypeToRemove.Id != SelectedVolumeType.Id)
                 {
-                    VolumeTypesToMatch = new ObservableCollection<MatchVolumeType>(db.MatchVolumeTypes
-                        .AsNoTracking()
-                        .Where(mvt => ShowUncheckedOnly ? mvt.IsChecked == false : true)
-                        .Include(mvt => mvt.Supplier)
-                         );
+                    if (DialogService.ShowWarningMatchAndDeleteDialog(SelectedMatchVolumeType.Supplier.ShortName,
+                        $"\"{SelectedMatchVolumeType.SupplierVolumeTypeName}\"",
+                        $"\"{SelectedVolumeType.Name}\"",
+                         $"\"{volumeTypeToRemove.Name}\""))
+                    {
+                        UpdateTypesMatching();
+                        db.VolumeTypes.Remove(volumeTypeToRemove);
+                        VolumeTypes.Remove(VolumeTypes.Where(vt => vt.Id == volumeTypeToRemove.Id).FirstOrDefault());
+                        await db.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
+                else
+                {
+                    UpdateTypesMatching();
+                }
+            }
 
-                VolumeTypes = new ObservableCollection<VolumeType>(db.VolumeTypes
-                    .AsNoTracking()
-                    .Where(vt => vt.Name.Contains(SearchText))
-                    );
+            if (ShowUncheckedOnly)
+            {
+                VolumeTypesToMatch.Remove(SelectedMatchVolumeType);
+            }
+            else
+            {
+                newListItemIndex++;
+            }
 
-                UncheckedCount = VolumeTypesToMatch.Where(mqu => mqu.IsChecked == false).Count();
+            if (VolumeTypesToMatch != null && newListItemIndex < VolumeTypesToMatch.Count)
+            {
+                SelectedMatchVolumeType = VolumeTypesToMatch[newListItemIndex];
             }
         }
 
+        private async void EditVolumeType()
+        {
+            VolumeType updatedVolumeType = DialogService.ShowEditVolumeTypeDialog(SelectedVolumeType);
+            if (updatedVolumeType != null)
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    SelectedVolumeType.Name = updatedVolumeType.Name;
+                    db.VolumeTypes.Update(SelectedVolumeType);
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+
+
+
+        public async void QueryDb()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                VolumeTypesToMatch = new ObservableCollection<MatchVolumeType>(await db.MatchVolumeTypes
+                    .Include(mvt => mvt.Supplier)
+                    .Where(mvt => ShowUncheckedOnly ? mvt.IsChecked == false : true)
+                    .Where(mvt => mvt.SupplierVolumeTypeName.Contains(SearchMatchVolumeTypesText) || mvt.Supplier.ShortName.Contains(SearchMatchVolumeTypesText))
+                    .AsNoTracking()
+                    .ToListAsync()
+                    );
+
+                VolumeTypes = new ObservableCollection<VolumeType>(await db.VolumeTypes
+                    .Where(vt => vt.Name.Contains(SearchVolumeTypesText))
+                    .AsNoTracking()
+                    .ToListAsync()
+                    );
+
+                UncheckedCount = await db.MatchVolumeTypes.Where(mvt => mvt.IsChecked == false).CountAsync();
+            }
+        }
+
+        public CommandType SearchMatchVolumeTypesCommand { get; }
+        public CommandType CancelSearchMatchVolumeTypesCommand { get; }
+
+        public CommandType EditVolumeTypeCommand { get; }
+        public CommandType SearchVolumeTypesCommand { get; }
+        public CommandType CancelSearchVolumeTypesCommand { get; }
+
         public CommandType MatchVolumeTypesCommand { get; }
-        public CommandType SearchCommand { get; }
-        public CommandType CancelSearchCommand { get; }
 
         public CommandType ShowNextPageCommand { get; }
-        public VolumeTypesPageVM(IPageService pageService)
+
+        public VolumeTypesPageVM(IPageService pageService, IDialogService dialogService)
         {
             PageService = pageService;
+            DialogService = dialogService;
 
             ShowUncheckedOnly = true;
-            SearchText = "";
+            SearchVolumeTypesText = "";
+            SearchMatchVolumeTypesText = "";
+
+            SearchMatchVolumeTypesCommand = new CommandType();
+            SearchMatchVolumeTypesCommand.Create(_ => QueryDb());
+            CancelSearchMatchVolumeTypesCommand = new CommandType();
+            CancelSearchMatchVolumeTypesCommand.Create(_ => { SearchMatchVolumeTypesText = ""; QueryDb(); });
+
+            EditVolumeTypeCommand = new CommandType();
+            EditVolumeTypeCommand.Create(_ => EditVolumeType(), _ => SelectedVolumeType != null);
+            SearchVolumeTypesCommand = new CommandType();
+            SearchVolumeTypesCommand.Create(_ => QueryDb());
+            CancelSearchVolumeTypesCommand = new CommandType();
+            CancelSearchVolumeTypesCommand.Create(_ => { SearchVolumeTypesText = ""; QueryDb(); });
 
             MatchVolumeTypesCommand = new CommandType();
             MatchVolumeTypesCommand.Create(_ => MatchVolumeTypes(), _ => SelectedVolumeType != null && SelectedMatchVolumeType != null);
-            SearchCommand = new CommandType();
-            SearchCommand.Create(_ => QueryDb(false));
-            CancelSearchCommand = new CommandType();
-            CancelSearchCommand.Create(_ => { SearchText = ""; QueryDb(false); });
-            ShowNextPageCommand = new CommandType();
-            ShowNextPageCommand.Create(_ => PageService.ShowVolumeTypesPage(), _ => UncheckedCount == 0);
 
-            QueryDb(true);
+            ShowNextPageCommand = new CommandType();
+            ShowNextPageCommand.Create(_ => PageService.ShowVolumeUnitsPage(), _ => UncheckedCount == 0);
+
+            QueryDb();
         }
     }
 }

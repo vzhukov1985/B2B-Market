@@ -132,18 +132,6 @@ namespace Core.Models
             }
         }
 
-        private bool _isChecked;
-        public bool IsChecked
-        {
-            get { return _isChecked; }
-            set
-            {
-                _isChecked = value;
-                OnPropertyChanged("IsChecked");
-            }
-        }
-
-
         private ProductDescription _description;
         public ProductDescription Description
         {

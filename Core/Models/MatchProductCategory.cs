@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -14,6 +15,19 @@ namespace Core.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        private Guid _id;
+        [Key]
+        public Guid Id
+        {
+            get { return _id; }
+            set
+            {
+                _id = value;
+                OnPropertyChanged("Id");
+            }
+        }
+
+
         private Guid _supplierId;
         public Guid SupplierId
         {
@@ -24,6 +38,18 @@ namespace Core.Models
                 OnPropertyChanged("SupplierId");
             }
         }
+
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                OnPropertyChanged("Supplier");
+            }
+        }
+
 
         private string _supplierCategoryName;
         public string SupplierCategoryName
@@ -36,8 +62,8 @@ namespace Core.Models
             }
         }
 
-        private Guid _productCategoryId;
-        public Guid ProductCategoryId
+        private Guid? _productCategoryId;
+        public Guid? ProductCategoryId
         {
             get { return _productCategoryId; }
             set
@@ -46,18 +72,6 @@ namespace Core.Models
                 OnPropertyChanged("ProductCategoryId");
             }
         }
-
-        private bool _isChecked;
-        public bool IsChecked
-        {
-            get { return _isChecked; }
-            set
-            {
-                _isChecked = value;
-                OnPropertyChanged("IsChecked");
-            }
-        }
-
 
     }
 }

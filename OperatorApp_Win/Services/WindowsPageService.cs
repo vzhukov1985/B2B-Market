@@ -20,8 +20,20 @@ namespace OperatorApp_Win.Services
 
         public void ShowVolumeTypesPage()
         {
-            VolumeTypesPage volumeTypesPage = new VolumeTypesPage() { DataContext = new VolumeTypesPageVM<RelayCommand>(new WindowsPageService()) };
+            VolumeTypesPage volumeTypesPage = new VolumeTypesPage() { DataContext = new VolumeTypesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
             NavigationService.Navigate(volumeTypesPage);
+        }
+
+        public void ShowVolumeUnitsPage()
+        {
+            VolumeUnitsPage volumeUnitsPage = new VolumeUnitsPage() { DataContext = new VolumeUnitsPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(volumeUnitsPage);
+        }
+        
+                    public void ShowProductExtraPropertyTypesPage()
+        {
+            ProductExtraPropertyTypesPage productExtraPropertyTypesPage = new ProductExtraPropertyTypesPage() { DataContext = new ProductExtraPropertyTypesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(productExtraPropertyTypesPage);
         }
     }
 }

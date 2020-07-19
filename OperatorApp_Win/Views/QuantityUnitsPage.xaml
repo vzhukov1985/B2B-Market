@@ -98,9 +98,6 @@
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Text="В базе:" Style="{StaticResource ListHeader}"/>
 
@@ -141,7 +138,7 @@
                             <Image Source="{Binding Source={x:Static resx:Images.Search}}" Width="15" RenderOptions.BitmapScalingMode="Fant"/>
                         </Button.Content>
                     </Button>
-                    <Button Width="22" Background="White" Command="{Binding CancelSearchCommand}">
+                    <Button Width="22" Background="White" Command="{Binding CancelSearchQuantityUnitsCommand}">
                         <Button.Content>
                             <Image Source="{Binding Source={x:Static resx:Images.X_Black}}" Width="15"/>
                         </Button.Content>

@@ -10,6 +10,10 @@ namespace OperatorApp.Services
         bool ShowOkCancelDialog(string text, string caption);
 
         QuantityUnit ShowEditQuantityUnitDialog(QuantityUnit quantityUnit);
-        bool ShowWarningQuantityUnitDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit);
+        VolumeType ShowEditVolumeTypeDialog(VolumeType volumeType);
+        VolumeUnit ShowEditVolumeUnitDialog(VolumeUnit volumeUnit);
+        ProductExtraPropertyType ShowEditProductExtraPropertyTypeDialog(ProductExtraPropertyType productExtraPropertyType);
+
+        bool ShowWarningMatchAndDeleteDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit);
     }
 }

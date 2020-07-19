@@ -26,7 +26,6 @@ namespace Core.Models
         {
             modelBuilder.Entity<Contract>().HasKey(k => new { k.ClientId, k.SupplierId });
             modelBuilder.Entity<Favorite>().HasKey(f => new { f.ClientUserId, f.ProductId });
-            modelBuilder.Entity<ProductExtraProperty>().HasKey(k => new { k.ProductId, k.PropertyTypeId });
             modelBuilder.Entity<CurrentOrder>().HasKey(k => new { k.ClientId, k.OfferId});
             modelBuilder.Entity<ArchivedRequestsStatus>().HasKey(k => new { k.ArchivedRequestId, k.ArchivedRequestStatusTypeId });
 
@@ -38,12 +37,6 @@ namespace Core.Models
             modelBuilder.Entity<Product>().Property(p => p.Code).Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
             modelBuilder.Entity<Product>().HasOne(p => p.Description).WithOne().HasForeignKey<ProductDescription>(pd => pd.ProductId);
 
-            modelBuilder.Entity<MatchExtraPropertyType>().HasKey(k => new { k.SupplierId, k.SupplierEPTypeName });
-            modelBuilder.Entity<MatchProductCategory>().HasKey(k => new { k.SupplierId, k.SupplierCategoryName });
-            modelBuilder.Entity<MatchProduct>().HasKey(k => new { k.SupplierId, k.SupplierProductCode });
-            modelBuilder.Entity<MatchQuantityUnit>().HasKey(k => new { k.SupplierId, k.SupplierQUShortName, k.SupplierQUFullName });
-            modelBuilder.Entity<MatchVolumeType>().HasKey(k => new { k.SupplierId, k.SupplierVolumeTypeName });
-            modelBuilder.Entity<MatchVolumeUnit>().HasKey(k => new { k.SupplierId, k.SupplierVUShortName, k.SupplierVUFullName });
         }
 
         public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -68,12 +61,13 @@ namespace Core.Models
         public virtual DbSet<ArchivedSupplier> ArchivedSuppliers { get; set; }
         public virtual DbSet<ArchivedRequestsStatus> ArchivedRequestsStatuses { get; set; }
         public virtual DbSet<ProductDescription> ProductDescriptions { get; set; }
-        public virtual DbSet<MatchExtraPropertyType> MatchExtraPropertyTypes { get; set; }
+        public virtual DbSet<MatchProductExtraPropertyType> MatchProductExtraPropertyTypes { get; set; }
+        public virtual DbSet<MatchProductExtraProperty> MatchProductExtraProperties { get; set; }
         public virtual DbSet<MatchProductCategory> MatchProductCategories { get; set; }
-        public virtual DbSet<MatchProduct> MatchProducts { get; set; }
         public virtual DbSet<MatchQuantityUnit> MatchQuantityUnits { get; set; }
         public virtual DbSet<MatchVolumeType> MatchVolumeTypes { get; set; }
         public virtual DbSet<MatchVolumeUnit> MatchVolumeUnits { get; set; }
+        public virtual DbSet<MatchOffer> MatchOffers { get; set; }
         
         
         public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)

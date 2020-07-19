@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Core.Models
 {
-    public class MatchVolumeType:INotifyPropertyChanged
+    public class MatchProductExtraPropertyType: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -51,25 +51,25 @@ namespace Core.Models
         }
 
 
-        private string _supplierVolumeTypeName;
-        public string SupplierVolumeTypeName
+        private string _supplierProductExtraPropertyTypeName;
+        public string SupplierProductExtraPropertyTypeName
         {
-            get { return _supplierVolumeTypeName; }
+            get { return _supplierProductExtraPropertyTypeName; }
             set
             {
-                _supplierVolumeTypeName = value;
-                OnPropertyChanged("SupplierVolumeTypeName");
+                _supplierProductExtraPropertyTypeName = value;
+                OnPropertyChanged("SupplierProductExtraPropertyTypeName");
             }
         }
 
-        private Guid? _volumeTypeId;
-        public Guid? VolumeTypeId
+        private Guid? _productExtraPropertyTypeId;
+        public Guid? ProductExtraPropertyTypeId
         {
-            get { return _volumeTypeId; }
+            get { return _productExtraPropertyTypeId; }
             set
             {
-                _volumeTypeId = value;
-                OnPropertyChanged("VolumeTypeId");
+                _productExtraPropertyTypeId = value;
+                OnPropertyChanged("ProductExtraPropertyTypeId");
             }
         }
     }

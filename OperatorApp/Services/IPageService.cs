@@ -8,5 +8,7 @@ namespace OperatorApp.Services
     {
         void ShowQuantityUnitsPage();
         void ShowVolumeTypesPage();
+        void ShowVolumeUnitsPage();
+        void ShowProductExtraPropertyTypesPage();
     }
 }

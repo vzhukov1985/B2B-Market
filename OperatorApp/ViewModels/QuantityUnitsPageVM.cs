@@ -45,7 +45,6 @@ namespace OperatorApp.ViewModels
             }
         }
 
-
         private bool _showUncheckedOnly;
         public bool ShowUncheckedOnly
         {
@@ -79,6 +78,7 @@ namespace OperatorApp.ViewModels
 
                 if (QuantityUnits != null && _selectedMatchQuantityUnit != null)
                     SelectedQuantityUnit = QuantityUnits.Where(qu => qu.Id == _selectedMatchQuantityUnit.QuantityUnitId).FirstOrDefault();
+
                 OnPropertyChanged("SelectedMatchQuantityUnit");
             }
         }
@@ -141,22 +141,25 @@ namespace OperatorApp.ViewModels
                 }
                 db.MatchQuantityUnits.Update(SelectedMatchQuantityUnit);
 
-                SelectedQuantityUnit.IsChecked = true;
-                db.QuantityUnits.Update(SelectedQuantityUnit);
+                if (SelectedQuantityUnit.IsChecked == false)
+                {
+                    SelectedQuantityUnit.IsChecked = true;
+                    db.QuantityUnits.Update(SelectedQuantityUnit);
+                }
                 db.SaveChanges();
             }
         }
 
 
-        private void MatchQuantityUnits()
+        private async void MatchQuantityUnits()
         {
             int newListItemIndex = QuantityUnitsToMatch.IndexOf(SelectedMatchQuantityUnit);
             using (MarketDbContext db = new MarketDbContext())
             {
-                QuantityUnit quantityUnitToRemove = db.QuantityUnits.Find(SelectedMatchQuantityUnit.QuantityUnitId);
-                if (db.MatchQuantityUnits.Where(mqu => mqu.QuantityUnitId == quantityUnitToRemove.Id).Count() == 1)
+                QuantityUnit quantityUnitToRemove = await db.QuantityUnits.FindAsync(SelectedMatchQuantityUnit.QuantityUnitId);
+                if (await db.MatchQuantityUnits.Where(mqu => mqu.QuantityUnitId == quantityUnitToRemove.Id).CountAsync() == 1 && quantityUnitToRemove.Id != SelectedQuantityUnit.Id)
                 {
-                    if (DialogService.ShowWarningQuantityUnitDialog(SelectedMatchQuantityUnit.Supplier.ShortName,
+                    if (DialogService.ShowWarningMatchAndDeleteDialog(SelectedMatchQuantityUnit.Supplier.ShortName,
                         $"\"{SelectedMatchQuantityUnit.SupplierQUShortName}\" - \"{SelectedMatchQuantityUnit.SupplierQUFullName}\"",
                         $"\"{SelectedQuantityUnit.ShortName}\" - \"{SelectedQuantityUnit.FullName}\"",
                          $"\"{quantityUnitToRemove.ShortName}\" - \"{quantityUnitToRemove.FullName}\""))
@@ -164,13 +167,12 @@ namespace OperatorApp.ViewModels
                         UpdateUnitsMatching();
                         db.QuantityUnits.Remove(quantityUnitToRemove);
                         QuantityUnits.Remove(QuantityUnits.Where(qu => qu.Id == quantityUnitToRemove.Id).FirstOrDefault());
-                        db.SaveChanges();
+                        await db.SaveChangesAsync();
                     }
                     else
                     {
                         return;
                     }
-
                 }
                 else
                 {
@@ -193,7 +195,7 @@ namespace OperatorApp.ViewModels
             }
         }
 
-        private void EditQuantityUnit()
+        private async void EditQuantityUnit()
         {
             QuantityUnit updatedQuantityUnit = DialogService.ShowEditQuantityUnitDialog(SelectedQuantityUnit);
             if (updatedQuantityUnit != null)
@@ -203,29 +205,31 @@ namespace OperatorApp.ViewModels
                     SelectedQuantityUnit.ShortName = updatedQuantityUnit.ShortName;
                     SelectedQuantityUnit.FullName = updatedQuantityUnit.FullName;
                     db.QuantityUnits.Update(SelectedQuantityUnit);
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
                 }
             }
         }
 
 
-        private void QueryDb()
+        private async void QueryDb()
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                QuantityUnitsToMatch = new ObservableCollection<MatchQuantityUnit>(db.MatchQuantityUnits
+                QuantityUnitsToMatch = new ObservableCollection<MatchQuantityUnit>(await db.MatchQuantityUnits
                     .Include(mqu => mqu.Supplier)
                     .Where(mqu => ShowUncheckedOnly ? mqu.IsChecked == false : true)
                     .Where(mqu => mqu.SupplierQUShortName.Contains(SearchMatchQuantityUnitsText) || mqu.SupplierQUFullName.Contains(SearchMatchQuantityUnitsText) || mqu.Supplier.ShortName.Contains(SearchMatchQuantityUnitsText))
                     .AsNoTracking()
+                    .ToListAsync()
                      );
 
-                QuantityUnits = new ObservableCollection<QuantityUnit>(db.QuantityUnits
+                QuantityUnits = new ObservableCollection<QuantityUnit>(await db.QuantityUnits
                     .Where(qu => qu.ShortName.Contains(SearchQuantityUnitsText) || qu.FullName.Contains(SearchQuantityUnitsText))
                     .AsNoTracking()
+                    .ToListAsync()
                     );
 
-                UncheckedCount = db.MatchQuantityUnits.Where(mqu => mqu.IsChecked == false).Count();
+                UncheckedCount = await db.MatchQuantityUnits.Where(mqu => mqu.IsChecked == false).CountAsync();
             }
         }
 
@@ -260,11 +264,12 @@ namespace OperatorApp.ViewModels
             SearchQuantityUnitsCommand.Create(_ => QueryDb());
             CancelSearchQuantityUnitsCommand = new CommandType();
             CancelSearchQuantityUnitsCommand.Create(_ => { SearchQuantityUnitsText = ""; QueryDb(); });
-            ShowNextPageCommand = new CommandType();
-            ShowNextPageCommand.Create(_ => PageService.ShowVolumeTypesPage(), _ => UncheckedCount == 0);
 
             MatchQuantityUnitsCommand = new CommandType();
             MatchQuantityUnitsCommand.Create(_ => MatchQuantityUnits(), _ => SelectedQuantityUnit != null && SelectedMatchQuantityUnit != null);
+
+            ShowNextPageCommand = new CommandType();
+            ShowNextPageCommand.Create(_ => PageService.ShowVolumeTypesPage(), _ => UncheckedCount == 0);
 
             QueryDb();
         }

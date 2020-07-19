@@ -12,6 +12,33 @@ using System.Xml.Linq;
 
 namespace Core.Services
 {
+    public class MatchProductExtraPropertiesComparer : IEqualityComparer<MatchProductExtraProperty>
+    {
+        public bool Equals(MatchProductExtraProperty x, MatchProductExtraProperty y)
+        {
+            if (Object.ReferenceEquals(x, y)) return true;
+
+            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+                return false;
+
+            return x.MatchProductExtraPropertyTypeId == y.MatchProductExtraPropertyTypeId &&
+                x.Value == y.Value;
+
+
+        }
+
+        public int GetHashCode(MatchProductExtraProperty obj)
+        {
+            if (Object.ReferenceEquals(obj, null)) return 0;
+
+            int hashMatchProductExtraPropertyTypeId = obj.MatchProductExtraPropertyTypeId == null? 0: obj.MatchProductExtraPropertyTypeId.GetHashCode();
+
+            int hashValue = obj.Value == null ? 0 : obj.Value.GetHashCode();
+
+            return hashMatchProductExtraPropertyTypeId ^ hashValue;
+        }
+    }
+
     public class XMLProcessor
     {
         public static void ExtractAllProductsToXML(string fileName, Guid supplierId)
@@ -119,7 +146,7 @@ namespace Core.Services
             XElement xSupplierInfo = xExtraction.Element("SupplierInfo");
 
             Supplier supplier;
-
+            List<Guid> offersProcessedIds = new List<Guid>();
             using (MarketDbContext db = new MarketDbContext())
             {
                 try
@@ -161,200 +188,209 @@ namespace Core.Services
                 IEnumerable<VolumeType> volumeTypes = db.VolumeTypes;
                 IEnumerable<VolumeUnit> volumeUnits = db.VolumeUnits;
 
-                IEnumerable<MatchExtraPropertyType> matchExtraPropertyTypes = db.MatchExtraPropertyTypes.Where(mept => mept.SupplierId == supplier.Id);
-                IEnumerable<MatchProduct> matchProducts = db.MatchProducts.Where(mp => mp.SupplierId == supplier.Id);
+                IEnumerable<MatchProductExtraPropertyType> matchExtraPropertyTypes = db.MatchProductExtraPropertyTypes.Where(mept => mept.SupplierId == supplier.Id);
                 IEnumerable<MatchProductCategory> matchProductCategories = db.MatchProductCategories.Where(mpc => mpc.SupplierId == supplier.Id);
                 IEnumerable<MatchQuantityUnit> matchQuantityUnits = db.MatchQuantityUnits.Where(mqu => mqu.SupplierId == supplier.Id);
                 IEnumerable<MatchVolumeType> matchVolumeTypes = db.MatchVolumeTypes.Where(mvt => mvt.SupplierId == supplier.Id);
                 IEnumerable<MatchVolumeUnit> matchVolumeUnits = db.MatchVolumeUnits.Where(mvu => mvu.SupplierId == supplier.Id);
+                IEnumerable<MatchOffer> matchOffers = db.MatchOffers.Where(mo => mo.SupplierId == supplier.Id);
 
-                int newProductsAdded = 0;
+                int newOffersAdded = 0;
                 int newExtraPropertiesAdded = 0;
                 int newProductCategoriesAdded = 0;
                 int newVolumeTypesAdded = 0;
                 int newVolumeUnitsAdded = 0;
                 int newQuantityUnitsAdded = 0;
 
-                foreach (XElement xOffer in xOffers)
+                try
                 {
-                    try
+                    foreach (XElement xOffer in xOffers)
                     {
+
                         XElement xProduct = xOffer.Element("Product");
 
                         XElement xCategory = xProduct.Element("Category");
                         MatchProductCategory matchProductCategory = matchProductCategories.Where(mpc => mpc.SupplierCategoryName == xCategory.Value).FirstOrDefault();
-                        ProductCategory productCategory;
                         if (matchProductCategory == null)
                         {
-                            productCategory = productCategories.Where(pc => pc.Name == xCategory.Value).FirstOrDefault();
-                            if (productCategory == null)
-                            {
-                                productCategory = new ProductCategory { Id = new Guid(), Name = xCategory.Value, MidCategoryId = new Guid("ccad6dcb-6dc8-4f62-a7ae-a904013e772a"), IsChecked = false }; //МидКатегория "Нет"
-                                db.ProductCategories.Add(productCategory);
-                                db.SaveChanges();
-                                newProductCategoriesAdded++;
-                            }
-                            db.MatchProductCategories.Add(new MatchProductCategory { SupplierId = supplier.Id, ProductCategoryId = productCategory.Id, SupplierCategoryName = xCategory.Value, IsChecked = false });
+                            ProductCategory existingProductCategory = productCategories.Where(pc => pc.Name == xCategory.Value).FirstOrDefault();
+                            matchProductCategory = new MatchProductCategory { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierCategoryName = xCategory.Value, ProductCategoryId = existingProductCategory == null ? (Guid?)null : existingProductCategory.Id };
+                            db.MatchProductCategories.Add(matchProductCategory);
+                            newProductCategoriesAdded++;
                         }
-                        else
-                        {
-                            productCategory = productCategories.Where(pc => pc.Id == matchProductCategory.ProductCategoryId).FirstOrDefault();
-                        }
-                        
 
                         XElement xVolumeType = xProduct.Element("VolumeType");
-                        MatchVolumeType matchVolumeType = matchVolumeTypes.Where(vt => vt.SupplierVolumeTypeName == xVolumeType.Value).FirstOrDefault();
-                        VolumeType volumeType;
+                        MatchVolumeType matchVolumeType = matchVolumeTypes.Where(mvt => mvt.SupplierVolumeTypeName == xVolumeType.Value).FirstOrDefault();
                         if (matchVolumeType == null)
                         {
-                            volumeType = volumeTypes.Where(vt => vt.Name == xVolumeType.Value).FirstOrDefault();
-                            if (volumeType == null)
-                            {
-                                volumeType = new VolumeType { Id = new Guid(), Name = xVolumeType.Value, IsChecked = false };
-                                db.VolumeTypes.Add(volumeType);
-                                db.SaveChanges();
-                                newVolumeTypesAdded++;
-                            }
-                            db.MatchVolumeTypes.Add(new MatchVolumeType { SupplierId = supplier.Id, SupplierVolumeTypeName = xVolumeType.Value, VolumeTypeId = volumeType.Id, IsChecked = false });
+                            VolumeType existingVolumeType = volumeTypes.Where(vt => vt.Name == xVolumeType.Value).FirstOrDefault();
+                            matchVolumeType = new MatchVolumeType { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierVolumeTypeName = xVolumeType.Value, VolumeTypeId = existingVolumeType == null ? (Guid?)null : existingVolumeType.Id };
+                            db.MatchVolumeTypes.Add(matchVolumeType);
+                            newVolumeTypesAdded++;
                         }
-                        else
-                        {
-                            volumeType = volumeTypes.Where(vt => vt.Id == matchVolumeType.VolumeTypeId).FirstOrDefault();
-                        }
-                        
 
                         XElement xVolumeUnit = xProduct.Element("VolumeUnit");
                         MatchVolumeUnit matchVolumeUnit = matchVolumeUnits.Where(mvu => mvu.SupplierVUShortName == xVolumeUnit.Attribute("ShortName").Value && mvu.SupplierVUFullName == xVolumeUnit.Attribute("FullName").Value).FirstOrDefault();
-                        VolumeUnit volumeUnit;
                         if (matchVolumeUnit == null)
                         {
-                            volumeUnit = volumeUnits.Where(vu => vu.ShortName == xVolumeUnit.Attribute("ShortName").Value && vu.FullName == xVolumeUnit.Attribute("FullName").Value).FirstOrDefault();
-                            if (volumeUnit == null)
-                            {
-                                volumeUnit = new VolumeUnit { Id = new Guid(), ShortName = xVolumeUnit.Attribute("ShortName").Value, FullName = xVolumeUnit.Attribute("FullName").Value, IsChecked = false };
-                                db.VolumeUnits.Add(volumeUnit);
-                                db.SaveChanges();
-                                newVolumeUnitsAdded++;
-                            }
-                            db.MatchVolumeUnits.Add(new MatchVolumeUnit { SupplierId = supplier.Id, SupplierVUShortName = xVolumeUnit.Attribute("ShortName").Value, SupplierVUFullName = xVolumeUnit.Attribute("FullName").Value, VolumeUnitId = volumeUnit.Id, IsChecked = false });
+                            VolumeUnit existingVolumeUnit = volumeUnits.Where(vu => vu.ShortName == xVolumeUnit.Attribute("ShortName").Value && vu.FullName == xVolumeUnit.Attribute("FullName").Value).FirstOrDefault();
+                            matchVolumeUnit = new MatchVolumeUnit { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierVUShortName = xVolumeUnit.Attribute("ShortName").Value, SupplierVUFullName = xVolumeUnit.Attribute("FullName").Value, VolumeUnitId = existingVolumeUnit == null ? (Guid?)null : existingVolumeUnit.Id };
+                            db.MatchVolumeUnits.Add(matchVolumeUnit);
+                            newVolumeUnitsAdded++;
                         }
-                        else
-                        {
-                            volumeUnit = volumeUnits.Where(vu => vu.Id == matchVolumeUnit.VolumeUnitId).FirstOrDefault();
-                        }
-                        
+
 
                         XElement xQuantityUnit = xOffer.Element("QuantityUnit");
-
                         MatchQuantityUnit matchQuantityUnit = matchQuantityUnits.Where(mqu => mqu.SupplierQUShortName == xQuantityUnit.Attribute("ShortName").Value && mqu.SupplierQUFullName == xQuantityUnit.Attribute("FullName").Value).FirstOrDefault();
-                        QuantityUnit quantityUnit;
                         if (matchQuantityUnit == null)
                         {
-                            quantityUnit = quantityUnits.Where(qu => qu.ShortName == xQuantityUnit.Attribute("ShortName").Value && qu.FullName == xQuantityUnit.Attribute("FullName").Value).FirstOrDefault();
-                            if (quantityUnit == null)
-                            {
-                                quantityUnit = new QuantityUnit { Id = new Guid(), ShortName = xQuantityUnit.Attribute("ShortName").Value, FullName = xQuantityUnit.Attribute("FullName").Value, IsChecked = false };
-                                db.QuantityUnits.Add(quantityUnit);
-                                db.SaveChanges();
-                                newQuantityUnitsAdded++;
-                            }
-                            db.MatchQuantityUnits.Add(new MatchQuantityUnit { SupplierId = supplier.Id, SupplierQUShortName = xQuantityUnit.Attribute("ShortName").Value, SupplierQUFullName = xQuantityUnit.Attribute("FullName").Value, QuantityUnitId = quantityUnit.Id, IsChecked = false });
-                        }
-                        else
-                        {
-                            quantityUnit = quantityUnits.Where(qu => qu.Id == matchQuantityUnit.QuantityUnitId).FirstOrDefault();
+                            QuantityUnit existingQuantityUnit = quantityUnits.Where(qu => qu.ShortName == xQuantityUnit.Attribute("ShortName").Value && qu.FullName == xQuantityUnit.Attribute("FullName").Value).FirstOrDefault();
+                            matchQuantityUnit = new MatchQuantityUnit { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierQUShortName = xQuantityUnit.Attribute("ShortName").Value, SupplierQUFullName = xQuantityUnit.Attribute("FullName").Value, QuantityUnitId = existingQuantityUnit == null ? (Guid?)null : existingQuantityUnit.Id };
+                            db.MatchQuantityUnits.Add(matchQuantityUnit);
+                            newQuantityUnitsAdded++;
                         }
 
-                        List<ProductExtraProperty> productExtraProperties = new List<ProductExtraProperty>();
+
+                        List<MatchProductExtraProperty> productExtraProperties = new List<MatchProductExtraProperty>();
 
                         IEnumerable<XElement> xExtraProperties = xProduct.Element("ExtraProperties").Elements("ExtraProperty");
                         foreach (XElement xExtraProperty in xExtraProperties)
                         {
-                            MatchExtraPropertyType matchExtraPropertyType = matchExtraPropertyTypes.Where(mept => mept.SupplierEPTypeName == xExtraProperty.Attribute("Type").Value).FirstOrDefault();
-                            ProductExtraPropertyType productExtraPropertyType;
-                            if (matchExtraPropertyType == null)
+                            MatchProductExtraPropertyType matchProductExtraPropertyType = matchExtraPropertyTypes.Where(mept => mept.SupplierProductExtraPropertyTypeName == xExtraProperty.Attribute("Type").Value).FirstOrDefault();
+                            if (matchProductExtraPropertyType == null)
                             {
-                                productExtraPropertyType = extraPropertyTypes.Where(ept => ept.Name == xExtraProperty.Attribute("Type").Value).FirstOrDefault();
-                                if (productExtraPropertyType == null)
-                                {
-                                    productExtraPropertyType = new ProductExtraPropertyType { Id = new Guid(), Name = xExtraProperty.Attribute("Type").Value, IsChecked = false };
-                                    db.ProductExtraPropertyTypes.Add(productExtraPropertyType);
-                                    db.SaveChanges();
-                                    newExtraPropertiesAdded++;
-                                }
-                                db.MatchExtraPropertyTypes.Add(new MatchExtraPropertyType { SupplierId = supplier.Id, SupplierEPTypeName = xExtraProperty.Attribute("Type").Value, ExtraPropertyTypeId = productExtraPropertyType.Id, IsChecked = false });
+                                ProductExtraPropertyType existingExtraPropertyType = extraPropertyTypes.Where(ept => ept.Name == xExtraProperty.Attribute("Type").Value).FirstOrDefault();
+                                matchProductExtraPropertyType = new MatchProductExtraPropertyType { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierProductExtraPropertyTypeName = xExtraProperty.Attribute("Type").Value, ProductExtraPropertyTypeId = existingExtraPropertyType == null ? (Guid?)null : existingExtraPropertyType.Id };
+                                db.MatchProductExtraPropertyTypes.Add(matchProductExtraPropertyType);
+                                newExtraPropertiesAdded++;
                             }
-                            else
-                            {
-                                productExtraPropertyType = extraPropertyTypes.Where(ept => ept.Id == matchExtraPropertyType.ExtraPropertyTypeId).FirstOrDefault();
-                            }
-                            productExtraProperties.Add(new ProductExtraProperty { ProductId = new Guid(), Product = null, PropertyType = null, PropertyTypeId = productExtraPropertyType.Id, Value = xExtraProperty.Attribute("Value").Value });
+                            productExtraProperties.Add(new MatchProductExtraProperty { Id = Guid.NewGuid(), MatchProductExtraPropertyTypeId = matchProductExtraPropertyType.Id, Value = xExtraProperty.Attribute("Value").Value });
                         }
 
-                        Product product;
-                        MatchProduct matchProduct = matchProducts.Where(mp => mp.SupplierId == supplier.Id && mp.SupplierProductCode == xOffer.Attribute("SupplierProductCode").Value).FirstOrDefault();
-                        if (matchProduct == null)
-                        {
-                            product = new Product { Id = new Guid(), CategoryId = productCategory.Id, Name = xProduct.Element("Name").Value, VolumeTypeId = volumeType.Id, VolumeUnitId = volumeUnit.Id, Volume = Convert.ToDecimal(xProduct.Element("Volume").Value, new System.Globalization.CultureInfo("en-US")), IsChecked = false };
-                            db.Products.Add(product);
-                            db.SaveChanges();
-                            db.MatchProducts.Add(new MatchProduct { SupplierId = supplier.Id, SupplierProductCode = xOffer.Attribute("SupplierProductCode").Value, ProductId = product.Id, IsChecked = false });
-                            newProductsAdded++;
-                        }
-                        else
-                        {
-                            product = products.Where(p => p.Id == matchProduct.ProductId).FirstOrDefault();
-                        }
-
-                        foreach (ProductExtraProperty productExtraProperty in productExtraProperties)
-                        {
-                            ProductExtraProperty property = extraProperties.Where(ep => ep.ProductId == product.Id && ep.PropertyTypeId == productExtraProperty.PropertyTypeId).FirstOrDefault();
-                            if (property == null)
-                            {
-                                productExtraProperty.ProductId = product.Id;
-                                db.ProductExtraProperties.Add(productExtraProperty);
-                            }
-                            else
-                            {
-                                property.Value = productExtraProperty.Value;
-                                db.ProductExtraProperties.Update(property);
-                            }
-                        }
-
-                        Offer offer = offers.Where(o => o.ProductId == product.Id && o.QuantityUnitId == quantityUnit.Id && o.SupplierProductCode == xOffer.Attribute("SupplierProductCode").Value).FirstOrDefault();
-                        if (offer == null)
-                        {
-                            offer = new Offer
-                            {
-                                Id = new Guid(),
-                                IsChecked = false,
-                                QuantityUnitId = quantityUnit.Id,
-                                SupplierId = supplier.Id,
-                                IsActive = true,
-                                SupplierProductCode = xOffer.Attribute("SupplierProductCode").Value,
-                                ProductId = product.Id,
-                                RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US")),
-                                DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US")),
-                                Remains = Convert.ToInt32(xOffer.Element("Remains").Value)
-                            };
-                            db.Offers.Add(offer);
-                        }
-                        else
-                        {
-                            offer.RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US"));
-                            offer.DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US"));
-                            offer.Remains = Convert.ToInt32(xOffer.Element("Remains").Value);
-                            db.Offers.Update(offer);
-                        }
+                        productExtraProperties = productExtraProperties.OrderBy(pep => pep.MatchProductExtraPropertyTypeId).ToList();
 
                         db.SaveChanges();
-                    }
-                    catch (Exception e)
-                    {
-                        logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
-                        return;
+
+                        MatchOffer matchOfferExists = matchOffers.Where(of => of.SupplierProductCode == xOffer.Attribute("SupplierProductCode").Value).FirstOrDefault();
+                        bool addNewMatchOffer = false;
+
+                        if (matchOfferExists == null)
+                        {
+                            addNewMatchOffer = true;
+                        }
+                        else
+                        {
+                            bool offerFullyMatches = true;
+                            Guid MatchProductCategoryIdToCompare = matchProductCategories.Where(mpc => mpc.SupplierCategoryName == xProduct.Element("Category").Value).Select(mpc => mpc.Id).FirstOrDefault();
+                            Guid MatchQuantityUnitIdToCompare = matchQuantityUnits.Where(mqu => mqu.SupplierQUShortName == xQuantityUnit.Attribute("ShortName").Value && mqu.SupplierQUFullName == xQuantityUnit.Attribute("FullName").Value).Select(mqu => mqu.Id).FirstOrDefault();
+                            Guid MatchVolumeTypeIdToCompare = matchVolumeTypes.Where(mvt => mvt.SupplierVolumeTypeName == xVolumeType.Value).Select(mvt => mvt.Id).FirstOrDefault();
+                            Guid MatchVolumeUnitIdToCompare = matchVolumeUnits.Where(mvu => mvu.SupplierVUShortName == xVolumeUnit.Attribute("ShortName").Value && mvu.SupplierVUFullName == xVolumeUnit.Attribute("FullName").Value).Select(mvu => mvu.Id).FirstOrDefault();
+                            if (matchOfferExists.MatchProductCategoryId != MatchProductCategoryIdToCompare ||
+                                matchOfferExists.MatchQuantityUnitId != MatchQuantityUnitIdToCompare ||
+                                matchOfferExists.MatchVolumeTypeId != MatchVolumeTypeIdToCompare ||
+                                matchOfferExists.MatchVolumeUnitId != MatchVolumeUnitIdToCompare ||
+                                matchOfferExists.ProductName != xProduct.Element("Name").Value ||
+                                matchOfferExists.ProductVolume != Convert.ToDecimal(xProduct.Element("Volume").Value, new CultureInfo("en-US")))
+                            {
+                                offerFullyMatches = false;
+                            }
+
+                            List<MatchProductExtraProperty> matchProductExtraPropertiesToCompare = db.MatchProductExtraProperties.Where(mpep => mpep.MatchOfferId == matchOfferExists.Id).ToList();
+                            matchProductExtraPropertiesToCompare = matchProductExtraPropertiesToCompare.OrderBy(mpep => mpep.MatchProductExtraPropertyTypeId).ToList();
+                            if (productExtraProperties.Count != matchProductExtraPropertiesToCompare.Count)
+                            {
+                                offerFullyMatches = false;
+                            }
+                            else
+                            {
+                                offerFullyMatches = productExtraProperties.SequenceEqual(matchProductExtraPropertiesToCompare, new MatchProductExtraPropertiesComparer());
+                            }
+
+
+                            if (offerFullyMatches == true)
+                            {
+                                Offer correspondingOffer;
+                                if (matchOfferExists.OfferId != null)
+                                {
+                                    correspondingOffer = db.Offers.Find(matchOfferExists.OfferId);
+                                    correspondingOffer.Remains = Convert.ToInt32(xOffer.Element("Remains").Value);
+                                    correspondingOffer.RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US"));
+                                    correspondingOffer.DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US"));
+                                    db.Offers.Update(correspondingOffer);
+                                }
+                                else
+                                {
+                                    matchOfferExists.Remains = Convert.ToInt32(xOffer.Element("Remains").Value);
+                                    matchOfferExists.RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US"));
+                                    matchOfferExists.DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US"));
+                                    db.MatchOffers.Update(matchOfferExists);
+                                }
+                            }
+                            else
+                            {
+                                Offer correspondingOffer;
+                                if (matchOfferExists.OfferId != null)
+                                {
+                                    correspondingOffer = db.Offers.Find(matchOfferExists.OfferId);
+                                    db.Offers.Remove(correspondingOffer);
+                                }
+
+                                IEnumerable<MatchProductExtraProperty> pepsToRemove = db.MatchProductExtraProperties.Where(mpep => mpep.MatchOfferId == matchOfferExists.Id);
+                                db.MatchProductExtraProperties.RemoveRange(pepsToRemove);
+                                db.SaveChanges();
+                                db.MatchOffers.Remove(matchOfferExists);
+                                db.SaveChanges();
+
+                                addNewMatchOffer = true;
+                            }
+
+                        }
+
+                        if (addNewMatchOffer)
+                        {
+                            MatchOffer newMatchOffer = new MatchOffer
+                            {
+                                Id = Guid.NewGuid(),
+                                SupplierId = supplier.Id,
+                                SupplierProductCode = xOffer.Attribute("SupplierProductCode").Value,
+                                MatchProductCategoryId = matchProductCategory.Id,
+                                MatchQuantityUnitId = matchQuantityUnit.Id,
+                                MatchVolumeTypeId = matchVolumeType.Id,
+                                MatchVolumeUnitId = matchVolumeUnit.Id,
+                                ProductName = xProduct.Element("Name").Value,
+                                ProductVolume = Convert.ToDecimal(xProduct.Element("Volume").Value, new CultureInfo("en-US")),
+                                Remains = Convert.ToInt32(xOffer.Element("Remains").Value),
+                                RetailPrice = Convert.ToDecimal(xOffer.Element("RetailPrice").Value, new CultureInfo("en-US")),
+                                DiscountPrice = Convert.ToDecimal(xOffer.Element("DiscountPrice").Value, new CultureInfo("en-US"))
+                            };
+
+                            db.MatchOffers.Add(newMatchOffer);
+                            matchOfferExists = newMatchOffer;
+                            newOffersAdded++;
+
+                            foreach (MatchProductExtraProperty matchProductExtraProperty in productExtraProperties)
+                            {
+                                MatchProductExtraProperty newExtraProperty = new MatchProductExtraProperty
+                                {
+                                    Id = matchProductExtraProperty.Id,
+                                    MatchOfferId = newMatchOffer.Id,
+                                    MatchProductExtraPropertyTypeId = matchProductExtraProperty.MatchProductExtraPropertyTypeId,
+                                    Value = matchProductExtraProperty.Value
+                                };
+                                db.MatchProductExtraProperties.Add(newExtraProperty);
+                            }
+                        }
+
+                        offersProcessedIds.Add(matchOfferExists.Id);
+                        db.SaveChanges();
                     }
                 }
+                catch (Exception e)
+                {
+                    logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
+                    return;
+                }
+
 
                 if (newProductCategoriesAdded > 0)
                     logFileStream.WriteLine("{0} - {1} new product categories were added", DateTime.Now.ToString("G"), newProductCategoriesAdded.ToString());
@@ -366,10 +402,47 @@ namespace Core.Services
                     logFileStream.WriteLine("{0} - {1} new quantity units were added", DateTime.Now.ToString("G"), newQuantityUnitsAdded.ToString());
                 if (newExtraPropertiesAdded > 0)
                     logFileStream.WriteLine("{0} - {1} new products' extra property types were added", DateTime.Now.ToString("G"), newExtraPropertiesAdded.ToString());
-                if (newProductsAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new products were added", DateTime.Now.ToString("G"), newProductsAdded.ToString());
+                if (newOffersAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new offers were added", DateTime.Now.ToString("G"), newOffersAdded.ToString());
             }
 
+            //Remove all info regarding offers that are in Db but doesn't exist in current extraction
+            try
+            {
+                int matchOffersDeleted = 0;
+                int existingOffersDeleted = 0;
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    List<Guid> allExistingMatchOffersIds = db.MatchOffers.Where(mo => mo.SupplierId == supplier.Id).Select(mo => mo.Id).ToList();
+                    List<Guid> matchOffersToRemoveIds = allExistingMatchOffersIds.Except(offersProcessedIds).ToList();
+                    foreach (Guid matchOfferToRemoveId in matchOffersToRemoveIds)
+                    {
+                        MatchOffer matchOfferToRemove = db.MatchOffers.Find(matchOfferToRemoveId);
+                        if (matchOfferToRemove.OfferId != null)
+                        {
+                            db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(co => co.OfferId == matchOfferToRemove.OfferId));
+                            db.SaveChanges();
+                            db.Offers.RemoveRange(db.Offers.Where(o => o.Id == matchOfferToRemove.OfferId).FirstOrDefault());
+                            db.SaveChanges();
+                            existingOffersDeleted++;
+                        }
+
+                        db.MatchProductExtraProperties.RemoveRange(db.MatchProductExtraProperties.Where(mpep => mpep.MatchOfferId == matchOfferToRemove.Id));
+                        db.SaveChanges();
+                        db.MatchOffers.Remove(matchOfferToRemove);
+                        db.SaveChanges();
+                        matchOffersDeleted++;
+                    }
+                }
+
+                if (matchOffersDeleted > 0)
+                    logFileStream.WriteLine("{0} - {1} matching offers and {3} active offers corresponding to them were removed", DateTime.Now.ToString("G"), matchOffersDeleted.ToString(), existingOffersDeleted.ToString());
+            }
+            catch (Exception e)
+            {
+                logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
+                return;
+            }
         }
 
         public static void RequestProductsDescription(List<Offer> offers, Guid supplierId)

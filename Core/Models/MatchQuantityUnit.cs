@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -13,6 +14,19 @@ namespace Core.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+
+        private Guid _id;
+        [Key]
+        public Guid Id
+        {
+            get { return _id; }
+            set
+            {
+                _id = value;
+                OnPropertyChanged("Id");
+            }
+        }
+
 
         private Guid _supplierId;
         public Guid SupplierId
@@ -59,25 +73,14 @@ namespace Core.Models
             }
         }
 
-        private Guid _quantityUnitId;
-        public Guid QuantityUnitId
+        private Guid? _quantityUnitId;
+        public Guid? QuantityUnitId
         {
             get { return _quantityUnitId; }
             set
             {
                 _quantityUnitId = value;
                 OnPropertyChanged("QuantityUnitId");
-            }
-        }
-
-        private bool _isChecked;
-        public bool IsChecked
-        {
-            get { return _isChecked; }
-            set
-            {
-                _isChecked = value;
-                OnPropertyChanged("IsChecked");
             }
         }
     }

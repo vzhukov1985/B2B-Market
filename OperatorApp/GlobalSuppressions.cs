@@ -6,3 +6,5 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.QuantityUnitsPageVM`1.QueryDb")]
+[assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.VolumeTypesPageVM`1.QueryDb")]
+[assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.VolumeUnitsPageVM`1.QueryDb")]

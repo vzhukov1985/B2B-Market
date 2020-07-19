@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Core.Models
 {
-    public class QuantityUnit:INotifyPropertyChanged
+    public class MatchProductExtraProperty: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -27,31 +27,41 @@ namespace Core.Models
             }
         }
 
-        private string _shortName;
-        public string ShortName
+        private Guid _matchOfferId;
+        public Guid MatchOfferId
         {
-            get { return _shortName; }
+            get { return _matchOfferId; }
             set
             {
-                _shortName = value;
-                OnPropertyChanged("ShortName");
+                _matchOfferId = value;
+                OnPropertyChanged("MatchOfferId");
             }
         }
 
-        private string _fullName;
-        public string FullName
+        private Guid _matchProductExtraPropertyTypeId;
+        public Guid MatchProductExtraPropertyTypeId
         {
-            get { return _fullName; }
+            get { return _matchProductExtraPropertyTypeId; }
             set
             {
-                _fullName = value;
-                OnPropertyChanged("FullName");
+                _matchProductExtraPropertyTypeId = value;
+                OnPropertyChanged("MatchProductExtraPropertyTypeId");
             }
         }
 
-        public override string ToString()
+        private string _value;
+        public string Value
         {
-            return ShortName;
+            get { return _value; }
+            set
+            {
+                _value = value;
+                OnPropertyChanged("Value");
+            }
         }
+
+
+
+
     }
 }

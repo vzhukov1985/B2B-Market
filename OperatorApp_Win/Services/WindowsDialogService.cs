@@ -26,12 +26,40 @@ namespace OperatorApp_Win.Services
             }
             return null;
         }
-
-        public bool ShowWarningQuantityUnitDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit)
+        public VolumeType ShowEditVolumeTypeDialog(VolumeType volumeType)
         {
-            WarningQuantityUnitDialog dlg = new WarningQuantityUnitDialog(SupplierName, MatchUnit, QuantityUnit, DeleteUnit);
+            EditVolumeTypeDlg dlg = new EditVolumeTypeDlg(volumeType);
+            if (dlg.ShowDialog() == true)
+            {
+                return new VolumeType { Name = dlg.VTName.Text };
+            }
+            return null;
+        }
+        public VolumeUnit ShowEditVolumeUnitDialog(VolumeUnit volumeUnit)
+        {
+            EditVolumeUnitDlg dlg = new EditVolumeUnitDlg(volumeUnit);
+            if (dlg.ShowDialog() == true)
+            {
+                return new VolumeUnit { ShortName = dlg.ShortName.Text, FullName = dlg.FullName.Text };
+            }
+            return null;
+        }
 
-            return dlg.ShowDialog() == true? true: false;
+        public ProductExtraPropertyType ShowEditProductExtraPropertyTypeDialog(ProductExtraPropertyType productExtraPropertyType)
+        {
+            EditProductExtraPropertyTypeDlg dlg = new EditProductExtraPropertyTypeDlg(productExtraPropertyType);
+            if (dlg.ShowDialog() == true)
+            {
+                return new ProductExtraPropertyType { Name = dlg.EPTName.Text };
+            }
+            return null;
+        }
+
+        public bool ShowWarningMatchAndDeleteDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit)
+        {
+            WarningMatchUnitAndDeleteDialog dlg = new WarningMatchUnitAndDeleteDialog(SupplierName, MatchUnit, QuantityUnit, DeleteUnit);
+
+            return dlg.ShowDialog() == true;
         }
     }
 }

@@ -15,9 +15,9 @@ namespace OperatorApp_Win.Dialogs
     /// <summary>
     /// Interaction logic for WarningQuantityUnitDialog.xaml
     /// </summary>
-    public partial class WarningQuantityUnitDialog : Window
+    public partial class WarningMatchUnitAndDeleteDialog : Window
     {
-        public WarningQuantityUnitDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit)
+        public WarningMatchUnitAndDeleteDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit)
         {
             InitializeComponent();
             SupplierAndMatchUnit.Text = $"от поставщика {SupplierName}: {MatchUnit}";
