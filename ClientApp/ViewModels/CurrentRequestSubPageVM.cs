@@ -1,5 +1,5 @@
 ﻿using ClientApp.Services;
-using Core.Models;
+using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -40,7 +40,7 @@ namespace ClientApp.ViewModels
         {
             get
             {
-                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false || o.IsChecked == false))
+                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false == false))
                 { 
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierNullRemains;
@@ -48,7 +48,7 @@ namespace ClientApp.ViewModels
                         return ProductOrderAndRemainsState.AllSuppliersNullRemains;
                 }
 
-                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false || o.IsChecked == false))
+                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false == false))
                 {
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierLessRemains;
@@ -251,7 +251,6 @@ namespace ClientApp.ViewModels
                 Id = o.OfferId,
                 SupplierProductCode = o.Offer.SupplierProductCode,
                 IsActive = o.Offer.IsActive,
-                IsChecked = o.Offer.IsChecked,
                 SupplierId = o.Offer.SupplierId,
                 Supplier = o.Offer.Supplier,
                 ProductId = o.Offer.ProductId,

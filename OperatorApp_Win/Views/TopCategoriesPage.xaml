@@ -1,0 +1,201 @@
+﻿<Page x:Class="OperatorApp_Win.Views.TopCategoriesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OperatorApp_Win.Views"
+      xmlns:conv="clr-namespace:OperatorApp_Win.Converters"
+      xmlns:resx="clr-namespace:OperatorApp.Resources;assembly=OperatorApp"
+      xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="TopCategoriesPage">
+
+    <Page.Resources>
+        <conv:NullCheckedToColorConverter x:Key="NullCheckedToColorConverter"/>
+        <CollectionViewSource Source="{Binding MidCategories}" x:Key="SortTopCategoriesCVS">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Сопоставление категорий товаров 3го уровня" Style="{StaticResource PageHeader}"/>
+
+        <Grid Grid.Row="1" Grid.Column="0" Margin="10,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding UncheckedCount, StringFormat='Категории 2 ур. (+{0}):'}" Style="{StaticResource ListHeader}" />
+
+            <CheckBox Grid.Row="0" Grid.Column="2" Content="Только несопоставленные" HorizontalAlignment="Right" VerticalAlignment="Center" IsChecked="{Binding ShowUncheckedOnly}" />
+
+            <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Source={StaticResource SortTopCategoriesCVS}}" SelectedItem="{Binding SelectedMidCategory}" ItemContainerStyle="{StaticResource LVItemFocusedColor}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name, StringFormat='&quot;{0}&quot;'}" Foreground="{Binding TopCategoryId, Converter={StaticResource NullCheckedToColorConverter}}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Command="{Binding RemoveMidCategoryCommand}" Style="{StaticResource ControlButton}">
+                            <Button.Content>
+                                <Image Source="{Binding Source={x:Static resx:Images.Remove}}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button Command="{Binding RemoveUnusedMidCategoriesCommand}" Style="{StaticResource ControlButton}">
+                            <Button.Content>
+                                <Image Source="{Binding Source={x:Static resx:Images.Clean}}"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+
+                    <TextBox Grid.Column="1" Text="{Binding SearchMidCategoriesText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding SearchMidCategoriesCommand}" Key="Return"/>
+                            <KeyBinding Command="{Binding CancelSearchMidCategoriesCommand}" Key="Esc"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button Command="{Binding SearchMidCategoriesCommand}" Style="{StaticResource ControlButton}">
+                            <Button.Content>
+                                <Image Source="{Binding Source={x:Static resx:Images.Search}}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button Command="{Binding CancelSearchMidCategoriesCommand}" Style="{StaticResource ControlButton}">
+                            <Button.Content>
+                                <Image Source="{Binding Source={x:Static resx:Images.X_Black}}"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1" Margin="10,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Категории 3 ур.:" Style="{StaticResource ListHeader}"/>
+
+            <ListView Grid.Row="1" ItemsSource="{Binding TopCategories}" ItemContainerStyle="{StaticResource LVItemFocusedColor}" SelectedItem="{Binding SelectedTopCategory}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name, StringFormat='&quot;{0}&quot;'}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button Command="{Binding AddTopCategoryCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Add}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding EditTopCategoryCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Edit}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding RemoveTopCategoryCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Remove}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding RemoveUnusedTopCategoriesCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Clean}}"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+
+                <TextBox Grid.Column="1" Text="{Binding SearchTopCategoriesText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding SearchTopCategoriesCommand}" Key="Return"/>
+                        <KeyBinding Command="{Binding CancelSearchTopCategoriesCommand}" Key="Esc"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Command="{Binding SearchTopCategoriesCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Search}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding CancelSearchTopCategoriesCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.X_Black}}"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"  DataContext="{Binding SelectedMidCategory}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBox Style="{StaticResource Field}" Text="{Binding Name, StringFormat='Название: {0}'}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Button Content="Сопоставить" Style="{StaticResource BigButton}" Command="{Binding MatchMidCategoriesCommand}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" DataContext="{Binding SelectedTopCategory}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBox Style="{StaticResource Field}" Text="{Binding Name, StringFormat='Название: {0}'}"/>
+            </StackPanel>
+        </Grid>
+
+        <Button Grid.Row="3" Grid.Column="0" Content="Назад" Style="{StaticResource BigButton}" Command="{Binding ShowPreviousPageCommand}" Width="150" Height="50" HorizontalAlignment="Left" Margin="10,10,0,10"/>
+        <Button Grid.Row="3" Grid.Column="2" Content="Далее" Style="{StaticResource BigButton}" Command="{Binding ShowNextPageCommand}" Width="150" Height="50" HorizontalAlignment="Right" Margin="0,10,10,10"/>
+    </Grid>
+</Page>

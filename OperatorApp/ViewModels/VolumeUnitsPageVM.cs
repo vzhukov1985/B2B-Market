@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.DBModels;
+using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using OperatorApp.Services;
@@ -53,7 +54,7 @@ namespace OperatorApp.ViewModels
             set
             {
                 _showUncheckedOnly = value;
-                QueryDb();
+                _ = QueryDb(true, false);
                 OnPropertyChanged("ShowUncheckedOnly");
             }
         }
@@ -77,8 +78,8 @@ namespace OperatorApp.ViewModels
             {
                 _selectedMatchVolumeUnit = value;
 
-                if (VolumeUnits != null && _selectedMatchVolumeUnit != null)
-                    SelectedVolumeUnit = VolumeUnits.Where(qu => qu.Id == _selectedMatchVolumeUnit.VolumeUnitId).FirstOrDefault();
+                if (VolumeUnits != null && _selectedMatchVolumeUnit != null && _selectedMatchVolumeUnit.VolumeUnitId != null)
+                    SelectedVolumeUnit = VolumeUnits.Where(vu => vu.Id == _selectedMatchVolumeUnit.VolumeUnitId).FirstOrDefault();
 
                 OnPropertyChanged("SelectedMatchVolumeUnit");
             }
@@ -117,132 +118,231 @@ namespace OperatorApp.ViewModels
             }
         }
 
-
-        private void UpdateUnitsMatching()
+        private async void RemoveMatchVolumeUnit()
         {
-            using (MarketDbContext db = new MarketDbContext())
+            List<Guid> unusedVolumeUnitsIds = MarketDbContext.GetUnusedMatchVolumeUnitsIds();
+            if (unusedVolumeUnitsIds.Contains(SelectedMatchVolumeUnit.Id))
             {
-                var ProductsToUpdate = db.Products
-                    .Where(p => p.VolumeUnitId == SelectedMatchVolumeUnit.VolumeUnitId);
-                foreach (Product product in ProductsToUpdate)
-                    product.VolumeUnitId = SelectedVolumeUnit.Id;
-
-                db.Products.UpdateRange(ProductsToUpdate);
-                db.SaveChanges();
-            }
-
-            using (MarketDbContext db = new MarketDbContext())
-            {
-
-                SelectedMatchVolumeUnit.VolumeUnitId = SelectedVolumeUnit.Id;
-                if (SelectedMatchVolumeUnit.IsChecked == false)
+                Tuple<string, string> element = new Tuple<string, string>(SelectedMatchVolumeUnit.Supplier.ShortName, "\"" + SelectedMatchVolumeUnit.SupplierVUShortName + "\" - \"" + SelectedMatchVolumeUnit.SupplierVUFullName + "\"");
+                if (DialogService.ShowWarningElementsRemoveDialog(new List<Tuple<string, string>> { element }))
                 {
-                    SelectedMatchVolumeUnit.IsChecked = true;
-                    UncheckedCount--;
-                }
-                db.MatchVolumeUnits.Update(SelectedMatchVolumeUnit);
-
-                if (SelectedVolumeUnit.IsChecked == false)
-                {
-                    SelectedVolumeUnit.IsChecked = true;
-                    db.VolumeUnits.Update(SelectedVolumeUnit);
-                }
-                db.SaveChanges();
-            }
-        }
-
-
-        private async void MatchVolumeUnits()
-        {
-            int newListItemIndex = VolumeUnitsToMatch.IndexOf(SelectedMatchVolumeUnit);
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                VolumeUnit volumeUnitToRemove = await db.VolumeUnits.FindAsync(SelectedMatchVolumeUnit.VolumeUnitId);
-                if (await db.MatchVolumeUnits.Where(mqu => mqu.VolumeUnitId == volumeUnitToRemove.Id).CountAsync() == 1 && volumeUnitToRemove.Id != SelectedVolumeUnit.Id)
-                {
-                    if (DialogService.ShowWarningMatchAndDeleteDialog(SelectedMatchVolumeUnit.Supplier.ShortName,
-                        $"\"{SelectedMatchVolumeUnit.SupplierVUShortName}\" - \"{SelectedMatchVolumeUnit.SupplierVUFullName}\"",
-                        $"\"{SelectedVolumeUnit.ShortName}\" - \"{SelectedVolumeUnit.FullName}\"",
-                         $"\"{volumeUnitToRemove.ShortName}\" - \"{volumeUnitToRemove.FullName}\""))
+                    using (MarketDbContext db = new MarketDbContext())
                     {
-                        UpdateUnitsMatching();
-                        db.VolumeUnits.Remove(volumeUnitToRemove);
-                        VolumeUnits.Remove(VolumeUnits.Where(qu => qu.Id == volumeUnitToRemove.Id).FirstOrDefault());
+                        db.MatchVolumeUnits.Remove(SelectedMatchVolumeUnit);
                         await db.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        return;
+                        _ = QueryDb(true, false);
                     }
                 }
-                else
-                {
-                    UpdateUnitsMatching();
-                }
-            }
-
-            if (ShowUncheckedOnly)
-            {
-                VolumeUnitsToMatch.Remove(SelectedMatchVolumeUnit);
             }
             else
             {
-                newListItemIndex++;
+                DialogService.ShowMessageDialog("Элемент не может быть удален, т.к. используется", "Удаление невозможно");
             }
+        }
 
-            if (VolumeUnitsToMatch != null && newListItemIndex < VolumeUnitsToMatch.Count)
+        private async void RemoveUnusedMatchVolumeUnits()
+        {
+            List<MatchVolumeUnit> unusedVolumeUnits = MarketDbContext.GetUnusedMatchVolumeUnits();
+            if (unusedVolumeUnits.Count > 0)
             {
-                SelectedMatchVolumeUnit = VolumeUnitsToMatch[newListItemIndex];
+                List<Tuple<string, string>> elements = unusedVolumeUnits.Select(vu => new Tuple<string, string>(vu.Supplier.ShortName, "\"" + vu.SupplierVUShortName + "\" - \"" + vu.SupplierVUFullName + "\"")).ToList();
+                if (DialogService.ShowWarningElementsRemoveDialog(elements))
+                {
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
+                        db.MatchVolumeUnits.RemoveRange(unusedVolumeUnits);
+                        await db.SaveChangesAsync();
+                        _ = QueryDb(true, false);
+                    }
+                }
+            }
+            else
+            {
+                DialogService.ShowMessageDialog("Все элементы в списке используются", "Удаление невозможно");
+            }
+        }
+
+        private async void AddNewVolumeUnitBasedOnMatch()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                VolumeUnit volumeUnit = db.VolumeUnits.Where(vu => vu.ShortName == SelectedMatchVolumeUnit.SupplierVUShortName && vu.FullName == SelectedMatchVolumeUnit.SupplierVUFullName).FirstOrDefault();
+                if (volumeUnit == null)
+                {
+                    volumeUnit = new VolumeUnit { Id = Guid.NewGuid(), ShortName = SelectedMatchVolumeUnit.SupplierVUShortName, FullName = SelectedMatchVolumeUnit.SupplierVUFullName };
+                    db.VolumeUnits.Add(volumeUnit);
+                    await db.SaveChangesAsync();
+                    SelectedMatchVolumeUnit.VolumeUnitId = volumeUnit.Id;
+                    db.MatchVolumeUnits.Update(SelectedMatchVolumeUnit);
+                    await db.SaveChangesAsync();
+                    _ = QueryDb();
+                }
+                else
+                {
+                    DialogService.ShowMessageDialog("Позиция с такими же параметрами уже существует. Проверьте и свяжите с ней или другой позицией", "Ошибка");
+                    if (VolumeUnits.Where(vu => vu.ShortName == SelectedMatchVolumeUnit.SupplierVUShortName && vu.FullName == SelectedMatchVolumeUnit.SupplierVUFullName).FirstOrDefault() == null)
+                    {
+                        SearchVolumeUnitsText = "";
+                    }
+                    await QueryDb(false, true);
+                    SelectedVolumeUnit = VolumeUnits.Where(vu => vu.ShortName == SelectedMatchVolumeUnit.SupplierVUShortName && vu.FullName == SelectedMatchVolumeUnit.SupplierVUFullName).FirstOrDefault();
+                }
+            }
+        }
+
+        private async void MatchVolumeUnits()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                SelectedMatchVolumeUnit.VolumeUnitId = SelectedVolumeUnit.Id;
+                db.Update(SelectedMatchVolumeUnit);
+                await db.SaveChangesAsync();
+                _ = QueryDb(true, false);
+            }
+        }
+
+        private async void AddVolumeUnit()
+        {
+            List<ElementField> fields = new List<ElementField>{
+                new ElementField("Короткое название", ""),
+                new ElementField("Полное название", "")
+            };
+
+            fields = DialogService.ShowAddEditElementDlg(fields, false);
+            if (fields != null)
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    VolumeUnit newVolumeUnit = new VolumeUnit { Id = Guid.NewGuid(), ShortName = fields[0].Value, FullName = fields[1].Value };
+                    if (db.VolumeUnits.Where(vu => vu.ShortName == newVolumeUnit.ShortName && vu.FullName == newVolumeUnit.FullName).FirstOrDefault() != null)
+                    {
+                        DialogService.ShowMessageDialog("Позиция с такими же параметрами уже существует. Добавление невозможно", "Ошибка");
+                        if (VolumeUnits.Where(vu => vu.ShortName == newVolumeUnit.ShortName && vu.FullName == newVolumeUnit.FullName).FirstOrDefault() == null)
+                        {
+                            SearchVolumeUnitsText = "";
+                        }
+                        await QueryDb(false, true);
+                        SelectedVolumeUnit = VolumeUnits.Where(vu => vu.ShortName == newVolumeUnit.ShortName && vu.FullName == newVolumeUnit.FullName).FirstOrDefault();
+                        return;
+                    }
+
+                    db.VolumeUnits.Add(newVolumeUnit);
+                    await db.SaveChangesAsync();
+                    _ = QueryDb(false, true);
+                }
             }
         }
 
         private async void EditVolumeUnit()
         {
-            VolumeUnit updatedVolumeUnit = DialogService.ShowEditVolumeUnitDialog(SelectedVolumeUnit);
-            if (updatedVolumeUnit != null)
+            List<ElementField> fields = new List<ElementField>{
+                new ElementField("Короткое название", SelectedVolumeUnit.ShortName),
+                new ElementField("Полное название", SelectedVolumeUnit.FullName)
+            };
+
+            fields = DialogService.ShowAddEditElementDlg(fields, true);
+            if (fields != null)
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    SelectedVolumeUnit.ShortName = updatedVolumeUnit.ShortName;
-                    SelectedVolumeUnit.FullName = updatedVolumeUnit.FullName;
+                    SelectedVolumeUnit.ShortName = fields[0].Value;
+                    SelectedVolumeUnit.FullName = fields[1].Value;
                     db.VolumeUnits.Update(SelectedVolumeUnit);
                     await db.SaveChangesAsync();
+                    _ = QueryDb(false, true);
                 }
             }
         }
 
-
-        private async void QueryDb()
+        private async void RemoveVolumeUnit()
         {
-            using (MarketDbContext db = new MarketDbContext())
+            List<Guid> unusedVolumeUnitsIds = MarketDbContext.GetUnusedVolumeUnitsIds();
+            if (unusedVolumeUnitsIds.Contains(SelectedVolumeUnit.Id))
             {
-                VolumeUnitsToMatch = new ObservableCollection<MatchVolumeUnit>(await db.MatchVolumeUnits
-                    .Include(mqu => mqu.Supplier)
-                    .Where(mqu => ShowUncheckedOnly ? mqu.IsChecked == false : true)
-                    .Where(mqu => mqu.SupplierVUShortName.Contains(SearchMatchVolumeUnitsText) || mqu.SupplierVUFullName.Contains(SearchMatchVolumeUnitsText) || mqu.Supplier.ShortName.Contains(SearchMatchVolumeUnitsText))
-                    .AsNoTracking()
-                    .ToListAsync()
-                     );
-
-                VolumeUnits = new ObservableCollection<VolumeUnit>(await db.VolumeUnits
-                    .Where(qu => qu.ShortName.Contains(SearchVolumeUnitsText) || qu.FullName.Contains(SearchVolumeUnitsText))
-                    .AsNoTracking()
-                    .ToListAsync()
-                    );
-
-                UncheckedCount = await db.MatchVolumeUnits.Where(mqu => mqu.IsChecked == false).CountAsync();
+                Tuple<string, string> element = new Tuple<string, string>("", "\"" + SelectedVolumeUnit.ShortName + "\" - \"" + SelectedVolumeUnit.FullName + "\"");
+                if (DialogService.ShowWarningElementsRemoveDialog(new List<Tuple<string, string>> { element }))
+                {
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
+                        db.VolumeUnits.Remove(SelectedVolumeUnit);
+                        await db.SaveChangesAsync();
+                        _ = QueryDb(false, true);
+                    }
+                }
+            }
+            else
+            {
+                DialogService.ShowMessageDialog("Элемент не может быть удален, т.к. используется", "Удаление невозможно");
             }
         }
 
+        private async void RemoveUnusedVolumeUnits()
+        {
+            List<VolumeUnit> unusedVolumeUnits = MarketDbContext.GetUnusedVolumeUnits();
+            if (unusedVolumeUnits.Count > 0)
+            {
+                List<Tuple<string, string>> elements = unusedVolumeUnits.Select(vu => new Tuple<string, string>("", "\"" + vu.ShortName + "\" - \"" + vu.FullName + "\"")).ToList();
+                if (DialogService.ShowWarningElementsRemoveDialog(elements))
+                {
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
+                        db.VolumeUnits.RemoveRange(unusedVolumeUnits);
+                        await db.SaveChangesAsync();
+                        _ = QueryDb(false, true);
+                    }
+                }
+            }
+            else
+            {
+                DialogService.ShowMessageDialog("Все элементы в списке используются", "Удаление невозможно");
+            }
+        }
+
+
+
+        public async Task QueryDb(bool UpdateVolumeUnitsToMatch = true, bool UpdateVolumeUnits = true)
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                if (UpdateVolumeUnitsToMatch)
+                {
+                    VolumeUnitsToMatch = new ObservableCollection<MatchVolumeUnit>(await db.MatchVolumeUnits
+                        .Include(mvu => mvu.Supplier)
+                        .Where(mvu => ShowUncheckedOnly ? mvu.VolumeUnitId == null : true)
+                        .Where(mvu => SearchMatchVolumeUnitsText == null ? true : mvu.SupplierVUShortName.Contains(SearchMatchVolumeUnitsText) || mvu.SupplierVUFullName.Contains(SearchMatchVolumeUnitsText) || mvu.Supplier.ShortName.Contains(SearchMatchVolumeUnitsText))
+                        .AsNoTracking()
+                        .ToListAsync()
+                         );
+                    UncheckedCount = await db.MatchVolumeUnits.Where(mvu => mvu.VolumeUnitId == null).CountAsync();
+                }
+
+                if (UpdateVolumeUnits)
+                {
+                    VolumeUnits = new ObservableCollection<VolumeUnit>(await db.VolumeUnits
+                        .Where(vu => SearchVolumeUnitsText == null ? true : vu.ShortName.Contains(SearchVolumeUnitsText) || vu.FullName.Contains(SearchVolumeUnitsText))
+                        .AsNoTracking()
+                        .ToListAsync()
+                        );
+                }
+            }
+        }
+
+        public CommandType RemoveMatchVolumeUnitCommand { get; }
+        public CommandType RemoveUnusedMatchVolumeUnitsCommand { get; }
         public CommandType SearchMatchVolumeUnitsCommand { get; }
         public CommandType CancelSearchMatchVolumeUnitsCommand { get; }
 
+        public CommandType AddVolumeUnitCommand { get; }
         public CommandType EditVolumeUnitCommand { get; }
+        public CommandType RemoveVolumeUnitCommand { get; }
+        public CommandType RemoveUnusedVolumeUnitsCommand { get; }
         public CommandType SearchVolumeUnitsCommand { get; }
         public CommandType CancelSearchVolumeUnitsCommand { get; }
 
+        public CommandType AddNewVolumeUnitBasedOnMatchCommand { get; }
         public CommandType MatchVolumeUnitsCommand { get; }
 
+        public CommandType ShowPreviousPageCommand { get; }
         public CommandType ShowNextPageCommand { get; }
 
         public VolumeUnitsPageVM(IPageService pageService, IDialogService dialogService)
@@ -254,27 +354,40 @@ namespace OperatorApp.ViewModels
             SearchVolumeUnitsText = "";
             SearchMatchVolumeUnitsText = "";
 
+            RemoveMatchVolumeUnitCommand = new CommandType();
+            RemoveMatchVolumeUnitCommand.Create(_ => RemoveMatchVolumeUnit(), _ => SelectedMatchVolumeUnit != null);
+            RemoveUnusedMatchVolumeUnitsCommand = new CommandType();
+            RemoveUnusedMatchVolumeUnitsCommand.Create(_ => RemoveUnusedMatchVolumeUnits());
             SearchMatchVolumeUnitsCommand = new CommandType();
-            SearchMatchVolumeUnitsCommand.Create(_ => QueryDb());
+            SearchMatchVolumeUnitsCommand.Create(_ => _ = QueryDb(true, false));
             CancelSearchMatchVolumeUnitsCommand = new CommandType();
-            CancelSearchMatchVolumeUnitsCommand.Create(_ => { SearchMatchVolumeUnitsText = ""; QueryDb(); });
+            CancelSearchMatchVolumeUnitsCommand.Create(_ => { SearchMatchVolumeUnitsText = ""; _ = QueryDb(true, false); }, _ => SearchMatchVolumeUnitsText != "");
 
+            AddVolumeUnitCommand = new CommandType();
+            AddVolumeUnitCommand.Create(_ => AddVolumeUnit());
             EditVolumeUnitCommand = new CommandType();
             EditVolumeUnitCommand.Create(_ => EditVolumeUnit(), _ => SelectedVolumeUnit != null);
+            RemoveVolumeUnitCommand = new CommandType();
+            RemoveVolumeUnitCommand.Create(_ => RemoveVolumeUnit(), _ => SelectedVolumeUnit != null);
+            RemoveUnusedVolumeUnitsCommand = new CommandType();
+            RemoveUnusedVolumeUnitsCommand.Create(_ => RemoveUnusedVolumeUnits());
             SearchVolumeUnitsCommand = new CommandType();
-            SearchVolumeUnitsCommand.Create(_ => QueryDb());
+            SearchVolumeUnitsCommand.Create(_ => _ = QueryDb(false, true));
             CancelSearchVolumeUnitsCommand = new CommandType();
-            CancelSearchVolumeUnitsCommand.Create(_ => { SearchVolumeUnitsText = ""; QueryDb(); });
+            CancelSearchVolumeUnitsCommand.Create(_ => { SearchVolumeUnitsText = ""; _ = QueryDb(false, true); }, _ => SearchVolumeUnitsText != "");
 
+            AddNewVolumeUnitBasedOnMatchCommand = new CommandType();
+            AddNewVolumeUnitBasedOnMatchCommand.Create(_ => AddNewVolumeUnitBasedOnMatch(), _ => SelectedMatchVolumeUnit != null);
             MatchVolumeUnitsCommand = new CommandType();
             MatchVolumeUnitsCommand.Create(_ => MatchVolumeUnits(), _ => SelectedVolumeUnit != null && SelectedMatchVolumeUnit != null);
 
+            ShowPreviousPageCommand = new CommandType();
+            ShowPreviousPageCommand.Create(_ => PageService.ShowVolumeTypesPage());
             ShowNextPageCommand = new CommandType();
-            ShowNextPageCommand.Create(_ => PageService.ShowProductExtraPropertyTypesPage(), _ => UncheckedCount == 0);
+            ShowNextPageCommand.Create(_ => PageService.ShowProductExtraPropertyTypesPage());
 
-            QueryDb();
+            _ = QueryDb(false, true); //Query with true,false executes when ShowUncheckedOnly property is set
         }
 
     }
 }
-

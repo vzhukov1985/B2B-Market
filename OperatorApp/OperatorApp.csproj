@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Add.png" />
+    <None Remove="Resources\Add_Property.png" />
+    <None Remove="Resources\Clean.png" />
+    <None Remove="Resources\Edit.png" />
+    <None Remove="Resources\EmptyPicture.png" />
+    <None Remove="Resources\Remove.png" />
+    <None Remove="Resources\Remove_Property.png" />
     <None Remove="Resources\Search.png" />
     <None Remove="Resources\X_Black.png" />
   </ItemGroup>
@@ -14,6 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Add.png" />
+    <Resource Include="Resources\Add_Property.png" />
+    <Resource Include="Resources\Clean.png" />
+    <Resource Include="Resources\Edit.png" />
+    <Resource Include="Resources\EmptyPicture.png" />
+    <Resource Include="Resources\Remove.png" />
+    <Resource Include="Resources\Remove_Property.png" />
     <Resource Include="Resources\Search.png" />
     <Resource Include="Resources\X_Black.png" />
   </ItemGroup>

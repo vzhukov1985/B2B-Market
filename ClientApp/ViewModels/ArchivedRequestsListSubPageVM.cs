@@ -1,5 +1,5 @@
 ﻿using ClientApp.Services;
-using Core.Models;
+using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;

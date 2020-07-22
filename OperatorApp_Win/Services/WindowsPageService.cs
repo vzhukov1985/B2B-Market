@@ -30,10 +30,30 @@ namespace OperatorApp_Win.Services
             NavigationService.Navigate(volumeUnitsPage);
         }
         
-                    public void ShowProductExtraPropertyTypesPage()
+        public void ShowProductExtraPropertyTypesPage()
         {
             ProductExtraPropertyTypesPage productExtraPropertyTypesPage = new ProductExtraPropertyTypesPage() { DataContext = new ProductExtraPropertyTypesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
             NavigationService.Navigate(productExtraPropertyTypesPage);
+        }
+        public void ShowProductCategoriesPage()
+        {
+            ProductCategoriesPage productCategoriesPage = new ProductCategoriesPage() { DataContext = new ProductCategoriesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(productCategoriesPage);
+        }
+        public void ShowMidCategoriesPage()
+        {
+            MidCategoriesPage midCategoriesPage = new MidCategoriesPage() { DataContext = new MidCategoriesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(midCategoriesPage);
+        }
+        public void ShowTopCategoriesPage()
+        {
+            TopCategoriesPage topCategoriesPage = new TopCategoriesPage() { DataContext = new TopCategoriesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(topCategoriesPage);
+        }
+        public void ShowOffersPage()
+        {
+            OffersPage offersPage = new OffersPage() { DataContext = new OffersPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(offersPage);
         }
     }
 }

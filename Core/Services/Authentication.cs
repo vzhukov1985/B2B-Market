@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BCrypt.Net;
-using Core.Models;
+using Core.DBModels;
 
 namespace Core.Services
 {

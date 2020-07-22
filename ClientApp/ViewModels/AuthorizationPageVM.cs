@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using ClientApp.Services;
-using Core.Models;
+using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 

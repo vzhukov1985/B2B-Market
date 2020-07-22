@@ -6,12 +6,18 @@
       xmlns:local="clr-namespace:OperatorApp_Win.Views"
       xmlns:conv="clr-namespace:OperatorApp_Win.Converters"
       xmlns:resx="clr-namespace:OperatorApp.Resources;assembly=OperatorApp"
+      xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="VolumeUnitsPage">
 
     <Page.Resources>
-        <conv:BoolToCheckedColorConverter x:Key="BoolToCheckedColorConverter"/>
+        <conv:NullCheckedToColorConverter x:Key="NullCheckedToColorConverter"/>
+        <CollectionViewSource Source="{Binding VolumeUnitsToMatch}" x:Key="SortVolumeUnitsCVS">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="SupplierVUShortName" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </Page.Resources>
 
     <Grid>
@@ -27,7 +33,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Сопоставление единиц измерения объема/веса" Style="{StaticResource PageHeader}"/>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Сопоставление единиц объема/веса" Style="{StaticResource PageHeader}"/>
 
         <Grid Grid.Row="1" Grid.Column="0" Margin="10,0,10,0">
             <Grid.RowDefinitions>
@@ -39,15 +45,20 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding UncheckedCount, StringFormat='У поставщиков (+{0}):'}" Style="{StaticResource ListHeader}" />
-            <CheckBox Grid.Row="0" Grid.Column="1" Content="Только несопоставленные" HorizontalAlignment="Right" VerticalAlignment="Center" IsChecked="{Binding ShowUncheckedOnly}" />
+            <ComboBox x:Name="SortComboBox" Grid.Row="0" Grid.Column="1" SelectedIndex="0" SelectionChanged="SortComboBox_SelectionChanged">
+                <ComboBoxItem Content="По названию"/>
+                <ComboBoxItem Content="По поставщику"/>
+            </ComboBox>
+            <CheckBox Grid.Row="0" Grid.Column="2" Content="Только несопоставленные" HorizontalAlignment="Right" VerticalAlignment="Center" IsChecked="{Binding ShowUncheckedOnly}" />
 
-            <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding VolumeUnitsToMatch}" SelectedItem="{Binding SelectedMatchVolumeUnit}" ItemContainerStyle="{StaticResource LVItemFocusedColor}">
+            <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Source={StaticResource SortVolumeUnitsCVS}}" SelectedItem="{Binding SelectedMatchVolumeUnit}" ItemContainerStyle="{StaticResource LVItemFocusedColor}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Foreground="{Binding IsChecked, Converter={StaticResource BoolToCheckedColorConverter}}">
+                        <TextBlock Foreground="{Binding VolumeUnitId, Converter={StaticResource NullCheckedToColorConverter}}">
                             <TextBlock.Text>
                                 <MultiBinding StringFormat="&quot;{0}&quot; - &quot;{1}&quot; ({2})">
                                     <Binding Path="SupplierVUShortName"/>
@@ -60,13 +71,26 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Command="{Binding RemoveMatchVolumeUnitCommand}" Style="{StaticResource ControlButton}">
+                            <Button.Content>
+                                <Image Source="{Binding Source={x:Static resx:Images.Remove}}"/>
+                            </Button.Content>
+                        </Button>
+                        <Button Command="{Binding RemoveUnusedMatchVolumeUnitsCommand}" Style="{StaticResource ControlButton}">
+                            <Button.Content>
+                                <Image Source="{Binding Source={x:Static resx:Images.Clean}}"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
 
                     <TextBox Grid.Column="1" Text="{Binding SearchMatchVolumeUnitsText, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
@@ -76,14 +100,14 @@
                     </TextBox>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Button Width="22" Background="White" Command="{Binding SearchMatchVolumeUnitsCommand}">
+                        <Button Command="{Binding SearchMatchVolumeUnitsCommand}" Style="{StaticResource ControlButton}">
                             <Button.Content>
-                                <Image Source="{Binding Source={x:Static resx:Images.Search}}" Width="15" RenderOptions.BitmapScalingMode="Fant"/>
+                                <Image Source="{Binding Source={x:Static resx:Images.Search}}"/>
                             </Button.Content>
                         </Button>
-                        <Button Width="22" Background="White" Command="{Binding CancelSearchMatchVolumeUnitsCommand}">
+                        <Button Command="{Binding CancelSearchMatchVolumeUnitsCommand}" Style="{StaticResource ControlButton}">
                             <Button.Content>
-                                <Image Source="{Binding Source={x:Static resx:Images.X_Black}}" Width="15"/>
+                                <Image Source="{Binding Source={x:Static resx:Images.X_Black}}"/>
                             </Button.Content>
                         </Button>
                     </StackPanel>
@@ -104,7 +128,7 @@
             <ListView Grid.Row="1" ItemsSource="{Binding VolumeUnits}" ItemContainerStyle="{StaticResource LVItemFocusedColor}" SelectedItem="{Binding SelectedVolumeUnit}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Foreground="{Binding IsChecked, Converter={StaticResource BoolToCheckedColorConverter}}">
+                        <TextBlock>
                             <TextBlock.Text>
                                 <MultiBinding StringFormat="&quot;{0}&quot; - &quot;{1}&quot;">
                                     <Binding Path="ShortName"/>
@@ -123,7 +147,28 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Редактировать" Command="{Binding EditVolumeUnitCommand}"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button Command="{Binding AddVolumeUnitCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Add}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding EditVolumeUnitCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Edit}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding RemoveVolumeUnitCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Remove}}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Command="{Binding RemoveUnusedVolumeUnitsCommand}" Style="{StaticResource ControlButton}">
+                        <Button.Content>
+                            <Image Source="{Binding Source={x:Static resx:Images.Clean}}"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
 
                 <TextBox Grid.Column="1" Text="{Binding SearchVolumeUnitsText, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
@@ -133,14 +178,14 @@
                 </TextBox>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Width="22" Background="White" Command="{Binding SearchVolumeUnitsCommand}">
+                    <Button Command="{Binding SearchVolumeUnitsCommand}" Style="{StaticResource ControlButton}">
                         <Button.Content>
-                            <Image Source="{Binding Source={x:Static resx:Images.Search}}" Width="15" RenderOptions.BitmapScalingMode="Fant"/>
+                            <Image Source="{Binding Source={x:Static resx:Images.Search}}"/>
                         </Button.Content>
                     </Button>
-                    <Button Width="22" Background="White" Command="{Binding CancelSearchVolumeUnitsCommand}">
+                    <Button Command="{Binding CancelSearchVolumeUnitsCommand}" Style="{StaticResource ControlButton}">
                         <Button.Content>
-                            <Image Source="{Binding Source={x:Static resx:Images.X_Black}}" Width="15"/>
+                            <Image Source="{Binding Source={x:Static resx:Images.X_Black}}"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>
@@ -161,7 +206,10 @@
                 <TextBox Style="{StaticResource Field}" Text="{Binding SupplierVUFullName, StringFormat='Полное название: {0}'}"/>
             </StackPanel>
 
-            <Button Grid.Column="1" Content="Сопоставить" Style="{StaticResource BigButton}" Command="{Binding MatchVolumeUnitsCommand}"/>
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Button Content="Внести новый" Style="{StaticResource BigButton}" Command="{Binding AddNewVolumeUnitBasedOnMatchCommand}"/>
+                <Button Content="Сопоставить" Style="{StaticResource BigButton}" Command="{Binding MatchVolumeUnitsCommand}"/>
+            </StackPanel>
 
             <StackPanel Grid.Column="2" DataContext="{Binding SelectedVolumeUnit}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBox Style="{StaticResource Field}" Text="{Binding ShortName, StringFormat='Короткое название: {0}'}"/>
@@ -169,7 +217,7 @@
             </StackPanel>
         </Grid>
 
-        <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Далее" Style="{StaticResource BigButton}" Command="{Binding ShowNextPageCommand}" Width="150" Height="50" HorizontalAlignment="Right" Margin="0,10,10,10"/>
+        <Button Grid.Row="3" Grid.Column="0" Content="Назад" Style="{StaticResource BigButton}" Command="{Binding ShowPreviousPageCommand}" Width="150" Height="50" HorizontalAlignment="Left" Margin="10,10,0,10"/>
+        <Button Grid.Row="3" Grid.Column="2" Content="Далее" Style="{StaticResource BigButton}" Command="{Binding ShowNextPageCommand}" Width="150" Height="50" HorizontalAlignment="Right" Margin="0,10,10,10"/>
     </Grid>
 </Page>
-

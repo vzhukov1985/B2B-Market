@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-using Core.Models;
+using Core.DBModels;
 
 namespace ClientApp.Services
 {

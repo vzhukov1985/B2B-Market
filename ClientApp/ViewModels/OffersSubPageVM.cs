@@ -1,5 +1,5 @@
 ﻿using ClientApp.Services;
-using Core.Models;
+using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -95,7 +95,7 @@ namespace ClientApp.ViewModels
                      .Include(p => p.VolumeUnit)
                      .Include(p => p.VolumeType)
                      .Include(p => p.Category)
-                     .Where(p => p.Offers.Any(of => of.Supplier.IsActive == true && of.Remains > 0 && of.IsActive == true && of.IsChecked == true))
+                     .Where(p => p.Offers.Any(of => of.Supplier.IsActive == true && of.Remains > 0 && of.IsActive == true))
                      .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
                      .Where(p => supplierFilter == null ? true : p.Offers.Select(of => of.SupplierId).Any(id => supplierFilter.Contains(id)))
                      .Where(p => ShowFavoritesOnly ? FavoriteProductsIds.Contains(p.Id) : true)

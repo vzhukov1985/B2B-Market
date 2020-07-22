@@ -1,6 +1,6 @@
 ﻿using Administration_Tools.Services;
 using Administration_Tools_Win.Views;
-using Core.Models;
+using Core.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Text;

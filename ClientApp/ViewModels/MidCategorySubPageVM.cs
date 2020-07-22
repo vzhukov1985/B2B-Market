@@ -1,5 +1,5 @@
 ﻿using ClientApp.Services;
-using Core.Models;
+using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -62,7 +62,7 @@ namespace ClientApp.ViewModels
                 var AllMidCategoriesGuids = SubCategories.Select(sc => sc.Id);
                 List<Guid> filterGuids;
                 using (MarketDbContext db = new MarketDbContext())
-                     filterGuids = await db.ProductCategories.Where(c => AllMidCategoriesGuids.Contains(c.MidCategoryId)).Select(c => c.Id).ToListAsync();
+                     filterGuids = await db.ProductCategories.Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync();
                 PageService.ShowOffersSubPage(User, UpperCategory.Name, filterGuids, null);
             }
             else

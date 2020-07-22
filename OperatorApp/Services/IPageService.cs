@@ -10,5 +10,9 @@ namespace OperatorApp.Services
         void ShowVolumeTypesPage();
         void ShowVolumeUnitsPage();
         void ShowProductExtraPropertyTypesPage();
+        void ShowProductCategoriesPage();
+        void ShowMidCategoriesPage();
+        void ShowTopCategoriesPage();
+        void ShowOffersPage();
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Core.Models;
+using Core.DBModels;
 using System.Collections.ObjectModel;
 
 

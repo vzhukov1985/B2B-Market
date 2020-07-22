@@ -1,4 +1,4 @@
-﻿using Core.Models;
+﻿using Core.DBModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -210,11 +210,11 @@ namespace Core.Services
                         XElement xProduct = xOffer.Element("Product");
 
                         XElement xCategory = xProduct.Element("Category");
-                        MatchProductCategory matchProductCategory = matchProductCategories.Where(mpc => mpc.SupplierCategoryName == xCategory.Value).FirstOrDefault();
+                        MatchProductCategory matchProductCategory = matchProductCategories.Where(mpc => mpc.SupplierProductCategoryName == xCategory.Value).FirstOrDefault();
                         if (matchProductCategory == null)
                         {
                             ProductCategory existingProductCategory = productCategories.Where(pc => pc.Name == xCategory.Value).FirstOrDefault();
-                            matchProductCategory = new MatchProductCategory { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierCategoryName = xCategory.Value, ProductCategoryId = existingProductCategory == null ? (Guid?)null : existingProductCategory.Id };
+                            matchProductCategory = new MatchProductCategory { Id = Guid.NewGuid(), SupplierId = supplier.Id, SupplierProductCategoryName = xCategory.Value, ProductCategoryId = existingProductCategory == null ? (Guid?)null : existingProductCategory.Id };
                             db.MatchProductCategories.Add(matchProductCategory);
                             newProductCategoriesAdded++;
                         }
@@ -281,7 +281,7 @@ namespace Core.Services
                         else
                         {
                             bool offerFullyMatches = true;
-                            Guid MatchProductCategoryIdToCompare = matchProductCategories.Where(mpc => mpc.SupplierCategoryName == xProduct.Element("Category").Value).Select(mpc => mpc.Id).FirstOrDefault();
+                            Guid MatchProductCategoryIdToCompare = matchProductCategories.Where(mpc => mpc.SupplierProductCategoryName == xProduct.Element("Category").Value).Select(mpc => mpc.Id).FirstOrDefault();
                             Guid MatchQuantityUnitIdToCompare = matchQuantityUnits.Where(mqu => mqu.SupplierQUShortName == xQuantityUnit.Attribute("ShortName").Value && mqu.SupplierQUFullName == xQuantityUnit.Attribute("FullName").Value).Select(mqu => mqu.Id).FirstOrDefault();
                             Guid MatchVolumeTypeIdToCompare = matchVolumeTypes.Where(mvt => mvt.SupplierVolumeTypeName == xVolumeType.Value).Select(mvt => mvt.Id).FirstOrDefault();
                             Guid MatchVolumeUnitIdToCompare = matchVolumeUnits.Where(mvu => mvu.SupplierVUShortName == xVolumeUnit.Attribute("ShortName").Value && mvu.SupplierVUFullName == xVolumeUnit.Attribute("FullName").Value).Select(mvu => mvu.Id).FirstOrDefault();
@@ -384,15 +384,15 @@ namespace Core.Services
                         offersProcessedIds.Add(matchOfferExists.Id);
                         db.SaveChanges();
                     }
-                }
+            }
                 catch (Exception e)
-                {
-                    logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
-                    return;
-                }
+            {
+                logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
+                return;
+            }
 
 
-                if (newProductCategoriesAdded > 0)
+            if (newProductCategoriesAdded > 0)
                     logFileStream.WriteLine("{0} - {1} new product categories were added", DateTime.Now.ToString("G"), newProductCategoriesAdded.ToString());
                 if (newVolumeTypesAdded > 0)
                     logFileStream.WriteLine("{0} - {1} new volume types were added", DateTime.Now.ToString("G"), newVolumeTypesAdded.ToString());

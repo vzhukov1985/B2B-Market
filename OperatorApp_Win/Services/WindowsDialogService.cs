@@ -1,14 +1,17 @@
-﻿using Core.Models;
+﻿using Core.DBModels;
+using Core.Models;
+using OperatorApp.DialogsViewModels;
 using OperatorApp.Services;
 using OperatorApp_Win.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 
 namespace OperatorApp_Win.Services
 {
-    public class WindowsDialogService: IDialogService
+    public class WindowsDialogService : IDialogService
     {
         public bool ShowOkCancelDialog(string text, string caption)
         {
@@ -17,49 +20,45 @@ namespace OperatorApp_Win.Services
             return false;
         }
 
-        public QuantityUnit ShowEditQuantityUnitDialog(QuantityUnit quantityUnit)
+        public void ShowMessageDialog(string text, string caption)
         {
-            EditQuantityUnitDlg dlg = new EditQuantityUnitDlg(quantityUnit);
-            if (dlg.ShowDialog() == true)
-            {
-                return new QuantityUnit { ShortName = dlg.ShortName.Text, FullName = dlg.FullName.Text };
-            }
-            return null;
+            MessageBox.Show(text, caption, MessageBoxButton.OK);
         }
-        public VolumeType ShowEditVolumeTypeDialog(VolumeType volumeType)
+
+
+        public List<ElementField> ShowAddEditElementDlg(List<ElementField> fields, bool isEditing)
         {
-            EditVolumeTypeDlg dlg = new EditVolumeTypeDlg(volumeType);
+            AddEditElementDlg dlg = new AddEditElementDlg() { DataContext = new AddEditElementDlgVM(fields, isEditing) };
             if (dlg.ShowDialog() == true)
             {
-                return new VolumeType { Name = dlg.VTName.Text };
-            }
-            return null;
-        }
-        public VolumeUnit ShowEditVolumeUnitDialog(VolumeUnit volumeUnit)
-        {
-            EditVolumeUnitDlg dlg = new EditVolumeUnitDlg(volumeUnit);
-            if (dlg.ShowDialog() == true)
-            {
-                return new VolumeUnit { ShortName = dlg.ShortName.Text, FullName = dlg.FullName.Text };
+                return ((AddEditElementDlgVM)dlg.DataContext).Fields.ToList();
             }
             return null;
         }
 
-        public ProductExtraPropertyType ShowEditProductExtraPropertyTypeDialog(ProductExtraPropertyType productExtraPropertyType)
+        public bool ShowMatchOfferDlg(MatchOffer matchOffer,
+            Offer offer,
+            List<ProductCategory> availableCategories,
+            List<VolumeType> availableVolumeTypes,
+            List<VolumeUnit> availableVolumeUnits,
+            List<ProductExtraPropertyType> availableProductExtraPropertyTypes,
+            List<QuantityUnit> availableQuantityUnits)
         {
-            EditProductExtraPropertyTypeDlg dlg = new EditProductExtraPropertyTypeDlg(productExtraPropertyType);
+            MatchOfferDlg dlg = new MatchOfferDlg() { DataContext = new MatchOfferDlgVM<RelayCommand>(matchOffer, offer, new WindowsDialogService(), availableCategories, availableVolumeTypes, availableVolumeUnits, availableProductExtraPropertyTypes, availableQuantityUnits) };
+
             if (dlg.ShowDialog() == true)
             {
-                return new ProductExtraPropertyType { Name = dlg.EPTName.Text };
+                return true;
             }
-            return null;
+            return false;
+            
         }
 
-        public bool ShowWarningMatchAndDeleteDialog(string SupplierName, string MatchUnit, string QuantityUnit, string DeleteUnit)
+        public bool ShowWarningElementsRemoveDialog(List<Tuple<string, string>> elements)
         {
-            WarningMatchUnitAndDeleteDialog dlg = new WarningMatchUnitAndDeleteDialog(SupplierName, MatchUnit, QuantityUnit, DeleteUnit);
-
+            WarningElementsRemoveDlg dlg = new WarningElementsRemoveDlg() { DataContext = new WarningElementsRemoveDlgVM(elements) };
             return dlg.ShowDialog() == true;
+
         }
     }
 }

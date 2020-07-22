@@ -1,5 +1,5 @@
 ﻿using ClientApp.Services;
-using Core.Models;
+using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -133,7 +133,7 @@ namespace ClientApp.ViewModels
             {
                 if (offer.OrderQuantity > offer.Remains)
                     offer.OrderQuantity = offer.Remains;
-                if (offer.OrderQuantity < 0 || offer.IsActive == false || offer.Supplier.IsActive == false || offer.IsChecked == false)
+                if (offer.OrderQuantity < 0 || offer.IsActive == false || offer.Supplier.IsActive == false)
                     offer.OrderQuantity = 0;
 
                 if (offer.IsQuantityWasChanged)
@@ -243,7 +243,7 @@ namespace ClientApp.ViewModels
             CurrentRequestOrders = User.Client.CurrentOrders;
 
             Offers = Product.Offers
-                .Where(o => ((o.Supplier.IsActive == true) && (o.IsActive == true) && (o.Remains > 0) && (o.IsChecked == true)) || (CurrentRequestOrders.Where(oo => oo.OfferId == o.Id).Select(oo => oo.Quantity).FirstOrDefault() > 0))
+                .Where(o => ((o.Supplier.IsActive == true) && (o.IsActive == true) && (o.Remains > 0)) || (CurrentRequestOrders.Where(oo => oo.OfferId == o.Id).Select(oo => oo.Quantity).FirstOrDefault() > 0))
                 .OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id))
                 .ThenBy(o => o.Supplier.ShortName).ToList();
 
@@ -252,7 +252,6 @@ namespace ClientApp.ViewModels
                 Id = offer.Id,
                 SupplierProductCode = offer.SupplierProductCode,
                 IsActive = offer.IsActive,
-                IsChecked = offer.IsChecked,
                 Product = offer.Product,
                 ProductId = offer.ProductId,
                 Supplier = offer.Supplier,
@@ -261,7 +260,7 @@ namespace ClientApp.ViewModels
                 RetailPrice = offer.RetailPrice,
                 QuantityUnit = offer.QuantityUnit,
                 QuantityUnitId = offer.QuantityUnitId,
-                Remains = (offer.IsActive) && (offer.Supplier.IsActive) && (offer.IsChecked) ? offer.Remains : 0,
+                Remains = (offer.IsActive) && (offer.Supplier.IsActive) ? offer.Remains : 0,
 
                 IsOfContractedSupplier = ContractedSuppliersIds.Contains(offer.Supplier.Id),
                 PriceForClient = ContractedSuppliersIds.Contains(offer.Supplier.Id) ? offer.DiscountPrice : offer.RetailPrice,

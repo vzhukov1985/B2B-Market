@@ -1,0 +1,234 @@
+﻿<Window x:Class="OperatorApp_Win.Dialogs.MatchOfferDlg"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OperatorApp_Win.Dialogs"
+        xmlns:resx="clr-namespace:OperatorApp.Resources;assembly=OperatorApp"
+        mc:Ignorable="d"
+        Title="Сопоставление предложения" Height="600" Width="1200"  WindowStartupLocation="CenterScreen" SizeToContent="Height">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Сопоставление предложения поставщика со продуктом" Style="{StaticResource DialogHeader}"/>
+
+        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource PanelBorder}">
+            <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding MatchOffer}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding ProductName}" HorizontalAlignment="Center" Style="{StaticResource BigProductOfferHeader}"/>
+
+                <TextBlock Grid.Row="1" Style="{StaticResource SupplierName}" HorizontalAlignment="Center">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Поставщик: {0} (код продукта: {1})">
+                            <Binding Path="Supplier.ShortName"/>
+                            <Binding Path="SupplierProductCode"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <TextBlock Grid.Row="2" Text="Основные свойства:" Style="{StaticResource PropertiesHeader}" HorizontalAlignment="Center" Margin="0,16,0,0"/>
+                
+                <Grid Grid.Row="3" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Категория:" Style="{StaticResource BigItemPropertyField}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MatchProductCategory.SupplierProductCategoryName}" Style="{StaticResource BigItemPropertyValue}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding MatchVolumeType.SupplierVolumeTypeName, StringFormat='{}{0}:'}" Style="{StaticResource BigItemPropertyField}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource BigItemPropertyValue}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:G20} {1} ({2})">
+                                <Binding Path="ProductVolume"/>
+                                <Binding Path="MatchVolumeUnit.SupplierVUShortName"/>
+                                <Binding Path="MatchVolumeUnit.SupplierVUFullName"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Grid.Row="4" Text="Дополнительные свойства:" Style="{StaticResource PropertiesHeader}" HorizontalAlignment="Center" Margin="0,10,0,0" Foreground="Blue"/>
+
+                <ItemsControl Grid.Row="5" HorizontalAlignment="Center" ItemsSource="{Binding MatchProductExtraProperties}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="{Binding MatchProductExtraPropertyType.SupplierProductExtraPropertyTypeName, StringFormat='{}{0}:'}" Style="{StaticResource BigItemExtraPropertyField}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <TextBlock  Text="{Binding Value}" Style="{StaticResource BigItemExtraPropertyValue}" VerticalAlignment="Center"/>
+                                    <Button Style="{StaticResource ControlButton}" Margin="5,0,0,0" Command="{Binding DataContext.AddNewPropertyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding Path=.}">
+                                        <Button.Content>
+                                            <Image Source="{Binding Source={x:Static resx:Images.Add_Property}}"/>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Grid.Row="6" HorizontalAlignment="Center" Style="{StaticResource BigItemQuantityUnit}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Указана цена за: {0} ({1})">
+                            <Binding Path="MatchQuantityUnit.SupplierQUShortName"/>
+                            <Binding Path="MatchQuantityUnit.SupplierQUFullName"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource  PanelBorder}">
+            <Grid Grid.Row="1" Grid.Column="1" DataContext="{Binding Offer.Product}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                    <TextBox Grid.Row="0" Text="{Binding Name}" Style="{StaticResource ProductNameTextBox}"/>
+
+                <TextBlock Grid.Row="1" Text="{Binding Code, StringFormat='Код продукта: {0}'}" Style="{StaticResource SupplierName}" HorizontalAlignment="Center"/>
+
+                
+                <TextBlock Grid.Row="2" Text="Основные свойства:" Style="{StaticResource PropertiesHeader}" HorizontalAlignment="Center" Margin="0,16,0,0"/>
+
+                <Grid Grid.Row="3" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Категория:" Style="{StaticResource BigItemPropertyField}"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=DataContext.AvailableCategories, RelativeSource={RelativeSource AncestorType=Window} }" DisplayMemberPath="Name" SelectedItem="{Binding Category}" Style="{StaticResource PropertyValueComboBox}"/>
+                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <ComboBox  
+                            ItemsSource="{Binding Path=DataContext.AvailableVolumeTypes, RelativeSource={RelativeSource AncestorType=Window}}" 
+                            DisplayMemberPath="Name" 
+                            SelectedItem="{Binding VolumeType}" 
+                            Style="{StaticResource PropertyFieldComboBox}"/>
+                        <TextBlock Text=":" Style="{StaticResource BigItemPropertyField}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <TextBox x:Name="VolumeTextBox" Text="{Binding Volume, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PropertyValueTextBox}" Width="85" PreviewTextInput="VolumeTextBox_PreviewTextInput"/>
+                        <ComboBox 
+                            ItemsSource="{Binding Path=DataContext.AvailableVolumeUnits, RelativeSource={RelativeSource AncestorType=Window}}" 
+                            SelectedItem="{Binding VolumeUnit}" 
+                            Style="{StaticResource PropertyValueComboBox}" Width="115">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} ({1})">
+                                                <Binding Path="ShortName"/>
+                                                <Binding Path="FullName"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    
+                </Grid>
+
+                <TextBlock Grid.Row="4" Text="Дополнительные свойства:" Style="{StaticResource PropertiesHeader}" HorizontalAlignment="Center" Margin="0,10,0,0" Foreground="Blue"/>
+
+                <ItemsControl Grid.Row="5" HorizontalAlignment="Center" ItemsSource="{Binding ExtraProperties}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <ComboBox 
+                                        ItemsSource="{Binding Path=DataContext.AvailableProductExtraPropertyTypes, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                        DisplayMemberPath="Name" SelectedItem="{Binding PropertyType}" 
+                                        Style="{StaticResource ExtraPropertyFieldComboBox}" Width="190"/>
+                                    <TextBlock Text=":" Style="{StaticResource BigItemExtraPropertyField}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <TextBox Text="{Binding Value}" Style="{StaticResource ExtraPropertyValueTextBox}" Width="200"/>
+                                    <Button Style="{StaticResource ControlButton}" Command="{Binding DataContext.RemoveProductPropertyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding Path=.}">
+                                        <Button.Content>
+                                            <Image Source="{Binding Source={x:Static resx:Images.Remove_Property}}"/>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <StackPanel Grid.Row="6" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top">
+                    <TextBlock Text="Указана цена за: "  Style="{StaticResource BigItemQuantityUnit}" VerticalAlignment="Center"/>
+                    <ComboBox 
+                        ItemsSource="{Binding Path=DataContext.AvailableQuantityUnits, RelativeSource={RelativeSource AncestorType=Window}}" 
+                        SelectedItem="{Binding Path=DataContext.Offer.QuantityUnit, RelativeSource={RelativeSource AncestorType=Window}}" 
+                        Style="{StaticResource QuantityUnitComboBox}" Width="150">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                            <Binding Path="ShortName"/>
+                                            <Binding Path="FullName"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+
+            </Grid>
+        </Border>
+
+
+        <Button x:Name="Ok" Grid.Row="2" Grid.Column="0" Content="Сохранить" Style="{StaticResource DialogButton}" Margin="0,10,0,10" Click="Ok_Click" Command="{Binding OkCommand}"/>
+        <Button x:Name="Cancel" Grid.Row="2" Grid.Column="1" Content="Отмена" Style="{StaticResource DialogButton}" Margin="0,10,0,10" Click="Cancel_Click"/>
+
+    </Grid>
+</Window>

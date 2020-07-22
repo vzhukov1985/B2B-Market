@@ -26,7 +26,7 @@ namespace OperatorApp_Win.Views
             InitializeComponent();
             WindowsPageService.NavigationService = frmMain.NavigationService;
             WindowsPageService pageService = new WindowsPageService();
-            pageService.ShowQuantityUnitsPage();
+            pageService.ShowOffersPage();
         }
     }
 }
