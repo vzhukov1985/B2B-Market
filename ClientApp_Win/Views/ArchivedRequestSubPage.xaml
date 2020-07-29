@@ -69,29 +69,27 @@
                                         <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <Image Grid.Column="0" Source="{Binding Path=Product.Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" Height="80" Width="80" RenderOptions.BitmapScalingMode="Fant" />
 
-                                                <Grid Grid.Column="1" Margin="15,25,5,20">
+                                                <Grid Grid.Column="0" Margin="15,25,5,20">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="0.33*"/>
                                                         <RowDefinition/>
                                                     </Grid.RowDefinitions>
 
-                                                    <TextBlock Grid.Row="0" Text="{Binding Path=Product.Name}" HorizontalAlignment="Left" MaxWidth="295" FontSize="15" FontWeight="DemiBold" TextWrapping="Wrap"/>
+                                                    <TextBlock Grid.Row="0" Text="{Binding Path=ProductName}" HorizontalAlignment="Left" MaxWidth="295" FontSize="15" FontWeight="DemiBold" TextWrapping="Wrap"/>
 
                                                     <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="0,5,0,10">
-                                                        <TextBlock Text="{Binding Path=Product.Category.Name}" FontSize="13"/>
+                                                        <TextBlock Text="{Binding Path=ProductCategory}" FontSize="13"/>
                                                         <TextBlock FontSize="13">
                                                             <TextBlock.Text>
                                                                 <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
-                                                                    <Binding Path="Product.VolumeType"/>
-                                                                    <Binding Path="Product.Volume"/>
-                                                                    <Binding Path="Product.VolumeUnit"/>
+                                                                    <Binding Path="ProductVolumeType"/>
+                                                                    <Binding Path="ProductVolume"/>
+                                                                    <Binding Path="ProductVolumeUnit"/>
                                                                 </MultiBinding>
                                                             </TextBlock.Text>
                                                         </TextBlock>

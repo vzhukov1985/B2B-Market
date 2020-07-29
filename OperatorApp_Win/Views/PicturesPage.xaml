@@ -1,0 +1,279 @@
+﻿<Page x:Class="OperatorApp_Win.Views.PicturesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OperatorApp_Win.Views"
+      xmlns:conv="clr-namespace:OperatorApp_Win.Converters"
+      xmlns:resx="clr-namespace:OperatorApp.Resources;assembly=OperatorApp"
+      xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="1148"
+      Title="PicturesPage">
+
+    <Page.Resources>
+        <conv:PicStatusesToColorConverter x:Key="PicStatusesToColorConverter"/>
+        <CollectionViewSource Source="{Binding Products}" x:Key="SortProductsCVS">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="HasPicture" Direction="Ascending" />
+                <scm:SortDescription PropertyName="HasPictureConflict" Direction="Descending" />
+                <scm:SortDescription PropertyName="Name"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Сопоставление картинок" Style="{StaticResource PageHeader}"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="700"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Продукты:" Style="{StaticResource ListHeader}"/>
+
+                <ListView Grid.Row="1" ItemsSource="{Binding Source={StaticResource SortProductsCVS}}" SelectedItem="{Binding SelectedProduct}" ItemContainerStyle="{StaticResource LVItemFocusedColor}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource ItemsBorder}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Source="{Binding Path=Picture, TargetNullValue={x:Static resx:Images.EmptyPicture}, IsAsync=True}" Height="150" Width="150"/>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Style="{StaticResource ProductOfferHeader}" TextWrapping="Wrap">
+                                        <TextBlock.Foreground>
+                                            <MultiBinding Converter="{StaticResource PicStatusesToColorConverter}">
+                                                <Binding Path="HasPicture"/>
+                                                <Binding Path="HasPictureConflict"/>
+                                            </MultiBinding>
+                                        </TextBlock.Foreground>
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Code, StringFormat='Код продукта: {0}'}"  Style="{StaticResource SupplierName}"/>
+
+                                    <Grid Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" HorizontalAlignment="Left">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Категория:" Style="{StaticResource ItemPropertyField}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category.Name}" Style="{StaticResource ItemPropertyValue}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding VolumeType.Name, StringFormat='{}{0}:'}" Style="{StaticResource ItemPropertyField}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ItemPropertyValue}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0:G20} {1} ({2})">
+                                                    <Binding Path="Volume"/>
+                                                    <Binding Path="VolumeUnit.ShortName"/>
+                                                    <Binding Path="VolumeUnit.FullName"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+
+                                    <ItemsControl Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,10" ItemsSource="{Binding ExtraProperties}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="150"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0" Text="{Binding PropertyType.Name, StringFormat='{}{0}:'}" Style="{StaticResource ItemExtraPropertyField}"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Value}" Style="{StaticResource ItemExtraPropertyValue}"/>
+
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <TextBlock Grid.Row="2" Style="{StaticResource ListHeader}" HorizontalAlignment="Center">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Без картинок: {0}, есть конфликты: {1}">
+                            <Binding Path="ProductsWithoutPicturesCount"/>
+                            <Binding Path="ProductsWithConflictedPicsCount"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+            </Grid>
+
+            <Grid Grid.Column="1" Margin="20,20,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <Grid Grid.Row="0" Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Текущая:" Style="{StaticResource PicsPictureHeader}"/>
+                    <Border Grid.Column="0" Grid.Row="1" Width="200" Height="200" BorderThickness="1" BorderBrush="LightGray">
+                        <Image Source="{Binding Path=SelectedProduct.Picture, TargetNullValue={x:Static resx:Images.EmptyPicture}, IsAsync=True}" Width="200" Height="200"/>
+                    </Border>
+                    <Button Grid.Column="0" Grid.Row="2" Content="Оставить"  Style="{StaticResource BigButton}" Width="200" Height="50" Command="{Binding RemoveConflictedPicturesCommand}" />
+
+                    <TextBlock Grid.Column="1" Grid.Row="0" Text="От других поставщиков:" Style="{StaticResource PicsPictureHeader}"/>
+                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="&lt;" Style="{StaticResource BigButton}" Width="40" Height="40" Command="{Binding ShowPreviousConflictPicCommand}"/>
+                        <Border Width="200" Height="200" BorderThickness="1" BorderBrush="LightGray">
+                            <Image Grid.Row="0" Source="{Binding Path=SelectedProductConflictedPicture, TargetNullValue={x:Static resx:Images.EmptyPicture}, IsAsync=True}" Width="200"  Height="200"/>
+                        </Border>
+                        <Button Content="&gt;" Style="{StaticResource BigButton}" Width="40" Height="40" Command="{Binding ShowNextConflictPicCommand}"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Grid.Row="2" Content="Заменить" Style="{StaticResource BigButton}" Width="200" Height="50" Command="{Binding UpdateConflictedPictureCommand}"/>
+
+                    <Button Grid.Column="2" Grid.Row="0" Content="Загрузить собственную:" Style="{StaticResource BigButton}" Width="200" Height="25" FontSize="15" Command="{Binding LoadCustomPictureCommand}"/>
+                    <Border Grid.Column="2" Grid.Row="1" Width="200" Height="200" BorderThickness="1" BorderBrush="LightGray">
+                        <Image Source="{Binding Path=CustomPicture, TargetNullValue={x:Static resx:Images.EmptyPicture}, IsAsync=True}" Width="200"  Height="200"/>
+                    </Border>
+                    <Button Grid.Column="2" Grid.Row="2" Content="Заменить" Style="{StaticResource BigButton}" Width="200" Height="50" Command="{Binding MatchWithCustomPictureCommand}"/>
+
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,70,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{Binding SelectedProduct.Name}" Style="{StaticResource PicsBigProductOfferHeader}" TextWrapping="Wrap" HorizontalAlignment="Center">
+                        <TextBlock.Foreground>
+                            <MultiBinding Converter="{StaticResource PicStatusesToColorConverter}" TargetNullValue="Green">
+                                <Binding Path="SelectedProduct.HasPicture"/>
+                                <Binding Path="SelectedProduct.HasPictureConflict"/>
+                            </MultiBinding>
+                        </TextBlock.Foreground> 
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="1" Text="{Binding SelectedProduct.Code, StringFormat='Код продукта: {0}'}"  Style="{StaticResource PicsProductCode}" HorizontalAlignment="Center"/>
+
+                    <Grid Grid.Row="2" Margin="0,10,0,0" HorizontalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Категория:" Style="{StaticResource PicsItemPropertyField}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedProduct.Category.Name}" Style="{StaticResource PicsItemPropertyValue}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedProduct.VolumeType.Name, StringFormat='{}{0}:'}" Style="{StaticResource PicsItemPropertyField}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource PicsItemPropertyValue}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0:G20} {1} ({2})">
+                                    <Binding Path="SelectedProduct.Volume"/>
+                                    <Binding Path="SelectedProduct.VolumeUnit.ShortName"/>
+                                    <Binding Path="SelectedProduct.VolumeUnit.FullName"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+
+                    <ItemsControl Grid.Row="3" HorizontalAlignment="Center" Margin="0,0,0,10" ItemsSource="{Binding SelectedProduct.ExtraProperties}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding PropertyType.Name, StringFormat='{}{0}:'}" Style="{StaticResource PicsItemExtraPropertyField}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Value}" Style="{StaticResource PicsItemExtraPropertyValue}"/>
+
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Grid.Row="4" Text="Имеются предложения от поставщиков:" Style="{StaticResource PicsProductCode}" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+
+                    <ItemsControl Grid.Row="5" ItemsSource="{Binding SelectedProduct.Offers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource PicsItemPropertyValue}" HorizontalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} (Код: {1})">
+                                            <Binding Path="Supplier.ShortName"/>
+                                            <Binding Path="SupplierProductCode"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Button Grid.Row="6" Content="Запросить картинки от всех поставщиков" Style="{StaticResource BigButton}" HorizontalAlignment="Center" Height="40" Width="500" Margin="0,20,0,0" VerticalAlignment="Top" Command="{Binding RequestPicturesForProductCommand}"/>
+
+                </Grid>
+                
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button  Grid.Column="0" Content="Назад" Style="{StaticResource BigButton}" Command="{Binding ShowPreviousPageCommand}" Width="150" Height="50" HorizontalAlignment="Left" Margin="10,10,0,10"/>
+            <Button Grid.Column="1" Content="Запросить картинки для всех товаров без картинки" Style="{StaticResource BigButton}" Command="{Binding RequestPicturesForAllProductsCommand}" Width="500" Height="50" HorizontalAlignment="Center" Margin="0,10,0,10"/>
+            <Button Grid.Column="2" Content="Далее" Style="{StaticResource BigButton}" Command="{Binding ShowNextPageCommand}" Width="150" Height="50" HorizontalAlignment="Right" Margin="0,10,10,10"/>
+        </Grid>
+
+    </Grid>
+</Page>

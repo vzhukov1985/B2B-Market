@@ -58,8 +58,7 @@ namespace ClientApp.ViewModels
 
         private void ShowSupplierProducts(Supplier selectedSupplier)
         {
-            List<Guid> supplierFilter = new List<Guid>();
-            supplierFilter.Add(selectedSupplier.Id);
+            List<Guid> supplierFilter = new List<Guid> { selectedSupplier.Id };
             PageService.ShowOffersSubPage(User, selectedSupplier.FullName, null, supplierFilter);
         }
 
@@ -89,7 +88,7 @@ namespace ClientApp.ViewModels
         public CommandType ShowSupplierProductsCommand { get; }
         public CommandType ShowContractedSuppliersProductsCommand { get; }
 
-        private List<Guid> ContractedSuppliersIds;
+        private readonly List<Guid> ContractedSuppliersIds;
 
         public MainSubPageVM(ClientUser user, IPageService pageService)
         {

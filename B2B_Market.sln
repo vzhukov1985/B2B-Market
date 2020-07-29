@@ -13,13 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp", "ClientApp\Clie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp_Win", "ClientApp_Win\ClientApp_Win.csproj", "{5965C153-60CB-4A00-8BF9-F29BA6431BAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agent", "Agent\Agent.csproj", "{18AD111F-8C05-4C8F-A5EF-5AC6B244EA1F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OperatorApp", "OperatorApp\OperatorApp.csproj", "{CB02FB30-A93D-47E0-BFF9-46431DA0758C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OperatorApp_Win", "OperatorApp_Win\OperatorApp_Win.csproj", "{75A05B63-9D8E-45D1-A1B2-F4C5D6790CFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateDb_Service", "UpdateDb_Service\UpdateDb_Service.csproj", "{12A0BE8E-EBB9-4D2E-ADD3-858BCFD8C426}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpdateDb_Service", "UpdateDb_Service\UpdateDb_Service.csproj", "{12A0BE8E-EBB9-4D2E-ADD3-858BCFD8C426}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +45,6 @@ Global
 		{5965C153-60CB-4A00-8BF9-F29BA6431BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5965C153-60CB-4A00-8BF9-F29BA6431BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5965C153-60CB-4A00-8BF9-F29BA6431BAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{18AD111F-8C05-4C8F-A5EF-5AC6B244EA1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18AD111F-8C05-4C8F-A5EF-5AC6B244EA1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18AD111F-8C05-4C8F-A5EF-5AC6B244EA1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18AD111F-8C05-4C8F-A5EF-5AC6B244EA1F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB02FB30-A93D-47E0-BFF9-46431DA0758C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB02FB30-A93D-47E0-BFF9-46431DA0758C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB02FB30-A93D-47E0-BFF9-46431DA0758C}.Release|Any CPU.ActiveCfg = Release|Any CPU

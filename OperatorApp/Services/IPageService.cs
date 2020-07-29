@@ -14,5 +14,7 @@ namespace OperatorApp.Services
         void ShowMidCategoriesPage();
         void ShowTopCategoriesPage();
         void ShowOffersPage();
+        void ShowPicturesPage();
+        void ShowDescriptionsPage();
     }
 }

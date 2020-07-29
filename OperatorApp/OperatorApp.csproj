@@ -6,8 +6,11 @@
 
   <ItemGroup>
     <None Remove="Resources\Add.png" />
+    <None Remove="Resources\Add_NewProperty.png" />
     <None Remove="Resources\Add_Property.png" />
     <None Remove="Resources\Clean.png" />
+    <None Remove="Resources\ConflictedPics_Next.png" />
+    <None Remove="Resources\ConflictedPics_Previous.png" />
     <None Remove="Resources\Edit.png" />
     <None Remove="Resources\EmptyPicture.png" />
     <None Remove="Resources\Remove.png" />
@@ -22,8 +25,11 @@
 
   <ItemGroup>
     <Resource Include="Resources\Add.png" />
+    <Resource Include="Resources\Add_NewProperty.png" />
     <Resource Include="Resources\Add_Property.png" />
     <Resource Include="Resources\Clean.png" />
+    <Resource Include="Resources\ConflictedPics_Next.png" />
+    <Resource Include="Resources\ConflictedPics_Previous.png" />
     <Resource Include="Resources\Edit.png" />
     <Resource Include="Resources\EmptyPicture.png" />
     <Resource Include="Resources\Remove.png" />

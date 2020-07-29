@@ -31,6 +31,10 @@
         <Setter Property="FontWeight" Value="DemiBold"/>
     </Style>
 
+    <Style x:Key="MenuButton" TargetType="Button" BasedOn="{StaticResource BigButton}">
+        <Setter Property="FontSize" Value="15"/>
+    </Style>
+
     <Style TargetType="ListView">
         <Setter Property="SelectionMode" Value="Single"/>
     </Style>
@@ -200,8 +204,45 @@
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontSize" Value="19"/>
     </Style>
-
-
+    
+    <!-- MatchPictures Page-->
+    <Style x:Key="PicsBigProductOfferHeader" TargetType="TextBlock" BasedOn="{StaticResource ProductOfferHeader}">
+        <Setter Property="FontSize" Value="28"/>
+    </Style>
+    <Style x:Key="PicsPictureHeader" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="DemiBold"/>
+        <Setter Property="Margin" Value="0,0,0,5"/>
+    </Style>
+    <Style x:Key="PicsProductCode" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="DemiBold"/>
+    </Style>
+    <Style x:Key="PicsItemPropertyField" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="0,0,2,0"/>
+        <Setter Property="FontWeight" Value="DemiBold"/>
+        <Setter Property="FontSize" Value="15"/>
+    </Style>
+    <Style x:Key="PicsItemPropertyValue" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="2,0,0,0"/>
+        <Setter Property="FontSize" Value="15"/>
+    </Style>
+    <Style x:Key="PicsItemExtraPropertyField" TargetType="TextBlock" BasedOn="{StaticResource PicsItemPropertyField}">
+        <Setter Property="Foreground" Value="Blue"/>
+    </Style>
+    <Style x:Key="PicsItemExtraPropertyValue" TargetType="TextBlock" BasedOn="{StaticResource PicsItemPropertyValue}">
+        <Setter Property="Foreground" Value="Blue"/>
+    </Style>
+    <Style x:Key="PicsItemQuantityUnit" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="DarkGreen"/>
+        <Setter Property="Margin" Value="30,0,0,5"/>
+    </Style>
 
     <!--- Dialogs-->
     <Style x:Key="DialogWindow" TargetType="Window">

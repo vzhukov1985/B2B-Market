@@ -55,5 +55,15 @@ namespace OperatorApp_Win.Services
             OffersPage offersPage = new OffersPage() { DataContext = new OffersPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
             NavigationService.Navigate(offersPage);
         }
+        public void ShowPicturesPage()
+        {
+            PicturesPage picturesPage = new PicturesPage() { DataContext = new PicturesPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(picturesPage);
+        }
+        public void ShowDescriptionsPage()
+        {
+            DescriptionsPage descriptionsPage = new DescriptionsPage() { DataContext = new DescriptionsPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(descriptionsPage);
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -38,12 +39,32 @@ namespace Core.DBModels
             }
         }
 
+        private async void LoadPictureAsync()
+        {
+            Picture = await HTTPManager.GetTopCategoryPictureAsync(Id);
+        }
+
+        private byte[] _picture;
         [NotMapped]
         public byte[] Picture
         {
             get
             {
-                return FTPManager.GetTopCategoryPicture(Id);
+                if (_picture == null)
+                {
+                    LoadPictureAsync();
+                    return null;
+                }
+
+                if (_picture.SequenceEqual(Encoding.ASCII.GetBytes("NoPicture")))
+                    return null;
+
+                return _picture;
+            }
+            set
+            {
+                _picture = value;
+                OnPropertyChanged("Picture");
             }
         }
     }

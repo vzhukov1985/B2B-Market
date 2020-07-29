@@ -73,6 +73,16 @@ namespace OperatorApp.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] Add_NewProperty {
+            get {
+                object obj = ResourceManager.GetObject("Add_NewProperty", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] Add_Property {
             get {
                 object obj = ResourceManager.GetObject("Add_Property", resourceCulture);

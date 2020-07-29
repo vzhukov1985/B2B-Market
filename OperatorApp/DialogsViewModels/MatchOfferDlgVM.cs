@@ -97,7 +97,7 @@ namespace OperatorApp.DialogsViewModels
             }
         }
 
-        private void AddNewProperty(MatchProductExtraProperty matchProperty)
+        private void AddPropertyBasedOnMatch(MatchProductExtraProperty matchProperty)
         {
             ProductExtraProperty newProperty = new ProductExtraProperty
             {
@@ -123,6 +123,11 @@ namespace OperatorApp.DialogsViewModels
             }
         }
 
+        private void AddNewProperty()
+        {
+            Offer.Product.ExtraProperties.Add(new ProductExtraProperty { Id = Guid.NewGuid(), Product = Offer.Product, ProductId = Offer.ProductId, PropertyType = null, PropertyTypeId = Guid.Empty, Value = "" });
+        }
+
         private void RemoveProductProperty(ProductExtraProperty property)
         {
             if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Дополнительное свойство \""+property.PropertyType.Name+": "+ property.Value+"\" будет удалено!", "ВНИМАНИЕ!!!"))
@@ -130,6 +135,7 @@ namespace OperatorApp.DialogsViewModels
         }
 
 
+        public CommandType AddPropertyBasedOnMatchCommand { get; }
         public CommandType AddNewPropertyCommand { get; }
         public CommandType RemoveProductPropertyCommand { get; }
 
@@ -150,9 +156,11 @@ namespace OperatorApp.DialogsViewModels
             Offer = offer;
             DialogService = dialogService;
 
-            AddNewPropertyCommand = new CommandType();
-            AddNewPropertyCommand.Create(o => AddNewProperty((MatchProductExtraProperty)o));
+            AddPropertyBasedOnMatchCommand = new CommandType();
+            AddPropertyBasedOnMatchCommand.Create(o => AddPropertyBasedOnMatch((MatchProductExtraProperty)o));
 
+            AddNewPropertyCommand = new CommandType();
+            AddNewPropertyCommand.Create(_ => AddNewProperty());
             RemoveProductPropertyCommand = new CommandType();
             RemoveProductPropertyCommand.Create(o => RemoveProductProperty((ProductExtraProperty)o));
 
@@ -174,6 +182,5 @@ namespace OperatorApp.DialogsViewModels
             AvailableProductExtraPropertyTypes = new ObservableCollection<ProductExtraPropertyType>(availableProductExtraPropertyTypes);
             AvailableQuantityUnits = new ObservableCollection<QuantityUnit>(availableQuantityUnits);
         }
-
     }
 }

@@ -8,6 +8,8 @@ namespace OperatorApp.Services
 {
     public interface IDialogService
     {
+        string FilePath { get; set; }
+
         bool ShowOkCancelDialog(string text, string caption);
         void ShowMessageDialog(string text, string caption);
 
@@ -21,5 +23,7 @@ namespace OperatorApp.Services
             List<QuantityUnit> availableQuantityUnits);
 
         bool ShowWarningElementsRemoveDialog(List<Tuple<string,string>> elements);
+
+        bool ShowOpenPictureDialog();
     }
 }

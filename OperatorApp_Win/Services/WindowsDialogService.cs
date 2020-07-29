@@ -1,5 +1,6 @@
 ﻿using Core.DBModels;
 using Core.Models;
+using Microsoft.Win32;
 using OperatorApp.DialogsViewModels;
 using OperatorApp.Services;
 using OperatorApp_Win.Dialogs;
@@ -13,6 +14,8 @@ namespace OperatorApp_Win.Services
 {
     public class WindowsDialogService : IDialogService
     {
+        public string FilePath { get; set; }
+
         public bool ShowOkCancelDialog(string text, string caption)
         {
             if (MessageBox.Show(text, caption, MessageBoxButton.OKCancel) == MessageBoxResult.OK)
@@ -59,6 +62,22 @@ namespace OperatorApp_Win.Services
             WarningElementsRemoveDlg dlg = new WarningElementsRemoveDlg() { DataContext = new WarningElementsRemoveDlgVM(elements) };
             return dlg.ShowDialog() == true;
 
+        }
+
+        public bool ShowOpenPictureDialog()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "PNG images (*.png) | *.png",
+                DefaultExt = ".png",
+            };
+            
+            if (openFileDialog.ShowDialog() == true)
+            {
+                FilePath = openFileDialog.FileName;
+                return true;
+            }
+            return false;
         }
     }
 }

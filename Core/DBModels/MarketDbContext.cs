@@ -68,7 +68,15 @@ namespace Core.DBModels
         public virtual DbSet<MatchVolumeType> MatchVolumeTypes { get; set; }
         public virtual DbSet<MatchVolumeUnit> MatchVolumeUnits { get; set; }
         public virtual DbSet<MatchOffer> MatchOffers { get; set; }
+        public virtual DbSet<UnmatchedPic> UnmatchedPics { get; set; }
+        public virtual DbSet<ConflictedPic> ConflictedPics { get; set; }
+        public virtual DbSet<UnmatchedDescription> UnmatchedDescriptions { get; set; }
+        public virtual DbSet<ConflictedDescription> ConflictedDescriptions { get; set; }
 
+
+
+        // public static readonly string b2bDataDir = @"\\192.168.1.1\Media Server\B2B FTP Server"; Local
+        public static readonly string b2bDataDir = @"D:/B2B FTP Server Mirror";
 
         public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)
         {
@@ -314,6 +322,15 @@ namespace Core.DBModels
             {
                 IEnumerable<Guid> allMidCategories = db.MidCategories.Select(mo => mo.TopCategoryId == null ? Guid.Empty : (Guid)mo.TopCategoryId).Distinct();
                 return db.TopCategories.Where(mc => !allMidCategories.Contains(mc.Id)).ToList();
+            }
+        }
+
+        public static List<Product> GetUnusedProducts()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                IEnumerable<Guid> allOffers = db.Offers.Select(o => o.ProductId).Distinct();
+                return db.Products.Where(p => !allOffers.Contains(p.Id)).ToList();
             }
         }
     }

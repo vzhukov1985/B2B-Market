@@ -70,19 +70,9 @@ namespace ClientApp.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                Request.Orders = new ObservableCollection<ArchivedOrder>(await db.ArchivedOrders.Where(o => o.ArchivedRequestId == Request.Id)
-                    .Include(o => o.Product)
-                    .ThenInclude(p => p.Category)
-                    .ThenInclude(c => c.MidCategory)
-                    .ThenInclude(m => m.TopCategory)
-                    .Include(o => o.Product)
-                    .ThenInclude(p => p.VolumeType)
-                    .Include(o => o.Product)
-                    .ThenInclude(p => p.VolumeUnit)
-                    .OrderBy(o => o.Product.Category)
-                    .ToListAsync());
+                Request.Orders = new ObservableCollection<ArchivedOrder>(await db.ArchivedOrders.Where(o => o.ArchivedRequestId == Request.Id).ToListAsync());
 
-                OrdersGroup = Request.Orders.GroupBy(o => o.Product.Category.MidCategory.TopCategory.Name).ToDictionary(g => g.Key, g => new ObservableCollection<ArchivedOrder>(g));
+                OrdersGroup = Request.Orders.GroupBy(o => o.ProductCategory).ToDictionary(g => g.Key, g => new ObservableCollection<ArchivedOrder>(g));
                 Request.ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>(Request.ArchivedRequestsStatuses.OrderBy(s => s.DateTime));
             }
         }

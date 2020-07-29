@@ -44,6 +44,8 @@ namespace Core.DBModels
             set
             {
                 _supplier = value;
+                if (_supplier != null)
+                    SupplierId = _supplier.Id;
                 OnPropertyChanged("Supplier");
             }
         }
@@ -90,6 +92,8 @@ namespace Core.DBModels
             set
             {
                 _matchProductCategory = value;
+                if (_matchProductCategory != null)
+                    MatchProductCategoryId = _matchProductCategory.Id;
                 OnPropertyChanged("MatchProductCategory");
             }
         }
@@ -112,6 +116,8 @@ namespace Core.DBModels
             set
             {
                 _matchVolumeType = value;
+                if (_matchVolumeType != null)
+                    MatchVolumeTypeId = _matchVolumeType.Id;
                 OnPropertyChanged("MatchVolumeType");
             }
         }
@@ -134,6 +140,8 @@ namespace Core.DBModels
             set
             {
                 _matchVolumeUnit = value;
+                if (_matchVolumeUnit != null)
+                    MatchVolumeUnitId = _matchVolumeUnit.Id;
                 OnPropertyChanged("MatchVolumeUnit");
             }
         }
@@ -167,6 +175,8 @@ namespace Core.DBModels
             set
             {
                 _matchQuantityUnit = value;
+                if (_matchQuantityUnit != null)
+                    MatchQuantityUnitId = _matchQuantityUnit.Id;
                 OnPropertyChanged("MatchQuantityUnit");
             }
         }
@@ -223,6 +233,8 @@ namespace Core.DBModels
             set
             {
                 _offer = value;
+                if (_offer != null)
+                    OfferId = _offer.Id;
                 OnPropertyChanged("Offer");
             }
         }
@@ -236,6 +248,26 @@ namespace Core.DBModels
                 _matchProductExtraProperties = value;
                 OnPropertyChanged("MatchProductExtraProperties");
             }
+        }
+
+        public static MatchOffer CloneForDB(MatchOffer matchOffer)
+        {
+            return new MatchOffer
+            {
+                Id = matchOffer.Id,
+                SupplierId = matchOffer.SupplierId,
+                SupplierProductCode = matchOffer.SupplierProductCode,
+                ProductName = matchOffer.ProductName,
+                MatchProductCategoryId = matchOffer.MatchProductCategoryId,
+                MatchVolumeTypeId = matchOffer.MatchVolumeTypeId,
+                MatchVolumeUnitId = matchOffer.MatchVolumeUnitId,
+                ProductVolume = matchOffer.ProductVolume,
+                MatchQuantityUnitId = matchOffer.MatchQuantityUnitId,
+                Remains = matchOffer.Remains,
+                RetailPrice = matchOffer.RetailPrice,
+                DiscountPrice = matchOffer.DiscountPrice,
+                OfferId = matchOffer.OfferId
+            };
         }
 
     }

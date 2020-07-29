@@ -145,7 +145,80 @@ namespace OperatorApp.ViewModels
         private List<QuantityUnit> availableQuantityUnits;
         private List<Offer> allOffers;
 
-        private async void RemoveMatchOffer()
+        private void MatchUnmatchedPicture()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                UnmatchedPic unmatchedPicRecord = db.UnmatchedPics.Where(up => up.SupplierProductCode == SelectedMatchOffer.SupplierProductCode && up.SupplierId == SelectedMatchOffer.SupplierId).FirstOrDefault();
+                if (unmatchedPicRecord != null)
+                {
+                    bool? resultTryToMoveToMatched = FTPManager.MoveUnmatchedProductPicToMatched(unmatchedPicRecord.Id, SelectedProduct.Id);
+                    if (resultTryToMoveToMatched == false) //Matched picture already exists
+                    {
+                        //Check if umatched pic and existing matched pic are the same
+                        if (FTPManager.AreUmatchedAndMatchedPicsTheSame(unmatchedPicRecord.Id, SelectedProduct.Id) == true)
+                        {
+                            //DeleteUnmatchedPic
+                            FTPManager.RemoveUnmatchedPic(unmatchedPicRecord.Id);
+                        }
+                        else
+                        {
+                            Guid newConflictedGuid = Guid.NewGuid();
+                            if (FTPManager.MoveUnmatchedProductPicToConflicted(unmatchedPicRecord.Id, newConflictedGuid) != null)
+                            {
+                                db.ConflictedPics.Add(new ConflictedPic { Id = newConflictedGuid, SupplierId = SelectedMatchOffer.SupplierId, ProductId = SelectedProduct.Id });
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    if (resultTryToMoveToMatched != null) //If moving to matched or conflicted is ok
+                    {
+                        db.UnmatchedPics.Remove(unmatchedPicRecord);
+                        db.SaveChanges();
+                    }
+                    if (resultTryToMoveToMatched == true)
+                    {
+                        SelectedProduct.Picture = null; //TODO: Sometimes pic is not updated
+                    }
+                }
+            }
+        }
+
+        private void MatchUnmatchedDesc()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                UnmatchedDescription unmatchedDescRecord = db.UnmatchedDescriptions.Where(up => up.SupplierProductCode == SelectedMatchOffer.SupplierProductCode && up.SupplierId == SelectedMatchOffer.SupplierId).FirstOrDefault();
+                SelectedProduct.Description = db.ProductDescriptions.Find(SelectedProduct.Id);
+                if (unmatchedDescRecord != null)
+                {
+                    if (SelectedProduct.Description != null && SelectedProduct.Description.Text != "")
+                    {
+                        if (SelectedProduct.Description.Text != unmatchedDescRecord.Description)
+                        {
+                            Guid newConflictedGuid = Guid.NewGuid();
+                            db.ConflictedDescriptions.Add(new ConflictedDescription { Id = newConflictedGuid, SupplierId = SelectedMatchOffer.SupplierId, ProductId = SelectedProduct.Id, Description = unmatchedDescRecord.Description });
+                        }
+                    }
+                    else
+                    {
+                        if (SelectedProduct.Description == null)
+                        {
+                            db.ProductDescriptions.Add(new ProductDescription { ProductId = SelectedProduct.Id, Text = unmatchedDescRecord.Description });
+                        }
+                        else
+                        {
+                            db.ProductDescriptions.Update(SelectedProduct.Description);
+                        }
+                    }
+                    db.UnmatchedDescriptions.Remove(unmatchedDescRecord);
+                    db.SaveChanges();
+
+                }
+            }
+        }
+
+        private void RemoveMatchOffer()
         {
             /*          List<Guid> unusedProductsIds = MarketDbContext.GetUnusedMatchOffersIds();
                        if (unusedProductsIds.Contains(SelectedMatchOffer.Id))
@@ -167,7 +240,7 @@ namespace OperatorApp.ViewModels
                        }*/
         }
 
-        private async void RemoveUnusedMatchOffers()
+        private void RemoveUnusedMatchOffers()
         {
             /*            List<MatchOffer> unusedProducts = MarketDbContext.GetUnusedMatchOffers();
                         if (unusedProducts.Count > 0)
@@ -192,49 +265,50 @@ namespace OperatorApp.ViewModels
         private async void AddNewProductBasedOnMatch()
         {
 
-                Guid newProductId = Guid.NewGuid();
-                Product newProduct = new Product()
-                {
-                    Id = newProductId,
-                    Name = SelectedMatchOffer.ProductName,
-                    Category = availableCategories.Where(pc => pc.Id == SelectedMatchOffer.MatchProductCategory.ProductCategoryId).FirstOrDefault(),
-                    VolumeType = availableVolumeTypes.Where(vt => vt.Id == SelectedMatchOffer.MatchVolumeType.VolumeTypeId).FirstOrDefault(),
-                    VolumeUnit = availableVolumeUnits.Where(vu => vu.Id == SelectedMatchOffer.MatchVolumeUnit.VolumeUnitId).FirstOrDefault(),
-                    Volume = SelectedMatchOffer.ProductVolume,
-                    ExtraProperties = new ObservableCollection<ProductExtraProperty>(SelectedMatchOffer.MatchProductExtraProperties.Select(mpep => new ProductExtraProperty
-                    {
-                        Id = Guid.NewGuid(),
-                        ProductId = newProductId,
-                        PropertyType = availableProductExtraPropertyTypes.Where(pep => pep.Id == mpep.MatchProductExtraPropertyType.ProductExtraPropertyTypeId).FirstOrDefault(),
-                        Value = mpep.Value
-                    }))
-                };
-
-                Offer newOffer = new Offer
+            Guid newProductId = Guid.NewGuid();
+            Product newProduct = new Product()
+            {
+                Id = newProductId,
+                Name = SelectedMatchOffer.ProductName,
+                Category = availableCategories.Where(pc => pc.Id == SelectedMatchOffer.MatchProductCategory.ProductCategoryId).FirstOrDefault(),
+                VolumeType = availableVolumeTypes.Where(vt => vt.Id == SelectedMatchOffer.MatchVolumeType.VolumeTypeId).FirstOrDefault(),
+                VolumeUnit = availableVolumeUnits.Where(vu => vu.Id == SelectedMatchOffer.MatchVolumeUnit.VolumeUnitId).FirstOrDefault(),
+                Volume = SelectedMatchOffer.ProductVolume,
+                ExtraProperties = new ObservableCollection<ProductExtraProperty>(SelectedMatchOffer.MatchProductExtraProperties.Select(mpep => new ProductExtraProperty
                 {
                     Id = Guid.NewGuid(),
-                    Product = newProduct,
-                    QuantityUnit = availableQuantityUnits.Where(qu => qu.Id == SelectedMatchOffer.MatchQuantityUnit.QuantityUnitId).FirstOrDefault(),
-                    Supplier = SelectedMatchOffer.Supplier,
-                    SupplierProductCode = SelectedMatchOffer.SupplierProductCode,
-                    Remains = SelectedMatchOffer.Remains,
-                    RetailPrice = SelectedMatchOffer.RetailPrice,
-                    DiscountPrice = SelectedMatchOffer.DiscountPrice,
-                    IsActive = true
-                };
+                    ProductId = newProductId,
+                    PropertyType = availableProductExtraPropertyTypes.Where(pep => pep.Id == mpep.MatchProductExtraPropertyType.ProductExtraPropertyTypeId).FirstOrDefault(),
+                    Value = mpep.Value
+                }))
+            };
 
-                bool dlgResult = DialogService.ShowMatchOfferDlg(
-                    SelectedMatchOffer,
-                    newOffer,
-                    availableCategories,
-                    availableVolumeTypes,
-                    availableVolumeUnits,
-                    availableProductExtraPropertyTypes,
-                    availableQuantityUnits
-                    );
+            Offer newOffer = new Offer
+            {
+                Id = Guid.NewGuid(),
+                Product = newProduct,
+                QuantityUnit = availableQuantityUnits.Where(qu => qu.Id == SelectedMatchOffer.MatchQuantityUnit.QuantityUnitId).FirstOrDefault(),
+                Supplier = SelectedMatchOffer.Supplier,
+                SupplierProductCode = SelectedMatchOffer.SupplierProductCode,
+                Remains = SelectedMatchOffer.Remains,
+                RetailPrice = SelectedMatchOffer.RetailPrice,
+                DiscountPrice = SelectedMatchOffer.DiscountPrice,
+                IsActive = true
+            };
+
+            bool dlgResult = DialogService.ShowMatchOfferDlg(
+                SelectedMatchOffer,
+                newOffer,
+                availableCategories,
+                availableVolumeTypes,
+                availableVolumeUnits,
+                availableProductExtraPropertyTypes,
+                availableQuantityUnits
+                );
 
             if (dlgResult == true)
             {
+                Offer oldOffer;
                 using (MarketDbContext db = new MarketDbContext())
                 {
                     db.Products.Add(Product.CloneForDB(newOffer.Product));
@@ -244,21 +318,37 @@ namespace OperatorApp.ViewModels
                 }
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    oldOffer = await db.Offers.FindAsync(SelectedMatchOffer.OfferId);
                     SelectedMatchOffer.OfferId = newOffer.Id;
-                    db.MatchOffers.Update(SelectedMatchOffer);
+                    db.MatchOffers.Update(MatchOffer.CloneForDB(SelectedMatchOffer));
                     await db.SaveChangesAsync();
                 }
+
+
+                if (oldOffer != null)
+                {
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
+                        db.Offers.Remove(Offer.CloneForDB(oldOffer));
+                        await db.SaveChangesAsync();
+                    }
+                }
+
                 using (MarketDbContext db = new MarketDbContext())
                 {
                     newOffer.Product.Code = db.Products.Find(newOffer.ProductId).Code;
                 }
-                    allOffers.Add(newOffer);
-                    Products.Add(newOffer.Product);
-                    UncheckedCount--;
-                    if (ShowUncheckedOnly)
-                        OffersToMatch.Remove(SelectedMatchOffer);
-          
+                allOffers.Add(newOffer);
+                Products.Add(newOffer.Product);
+                SelectedProduct = newOffer.Product;
+                MatchUnmatchedPicture();
+                MatchUnmatchedDesc();
+
+                UncheckedCount--;
+                if (ShowUncheckedOnly)
+                    OffersToMatch.Remove(SelectedMatchOffer);
             }
+            SelectedProduct = newOffer.Product;
         }
 
         private async void MatchOffers()
@@ -344,10 +434,13 @@ namespace OperatorApp.ViewModels
 
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                        SelectedMatchOffer.OfferId = offer.Id;
-                        db.MatchOffers.Update(SelectedMatchOffer);
-                        await db.SaveChangesAsync();
+                    SelectedMatchOffer.OfferId = offer.Id;
+                    db.MatchOffers.Update(MatchOffer.CloneForDB(SelectedMatchOffer));
+                    await db.SaveChangesAsync();
                 }
+
+                MatchUnmatchedPicture();
+                MatchUnmatchedDesc();
 
                 if (updateOffer == false)
                 {
@@ -378,7 +471,7 @@ namespace OperatorApp.ViewModels
             SelectedOfferQuantityUnit = offer.QuantityUnit;
         }
 
-        private async void AddProduct()
+        private void AddProduct()
         {
             /*List<ElementField> fields = new List<ElementField>{
                 new ElementField("Название", "")
@@ -409,7 +502,7 @@ namespace OperatorApp.ViewModels
             }*/
         }
 
-        private async void EditProduct()
+        private void EditProduct()
         {
             /*List<ElementField> fields = new List<ElementField>{
                 new ElementField("Название", SelectedProduct.Name)
@@ -430,29 +523,31 @@ namespace OperatorApp.ViewModels
 
         private async void RemoveProduct()
         {
-            /*List<Guid> unusedProductsIds = MarketDbContext.GetUnusedProductsIds();
-            if (unusedProductsIds.Contains(SelectedProduct.Id))
+            using (MarketDbContext db = new MarketDbContext())
             {
-                Tuple<string, string> element = new Tuple<string, string>("", "\"" + SelectedProduct.Name + "\"");
-                if (DialogService.ShowWarningElementsRemoveDialog(new List<Tuple<string, string>> { element }))
+                
+                if (db.Offers.Where(o => o.ProductId == SelectedProduct.Id).Count() == 0)
                 {
-                    using (MarketDbContext db = new MarketDbContext())
+                    if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Вы уверены, что хотите удалить продукт \"" + SelectedProduct.Name + "\"?", "ВНИМАНИЕ!!!"))
                     {
-                        db.Products.Remove(SelectedProduct);
+                        db.ProductExtraProperties.RemoveRange(SelectedProduct.ExtraProperties.Select(ep => ProductExtraProperty.CloneForDB(ep)));
+                        db.ProductDescriptions.Remove(db.ProductDescriptions.Find(SelectedProduct.Id));
+                        db.Products.Remove(Product.CloneForDB(SelectedProduct));
                         await db.SaveChangesAsync();
-                        _ = QueryDb(false, true);
+                        Products.Remove(SelectedProduct);
                     }
                 }
+                else
+                {
+                    DialogService.ShowMessageDialog("Невозможно удалить продукт, т.к. он есть в предложениях от поставщиков.", "Ошибка");
+                }
             }
-            else
-            {
-                DialogService.ShowMessageDialog("Элемент не может быть удален, т.к. используется", "Удаление невозможно");
-            }*/
+
         }
 
-        private async void RemoveUnusedProducts()
+        private void RemoveUnusedProducts()
         {
-            /*List<Product> unusedProducts = MarketDbContext.GetUnusedProducts();
+/*            List<Product> unusedProducts = MarketDbContext.GetUnusedProducts();
             if (unusedProducts.Count > 0)
             {
                 List<Tuple<string, string>> elements = unusedProducts.Select(vt => new Tuple<string, string>("", "\"" + vt.Name + "\"")).ToList();
@@ -460,6 +555,7 @@ namespace OperatorApp.ViewModels
                 {
                     using (MarketDbContext db = new MarketDbContext())
                     {
+                        db.ProductExtraProperties.RemoveRange(Products.Select(p => p.ExtraProperties))
                         db.Products.RemoveRange(unusedProducts);
                         await db.SaveChangesAsync();
                         _ = QueryDb(false, true);
@@ -589,7 +685,7 @@ namespace OperatorApp.ViewModels
             ShowPreviousPageCommand = new CommandType();
             ShowPreviousPageCommand.Create(_ => PageService.ShowTopCategoriesPage());
             ShowNextPageCommand = new CommandType();
-            ShowNextPageCommand.Create(_ => PageService.ShowQuantityUnitsPage());
+            ShowNextPageCommand.Create(_ => PageService.ShowPicturesPage());
 
             _ = QueryDb(false, true); //Query with true,false executes when ShowUncheckedOnly property is set
             _ = QueryAvailableItems();

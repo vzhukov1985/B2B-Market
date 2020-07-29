@@ -132,6 +132,7 @@ namespace OperatorApp.ViewModels
                         await db.SaveChangesAsync();
                         _ = QueryDb(true,false);
                     }
+
                 }
             }
             else

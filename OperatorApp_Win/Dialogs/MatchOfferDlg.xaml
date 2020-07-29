@@ -30,6 +30,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
@@ -84,7 +85,7 @@
                                 <TextBlock Grid.Column="0" Text="{Binding MatchProductExtraPropertyType.SupplierProductExtraPropertyTypeName, StringFormat='{}{0}:'}" Style="{StaticResource BigItemExtraPropertyField}"/>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <TextBlock  Text="{Binding Value}" Style="{StaticResource BigItemExtraPropertyValue}" VerticalAlignment="Center"/>
-                                    <Button Style="{StaticResource ControlButton}" Margin="5,0,0,0" Command="{Binding DataContext.AddNewPropertyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding Path=.}">
+                                    <Button Style="{StaticResource ControlButton}" Margin="5,0,0,0" Command="{Binding DataContext.AddPropertyBasedOnMatchCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding Path=.}">
                                         <Button.Content>
                                             <Image Source="{Binding Source={x:Static resx:Images.Add_Property}}"/>
                                         </Button.Content>
@@ -96,7 +97,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Grid.Row="6" HorizontalAlignment="Center" Style="{StaticResource BigItemQuantityUnit}">
+                <TextBlock Grid.Row="7" HorizontalAlignment="Center" Style="{StaticResource BigItemQuantityUnit}">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Указана цена за: {0} ({1})">
                             <Binding Path="MatchQuantityUnit.SupplierQUShortName"/>
@@ -110,6 +111,7 @@
         <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource  PanelBorder}">
             <Grid Grid.Row="1" Grid.Column="1" DataContext="{Binding Offer.Product}">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -201,7 +203,13 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <StackPanel Grid.Row="6" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top">
+                <Button Grid.Row="6" Style="{StaticResource ControlButton}" Margin="400,0,0,0" Command="{Binding DataContext.AddNewPropertyCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Button.Content>
+                        <Image Source="{Binding Source={x:Static resx:Images.Add_NewProperty}}"/>
+                    </Button.Content>
+                </Button>
+
+                <StackPanel Grid.Row="7" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top">
                     <TextBlock Text="Указана цена за: "  Style="{StaticResource BigItemQuantityUnit}" VerticalAlignment="Center"/>
                     <ComboBox 
                         ItemsSource="{Binding Path=DataContext.AvailableQuantityUnits, RelativeSource={RelativeSource AncestorType=Window}}" 
@@ -221,11 +229,9 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </StackPanel>
-
-
             </Grid>
         </Border>
-
+        
 
         <Button x:Name="Ok" Grid.Row="2" Grid.Column="0" Content="Сохранить" Style="{StaticResource DialogButton}" Margin="0,10,0,10" Click="Ok_Click" Command="{Binding OkCommand}"/>
         <Button x:Name="Cancel" Grid.Row="2" Grid.Column="1" Content="Отмена" Style="{StaticResource DialogButton}" Margin="0,10,0,10" Click="Cancel_Click"/>

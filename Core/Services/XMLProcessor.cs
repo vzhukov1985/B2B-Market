@@ -18,7 +18,7 @@ namespace Core.Services
         {
             if (Object.ReferenceEquals(x, y)) return true;
 
-            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+            if (x is null || y is null)
                 return false;
 
             return x.MatchProductExtraPropertyTypeId == y.MatchProductExtraPropertyTypeId &&
@@ -29,9 +29,9 @@ namespace Core.Services
 
         public int GetHashCode(MatchProductExtraProperty obj)
         {
-            if (Object.ReferenceEquals(obj, null)) return 0;
+            if (obj is null) return 0;
 
-            int hashMatchProductExtraPropertyTypeId = obj.MatchProductExtraPropertyTypeId == null? 0: obj.MatchProductExtraPropertyTypeId.GetHashCode();
+            int hashMatchProductExtraPropertyTypeId = obj.MatchProductExtraPropertyTypeId == null ? 0 : obj.MatchProductExtraPropertyTypeId.GetHashCode();
 
             int hashValue = obj.Value == null ? 0 : obj.Value.GetHashCode();
 
@@ -384,26 +384,26 @@ namespace Core.Services
                         offersProcessedIds.Add(matchOfferExists.Id);
                         db.SaveChanges();
                     }
-            }
+                }
                 catch (Exception e)
-            {
-                logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
-                return;
-            }
+                {
+                    logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
+                    return;
+                }
 
 
-            if (newProductCategoriesAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new product categories were added", DateTime.Now.ToString("G"), newProductCategoriesAdded.ToString());
+                if (newProductCategoriesAdded > 0)
+                    logFileStream.WriteLine("{0} - {1} new match product categories were added", DateTime.Now.ToString("G"), newProductCategoriesAdded.ToString());
                 if (newVolumeTypesAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new volume types were added", DateTime.Now.ToString("G"), newVolumeTypesAdded.ToString());
+                    logFileStream.WriteLine("{0} - {1} new match volume types were added", DateTime.Now.ToString("G"), newVolumeTypesAdded.ToString());
                 if (newVolumeUnitsAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new volume units were added", DateTime.Now.ToString("G"), newVolumeUnitsAdded.ToString());
+                    logFileStream.WriteLine("{0} - {1} new match volume units were added", DateTime.Now.ToString("G"), newVolumeUnitsAdded.ToString());
                 if (newQuantityUnitsAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new quantity units were added", DateTime.Now.ToString("G"), newQuantityUnitsAdded.ToString());
+                    logFileStream.WriteLine("{0} - {1} new match quantity units were added", DateTime.Now.ToString("G"), newQuantityUnitsAdded.ToString());
                 if (newExtraPropertiesAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new products' extra property types were added", DateTime.Now.ToString("G"), newExtraPropertiesAdded.ToString());
+                    logFileStream.WriteLine("{0} - {1} new match products' extra property types were added", DateTime.Now.ToString("G"), newExtraPropertiesAdded.ToString());
                 if (newOffersAdded > 0)
-                    logFileStream.WriteLine("{0} - {1} new offers were added", DateTime.Now.ToString("G"), newOffersAdded.ToString());
+                    logFileStream.WriteLine("{0} - {1} new match offers were added", DateTime.Now.ToString("G"), newOffersAdded.ToString());
             }
 
             //Remove all info regarding offers that are in Db but doesn't exist in current extraction
@@ -420,11 +420,20 @@ namespace Core.Services
                         MatchOffer matchOfferToRemove = db.MatchOffers.Find(matchOfferToRemoveId);
                         if (matchOfferToRemove.OfferId != null)
                         {
-                            db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(co => co.OfferId == matchOfferToRemove.OfferId));
-                            db.SaveChanges();
-                            db.Offers.RemoveRange(db.Offers.Where(o => o.Id == matchOfferToRemove.OfferId).FirstOrDefault());
-                            db.SaveChanges();
-                            existingOffersDeleted++;
+                            List<CurrentOrder> curOrders = db.CurrentOrders.Include(co => co.Offer).Where(co => co.OfferId == matchOfferToRemove.OfferId).ToList();
+                            if (curOrders.Count > 0)
+                            {
+                                foreach (CurrentOrder order in curOrders)
+                                    order.Offer.Remains = 0;
+                                db.CurrentOrders.UpdateRange(curOrders);
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                db.Offers.Remove(db.Offers.Where(o => o.Id == matchOfferToRemove.OfferId).FirstOrDefault());
+                                db.SaveChanges();
+                                existingOffersDeleted++;
+                            }
                         }
 
                         db.MatchProductExtraProperties.RemoveRange(db.MatchProductExtraProperties.Where(mpep => mpep.MatchOfferId == matchOfferToRemove.Id));
@@ -436,67 +445,269 @@ namespace Core.Services
                 }
 
                 if (matchOffersDeleted > 0)
-                    logFileStream.WriteLine("{0} - {1} matching offers and {3} active offers corresponding to them were removed", DateTime.Now.ToString("G"), matchOffersDeleted.ToString(), existingOffersDeleted.ToString());
+                    logFileStream.WriteLine($"{DateTime.Now:G} - {matchOffersDeleted} matching offers and {existingOffersDeleted} active offers corresponding to them were removed");
             }
             catch (Exception e)
             {
                 logFileStream.WriteLine("{0} - ERROR: EXCEPTION \"{1}\"", DateTime.Now.ToString("G"), e.Message);
                 return;
             }
+            File.Delete(xmlFile);
         }
 
-        public static void RequestProductsDescription(List<Offer> offers, Guid supplierId)
+        public static void ProcessPicturesXMLFromFile(string xmlFile, StreamWriter logFileStream)
         {
-            Supplier supplier;
-            using (MarketDbContext db = new MarketDbContext())
+            XDocument xDoc = XDocument.Load(xmlFile);
+            XElement xProductPictures = xDoc.Root;
+            Guid supplierId = new Guid(xProductPictures.Attribute("SupplierId").Value);
+            IEnumerable<XElement> xPictures = xProductPictures.Elements("ProductPicture");
+            int newUnmatchedPicsAdded = 0;
+            int newMatchedPicsAdded = 0;
+            int newConflictedPicsAdded = 0;
+
+            foreach (XElement xPicture in xPictures)
             {
-                supplier = db.Suppliers
-                    .Where(s => s.Id == supplierId)
-                    .FirstOrDefault();
+                string supplierProductCode = xPicture.Attribute("SupplierProductCode").Value;
+                string xmlFileDirectory = Path.GetDirectoryName(xmlFile);
+                string supplierShortFilePath = xPicture.Element("PictureFile").Value;
+                string supplierPicFullFilePath = xmlFileDirectory + @"\" + supplierShortFilePath;
+                if (File.Exists(supplierPicFullFilePath))
+                {
+                    if (Path.GetExtension(supplierPicFullFilePath).ToUpper() == ".PNG")
+                    {
+                        MatchOffer matchOffer;
+                        using (MarketDbContext db = new MarketDbContext())
+                        {
+                            matchOffer = db.MatchOffers.Where(mo => mo.SupplierId == supplierId && mo.SupplierProductCode == supplierProductCode).FirstOrDefault();
+                        }
+                        if (matchOffer != null)
+                        {
+                            if (matchOffer.OfferId == null)
+                            {
+                                Guid newUnmatchedPicGuid = Guid.NewGuid();
+                                using (MarketDbContext db = new MarketDbContext())
+                                {
+                                    if (db.UnmatchedPics.Where(up => up.SupplierId == supplierId && up.SupplierProductCode == supplierProductCode).FirstOrDefault() == null)
+                                    {
+                                        string destFileName = MarketDbContext.b2bDataDir + @"\Pictures\Products\Unmatched\" + newUnmatchedPicGuid.ToString() + ".png";
+                                        File.Copy(supplierPicFullFilePath, destFileName);
+                                        db.UnmatchedPics.Add(new UnmatchedPic { Id = newUnmatchedPicGuid, SupplierId = supplierId, SupplierProductCode = supplierProductCode });
+                                        newUnmatchedPicsAdded++;
+                                    }
+                                    db.SaveChanges();
+                                }
+                            }
+                            else
+                            {
+                                Guid productId;
+                                using (MarketDbContext db = new MarketDbContext())
+                                {
+                                    productId = db.Offers.Find(matchOffer.OfferId).ProductId;
+                                }
+                                string destFileName = MarketDbContext.b2bDataDir + @"\Pictures\Products\Matched\" + productId.ToString() + ".png";
+
+                                if (File.Exists(destFileName))
+                                {
+                                    if (new FileInfo(supplierPicFullFilePath).Length != new FileInfo(destFileName).Length)
+                                    {
+                                        Guid newConflictedPicGuid = Guid.NewGuid();
+
+                                        using (MarketDbContext db = new MarketDbContext())
+                                        {
+                                            if (db.ConflictedPics.Where(up => up.SupplierId == supplierId && up.ProductId == productId).FirstOrDefault() == null)
+                                            {
+                                                destFileName = MarketDbContext.b2bDataDir + @"\Pictures\Products\Conflicted\" + newConflictedPicGuid.ToString() + ".png";
+                                                File.Copy(supplierPicFullFilePath, destFileName);
+                                                db.ConflictedPics.Add(new ConflictedPic { Id = newConflictedPicGuid, SupplierId = supplierId, ProductId = productId });
+                                                db.SaveChanges();
+                                                newConflictedPicsAdded++;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    File.Copy(supplierPicFullFilePath, destFileName);
+                                    newMatchedPicsAdded++;
+                                }
+                            }
+                        }
+                    }
+                    File.Delete(supplierPicFullFilePath);
+                }
             }
+            File.Delete(xmlFile);
+            logFileStream.WriteLine($"{DateTime.Now:G} - Pics were added: {newMatchedPicsAdded} matched, {newUnmatchedPicsAdded} unmatched, {newConflictedPicsAdded} conflicted");
+        }
+
+        public static void ProcessDescriptionsXMLFromFile(string xmlFile, StreamWriter logFileStream)
+        {
+            XDocument xDoc = XDocument.Load(xmlFile);
+            XElement xProductDescriptions = xDoc.Root;
+            Guid supplierId = new Guid(xProductDescriptions.Attribute("SupplierId").Value);
+            IEnumerable<XElement> xDescriptions = xProductDescriptions.Elements("ProductDescription");
+            int newUnmatchedDescsAdded = 0;
+            int newMatchedDescsAdded = 0;
+            int newConflictedDescsAdded = 0;
+
+            foreach (XElement xDescription in xDescriptions)
+            {
+                string supplierProductCode = xDescription.Attribute("SupplierProductCode").Value;
+                string xmlFileDirectory = Path.GetDirectoryName(xmlFile);
+                string supplierDescription = xDescription.Element("Description").Value;
+
+                MatchOffer matchOffer;
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    matchOffer = db.MatchOffers.Where(mo => mo.SupplierId == supplierId && mo.SupplierProductCode == supplierProductCode).FirstOrDefault();
+                }
+                if (matchOffer != null)
+                {
+                    if (matchOffer.OfferId == null)
+                    {
+                        Guid newUnmatchedPicGuid = Guid.NewGuid();
+                        using (MarketDbContext db = new MarketDbContext())
+                        {
+                            if (db.UnmatchedDescriptions.Where(ud => ud.SupplierId == supplierId && ud.SupplierProductCode == supplierProductCode).FirstOrDefault() == null)
+                            {
+                                db.UnmatchedDescriptions.Add(new UnmatchedDescription { Id = Guid.NewGuid(), SupplierId = supplierId, SupplierProductCode = supplierProductCode, Description = supplierDescription });
+                                newUnmatchedDescsAdded++;
+                            }
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        Guid productId;
+                        using (MarketDbContext db = new MarketDbContext())
+                        {
+                            productId = db.Offers.Find(matchOffer.OfferId).ProductId;
+                        }
+                        ProductDescription prodDesc;
+                        using (MarketDbContext db = new MarketDbContext())
+                        {
+                            prodDesc = db.ProductDescriptions.Find(productId);
+                        }
+
+                        if (prodDesc == null || prodDesc.Text == "")
+                        {
+                            using (MarketDbContext db = new MarketDbContext())
+                            {
+
+                                if (prodDesc == null)
+                                {
+                                    db.ProductDescriptions.Add(new ProductDescription { ProductId = productId, Text = supplierDescription });
+                                }
+                                else
+                                {
+                                    prodDesc.Text = supplierDescription;
+                                    db.ProductDescriptions.Update(prodDesc);
+                                }
+                                db.SaveChanges();
+                                newMatchedDescsAdded++;
+
+                            }
+                        }
+                        else
+                        {
+                            if (prodDesc.Text != supplierDescription)
+                            {
+                                using (MarketDbContext db = new MarketDbContext())
+                                {
+                                    if (db.ConflictedDescriptions.Where(up => up.SupplierId == supplierId && up.ProductId == productId).FirstOrDefault() == null)
+                                    {
+                                        db.ConflictedDescriptions.Add(new ConflictedDescription { Id = Guid.NewGuid(), SupplierId = supplierId, ProductId = productId, Description = supplierDescription });
+                                        db.SaveChanges();
+                                        newConflictedDescsAdded++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            File.Delete(xmlFile);
+            logFileStream.WriteLine($"{DateTime.Now:G} - Descriptions were added: {newMatchedDescsAdded} matched, {newUnmatchedDescsAdded} unmatched, {newConflictedDescsAdded} conflicted");
+        }
+
+
+
+        public static MemoryStream CreateReqProdPics(Offer offer)
+        {
+            XDocument xDoc = new XDocument();
+
+            XElement xRequests = new XElement("RequestProductsPictures");
+            xRequests.Add(new XAttribute("Version", "1.0"));
+            xRequests.Add(new XAttribute("SupplierId", offer.Supplier.Id));
+
+            XElement xRequest = new XElement("Request");
+            xRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            xRequests.Add(xRequest);
+
+            xDoc.Add(xRequests);
+
+            MemoryStream resStream = new MemoryStream();
+            xDoc.Save(resStream);
+            return resStream;
+        }
+
+        public static MemoryStream UpdateReqProdPics(Stream xmlReadStream, Offer offer)
+        {
+            XDocument xDoc = XDocument.Load(xmlReadStream);
+
+            XElement xRequests = xDoc.Element("RequestProductsPictures");
+
+            foreach (XElement xRequest in xRequests.Elements())
+            {
+                if (xRequest.Attribute("SupplierProductCode").Value == offer.SupplierProductCode)
+                    return null;
+            }
+            XElement xNewRequest = new XElement("Request");
+            xNewRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            xRequests.Add(xNewRequest);
+
+            MemoryStream resStream = new MemoryStream();
+            xDoc.Save(resStream);
+            return resStream;
+        }
+
+        public static MemoryStream CreateReqProdDesc(Offer offer)
+        {
             XDocument xDoc = new XDocument();
 
             XElement xRequests = new XElement("RequestProductsDescriptions");
             xRequests.Add(new XAttribute("Version", "1.0"));
+            xRequests.Add(new XAttribute("SupplierId", offer.Supplier.Id));
 
-            foreach (Offer offer in offers)
-            {
-
-                XElement xRequest = new XElement("Request");
-                xRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
-                xRequests.Add(xRequest);
-            }
+            XElement xRequest = new XElement("Request");
+            xRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            xRequests.Add(xRequest);
 
             xDoc.Add(xRequests);
-            xDoc.Save("d://requestProductInfo.xml");
+
+            MemoryStream resStream = new MemoryStream();
+            xDoc.Save(resStream);
+            return resStream;
         }
 
-        public static void ProductsDescriptions(List<Offer> offers, Guid supplierId)
+        public static MemoryStream UpdateReqProdDesc(Stream xmlReadStream, Offer offer)
         {
-            Supplier supplier;
-            using (MarketDbContext db = new MarketDbContext())
+            XDocument xDoc = XDocument.Load(xmlReadStream);
+
+            XElement xRequests = xDoc.Element("RequestProductsDescriptions");
+
+            foreach (XElement xRequest in xRequests.Elements())
             {
-                supplier = db.Suppliers
-                    .Where(s => s.Id == supplierId)
-                    .FirstOrDefault();
+                if (xRequest.Attribute("SupplierProductCode").Value == offer.SupplierProductCode)
+                    return null;
             }
-            XDocument xDoc = new XDocument();
+            XElement xNewRequest = new XElement("Request");
+            xNewRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            xRequests.Add(xNewRequest);
 
-            XElement xDescriptions = new XElement("ProductsDescriptions");
-            xDescriptions.Add(new XAttribute("Version", "1.0"));
-
-            foreach (Offer offer in offers)
-            {
-
-                XElement xProductDesc = new XElement("ProductDescription");
-                xProductDesc.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
-                xProductDesc.Add(new XElement("PictureFile", "Pics\\" + offer.Product.Id.ToString() + ".png"));
-                xProductDesc.Add(new XElement("Description", offer.Product.Description));
-                xDescriptions.Add(xProductDesc);
-            }
-
-            xDoc.Add(xDescriptions);
-            xDoc.Save("d://ProductDesc.xml");
+            MemoryStream resStream = new MemoryStream();
+            xDoc.Save(resStream);
+            return resStream;
         }
 
         public static void SaveRequestXMLToStream(ArchivedRequest request, Stream stream)

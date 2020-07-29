@@ -18,6 +18,11 @@
                 <scm:SortDescription PropertyName="ProductName" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
+        <CollectionViewSource Source="{Binding Products}" x:Key="SortProductsCVS">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </Page.Resources>
 
     <Grid>
@@ -188,7 +193,7 @@
 
             <TextBlock Grid.Row="0" Text="Продукты:" Style="{StaticResource ListHeader}"/>
 
-            <ListView x:Name="ListProducts" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}" ItemContainerStyle="{StaticResource LVItemFocusedColor}">
+            <ListView x:Name="ListProducts" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Source={StaticResource SortProductsCVS}}" SelectedItem="{Binding SelectedProduct}" ItemContainerStyle="{StaticResource LVItemFocusedColor}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource ItemsBorder}">

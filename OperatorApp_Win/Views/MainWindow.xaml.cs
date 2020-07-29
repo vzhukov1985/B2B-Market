@@ -1,4 +1,5 @@
-﻿using OperatorApp_Win.Services;
+﻿using OperatorApp.ViewModels;
+using OperatorApp_Win.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,9 @@ namespace OperatorApp_Win.Views
             InitializeComponent();
             WindowsPageService.NavigationService = frmMain.NavigationService;
             WindowsPageService pageService = new WindowsPageService();
-            pageService.ShowOffersPage();
+            DataContext = new MainWindowVM<RelayCommand>(pageService);
+            pageService.ShowQuantityUnitsPage();
+
         }
     }
 }

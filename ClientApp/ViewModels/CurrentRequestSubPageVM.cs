@@ -40,7 +40,7 @@ namespace ClientApp.ViewModels
         {
             get
             {
-                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false == false))
+                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false))
                 { 
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierNullRemains;
@@ -48,7 +48,7 @@ namespace ClientApp.ViewModels
                         return ProductOrderAndRemainsState.AllSuppliersNullRemains;
                 }
 
-                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false == false))
+                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.Supplier.IsActive == false || o.IsActive == false))
                 {
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierLessRemains;
@@ -376,8 +376,14 @@ namespace ClientApp.ViewModels
                     Price = o.PriceForClient,
                     QuantityUnit = o.QuantityUnit.ShortName,
                     Quantity = o.OrderQuantity,
+                    ProductName = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Name,
+                    ProductCategory = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Category.Name,
+                    ProductCode = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Code,
+                    ProductVolumeType = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().VolumeType.Name,
+                    ProductVolumeUnit = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().VolumeUnit.ShortName,
+                    ProductVolume = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Volume,
                     ProductId = o.ProductId,
-                    Product = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault(),
+                    Product = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault()
                 }))
             }).ToList();
 

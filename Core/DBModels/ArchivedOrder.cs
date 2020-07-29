@@ -50,28 +50,6 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _productId;
-        public Guid ProductId
-        {
-            get { return _productId; }
-            set
-            {
-                _productId = value;
-                OnPropertyChanged("ProductId");
-            }
-        }
-
-        private Product _product;
-        public Product Product
-        {
-            get { return _product; }
-            set
-            {
-                _product = value;
-                OnPropertyChanged("Product");
-            }
-        }
-
         private string _supplierProductCode;
         public string SupplierProductCode
         {
@@ -80,6 +58,72 @@ namespace Core.DBModels
             {
                 _supplierProductCode = value;
                 OnPropertyChanged("SupplierProductCode");
+            }
+        }
+
+        private string _productName;
+        public string ProductName
+        {
+            get { return _productName; }
+            set
+            {
+                _productName = value;
+                OnPropertyChanged("ProductName");
+            }
+        }
+
+        private string _productCategory;
+        public string ProductCategory
+        {
+            get { return _productCategory; }
+            set
+            {
+                _productCategory = value;
+                OnPropertyChanged("ProductCategory");
+            }
+        }
+
+        private int _productCode;
+        public int ProductCode
+        {
+            get { return _productCode; }
+            set
+            {
+                _productCode = value;
+                OnPropertyChanged("ProductCode");
+            }
+        }
+
+        private string _productVolumeType;
+        public string ProductVolumeType
+        {
+            get { return _productVolumeType; }
+            set
+            {
+                _productVolumeType = value;
+                OnPropertyChanged("ProductVolumeType");
+            }
+        }
+
+        private string _productVolumeUnit;
+        public string ProductVolumeUnit
+        {
+            get { return _productVolumeUnit; }
+            set
+            {
+                _productVolumeUnit = value;
+                OnPropertyChanged("ProductVolumeUnit");
+            }
+        }
+
+        private decimal _productVolume;
+        public decimal ProductVolume
+        {
+            get { return _productVolume; }
+            set
+            {
+                _productVolume = value;
+                OnPropertyChanged("ProductVolume");
             }
         }
 
@@ -129,5 +173,30 @@ namespace Core.DBModels
                 OnPropertyChanged("OfferId");
             }
         }
+
+        private Guid _productId;
+        [NotMapped]
+        public Guid ProductId
+        {
+            get { return _productId; }
+            set
+            {
+                _productId = value;
+                OnPropertyChanged("ProductId");
+            }
+        }
+
+        private Product _product;
+        [NotMapped]
+        public Product Product
+        {
+            get { return _product; }
+            set
+            {
+                _product = value;
+                OnPropertyChanged("Product");
+            }
+        }
+
     }
 }

@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.ObjectModel;
 using Core.Services;
+using System.Linq;
 
 namespace Core.DBModels
 {
@@ -187,12 +188,32 @@ namespace Core.DBModels
             }
         }
 
+        private async void LoadPictureAsync()
+        {
+            Picture = await HTTPManager.GetSupplierPictureAsync(Id);
+        }
+
+        private byte[] _picture;
         [NotMapped]
         public byte[] Picture
         {
             get
             {
-                return FTPManager.GetSupplierPicture(FTPAccess);
+                if (_picture == null)
+                {
+                    LoadPictureAsync();
+                    return null;
+                }
+
+                if (_picture.SequenceEqual(Encoding.ASCII.GetBytes("NoPicture")))
+                    return null;
+
+                return _picture;
+            }
+            set
+            {
+                _picture = value;
+                OnPropertyChanged("Picture");
             }
         }
 

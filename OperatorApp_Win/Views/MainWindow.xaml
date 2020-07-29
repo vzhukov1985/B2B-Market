@@ -5,8 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OperatorApp_Win.Views"
         mc:Ignorable="d"
-        Title="B2B Market - Оператор" Height="800" Width="1100" WindowStartupLocation="CenterScreen">
+        Title="B2B Market - Оператор" Height="800" Width="1100" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid>
-        <Frame x:Name="frmMain" NavigationUIVisibility="Hidden"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Frame Grid.Row="0" x:Name="frmMain" NavigationUIVisibility="Hidden"/>
+        
+        <Grid Grid.Row="1" Height="70">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Ед. изм. кол-ва" Style="{StaticResource MenuButton}" Command="{Binding QuantityUnitsPageCommand}"/>
+            <Button Grid.Column="1" Content="Типы объема/веса" Style="{StaticResource MenuButton}" Command="{Binding VolumeTypesPageCommand}"/>
+            <Button Grid.Column="2" Content="Ед. изм. об/веса" Style="{StaticResource MenuButton}" Command="{Binding VolumeUnitsPageCommand}"/>
+            <Button Grid.Column="3" Content="Доп. св-ва" Style="{StaticResource MenuButton}" Command="{Binding ProductExtraPropertyTypesPageCommand}"/>
+            <Button Grid.Column="4" Content="Кат 1-го уровня" Style="{StaticResource MenuButton}" Command="{Binding ProductCategoriesPageCommand}"/>
+            <Button Grid.Column="5" Content="Кат 2-го уровня" Style="{StaticResource MenuButton}" Command="{Binding MidCategoriesPageCommand}"/>
+            <Button Grid.Column="6" Content="Кат 3-го уровня" Style="{StaticResource MenuButton}" Command="{Binding TopCategoriesPageCommand}"/>
+            <Button Grid.Column="7" Content="Товары" Style="{StaticResource MenuButton}" Command="{Binding OffersPageCommand}"/>
+            <Button Grid.Column="8" Content="Картинки" Style="{StaticResource MenuButton}" Command="{Binding PicturesPageCommand}"/>
+            <Button Grid.Column="9" Content="Описания" Style="{StaticResource MenuButton}" Command="{Binding DescriptionsPageCommand}"/>
+        </Grid>
+            
+           
+            
     </Grid>
 </Window>
