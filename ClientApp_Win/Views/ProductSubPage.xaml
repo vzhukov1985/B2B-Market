@@ -17,10 +17,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Image x:Name="PART_Image" Source="{Binding Source={x:Static resx:UILang.Minus_Enabled}}" Height="28" RenderOptions.BitmapScalingMode="Fant"/>
+                        <Image x:Name="PART_Image" Source="{Binding Source={x:Static resx:Images.Minus_Enabled}}" Height="28" RenderOptions.BitmapScalingMode="Fant"/>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Source" Value="{Binding Source={x:Static resx:UILang.Minus_Disabled}}" TargetName="PART_Image"/>
+                                <Setter Property="Source" Value="{Binding Source={x:Static resx:Images.Minus_Disabled}}" TargetName="PART_Image"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -32,10 +32,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Image x:Name="PART_Image" Source="{Binding Source={x:Static resx:UILang.Plus_Enabled}}" Height="28" RenderOptions.BitmapScalingMode="Fant"/>
+                        <Image x:Name="PART_Image" Source="{Binding Source={x:Static resx:Images.Plus_Enabled}}" Height="28" RenderOptions.BitmapScalingMode="Fant"/>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Source" Value="{Binding Source={x:Static resx:UILang.Plus_Disabled}}" TargetName="PART_Image"/>
+                                <Setter Property="Source" Value="{Binding Source={x:Static resx:Images.Plus_Disabled}}" TargetName="PART_Image"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -47,6 +47,7 @@
 
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
     </Page.Resources>
 
     <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Hidden">
@@ -57,14 +58,14 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
-            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseLeftButtonDown">
                         <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Image>
-            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
+            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseLeftButtonDown">
                         <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
@@ -87,7 +88,7 @@
 
                 <!--Product Picture-->
                 <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
-                    <Image Grid.Row="0" Height="250" Width="250" Source="{Binding Product.Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}}" RenderOptions.BitmapScalingMode="Fant"/>
+                    <Image Grid.Row="0" Height="250" Width="250" Source="{Binding Product.PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" RenderOptions.BitmapScalingMode="Fant"/>
                 </Border>
 
                 <!-- Product Name & Favorite Button-->
@@ -131,7 +132,7 @@
                 </Border>
 
                 <Grid Grid.Row="3" Background="LightGray">
-                    <TextBlock Text="{x:Static resx:UILang.UI_ProductSubPage_Offers}" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
+                    <TextBlock Text="ПРЕДЛОЖЕНИЯ" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- Offers-->
@@ -172,11 +173,11 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Button Grid.Row="5" Style="{StaticResource BlueButton}" Content="{x:Static resx:UILang.UI_ProductSubPage_UpdateCurrentRequest}" FontWeight="DemiBold" FontSize="18" Width="320" Height="55" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,29,0" Command="{Binding UpdateCurrentRequestCommand}"/>
+                <Button Grid.Row="5" Style="{StaticResource BlueButton}" Content="ВНЕСТИ ИЗМЕНЕНИЯ В ЗАЯВКУ" FontWeight="DemiBold" FontSize="18" Width="320" Height="55" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,29,0" Command="{Binding UpdateCurrentRequestCommand}"/>
                 <TextBlock Grid.Row="5" Text="{Binding TotalSum, StringFormat='Итого: {0:G20} тг'}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" FontWeight="DemiBold" Foreground="Black" Margin="40,25"/>
 
                 <Grid Grid.Row="6" Background="LightGray">
-                    <TextBlock Text="{x:Static resx:UILang.UI_ProductSubPage_Description}" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
+                    <TextBlock Text="ОПИСАНИЕ" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
                 </Grid>
 
                 <TextBlock Grid.Row="7" Text="{Binding Product.Description.Text}" FontSize="15" TextWrapping="Wrap" Margin="10"/>

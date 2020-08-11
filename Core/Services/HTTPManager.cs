@@ -9,45 +9,19 @@ namespace Core.Services
 {
     public class HTTPManager
     {
-        private readonly static string HTTPServerUrl = "http://localhost";
-
-        static readonly HttpClient httpClient = new HttpClient();
-
-        public static async Task<byte[]> GetProductPictureAsync(Guid guid)
+        public static Uri GetMatchedProductPictureUri(Guid guid)
         {
-            try
-            {
-                return await httpClient.GetByteArrayAsync(HTTPServerUrl + "/Pictures/Products/Matched/" + guid.ToString() + ".png");
-            }
-            catch (HttpRequestException)
-            {
-                return Encoding.ASCII.GetBytes("NoPicture");
-            }
+            return new Uri(B2BPaths.HTTPServerUrl + B2BPaths.MatchedProductsPicturesPath + "/"+ guid.ToString() + B2BPaths.PictureExtension);
         }
 
-        public static async Task<byte[]> GetTopCategoryPictureAsync(Guid guid)
+        public static Uri GetTopCategoryPictureUri(Guid guid)
         {
-            try
-            {
-                return await httpClient.GetByteArrayAsync(HTTPServerUrl + "/Pictures/TopCategories/" + guid.ToString() + ".png");
-            }
-            catch (HttpRequestException)
-            {
-                return Encoding.ASCII.GetBytes("NoPicture");
-            }
+            return new Uri(B2BPaths.HTTPServerUrl + B2BPaths.TopCategoriesPicturePath + "/" + guid.ToString() + B2BPaths.PictureExtension);
         }
 
-        public static async Task<byte[]> GetSupplierPictureAsync(Guid guid)
+        public static Uri GetSupplierPictureUri(Guid guid)
         {
-            try
-            {
-                return await httpClient.GetByteArrayAsync(HTTPServerUrl + "/Pictures/Suppliers/" + guid.ToString() + ".png");
-            }
-            catch (HttpRequestException)
-            {
-                return Encoding.ASCII.GetBytes("NoPicture");
-            }
+            return new Uri(B2BPaths.HTTPServerUrl + B2BPaths.SuppliersPicturePath + "/" + guid.ToString() + B2BPaths.PictureExtension);
         }
-
     }
 }

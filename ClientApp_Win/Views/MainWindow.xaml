@@ -6,9 +6,9 @@
         xmlns:resx="clr-namespace:ClientApp.Resources;assembly=ClientApp"
         xmlns:local="clr-namespace:ClientApp_Win"
         mc:Ignorable="d"
-        Title="{x:Static resx:UILang.UI_MainWindow_Title}" Height="900" Width="560" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="B2B Market" Height="900" Width="560" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Border BorderThickness="1,1,1,1" BorderBrush="LightGray"/>
-        <Frame x:Name="frmMainFrame" Source="AuthorizationPage.xaml" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="frmMainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

@@ -1,6 +1,7 @@
 ﻿using ClientApp.Services;
 using Core.DBModels;
 using Core.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ClientApp.ViewModels
 {
@@ -59,7 +61,7 @@ namespace ClientApp.ViewModels
         {
             List<Guid> filterGuids;
             
-            if (selectedCategory.Name == ClientAppResourceManager.GetString("UI_CategoriesSubPage_AllProducts"))
+            if (selectedCategory.Name == "Все товары")
             {
                 filterGuids = SubCategories.Select(sc => sc.Id).ToList();
                 PageService.ShowOffersSubPage(User, UpperCategory.Name, filterGuids, null);
@@ -68,6 +70,20 @@ namespace ClientApp.ViewModels
             {
                 filterGuids = new List<Guid> { selectedCategory.Id };
                 PageService.ShowOffersSubPage(User, selectedCategory.Name, filterGuids, null);
+            }
+        }
+
+        private void QueryDb()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+                SubCategories = new ObservableCollection<ProductCategory>(db.ProductCategories.Where(c => c.MidCategoryId == UpperCategory.Id).OrderBy(c => c.Name));
+
+            SubCategories.Insert(0, new ProductCategory { Name = "Все товары" });
+
+            if (SubCategories.Count < 3)
+            {
+                IsRedirectOnLoad = true;
+                CategorySelected(SubCategories[SubCategories.Count - 1]);
             }
         }
 
@@ -91,19 +107,7 @@ namespace ClientApp.ViewModels
             CategorySelectedCommand = new CommandType();
             CategorySelectedCommand.Create(c => CategorySelected((ProductCategory)c));
 
-            using (MarketDbContext db = new MarketDbContext())
-                SubCategories = new ObservableCollection<ProductCategory>(db.ProductCategories.Where(c => c.MidCategoryId == UpperCategory.Id).OrderBy(c => c.Name));
-
-            SubCategories.Insert(0, new ProductCategory { Name = ClientAppResourceManager.GetString("UI_CategoriesSubPage_AllProducts") });
-
-
-
-            if (SubCategories.Count < 3)
-            {
-                IsRedirectOnLoad = true;
-                CategorySelectedCommand.Execute(SubCategories[SubCategories.Count-1]);
-            }
-
+            QueryDb();
         }
     }
 }

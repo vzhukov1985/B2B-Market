@@ -40,8 +40,8 @@ namespace ClientApp.ViewModels
         {
             get
             {
-                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false|| o.IsActive == false))
-                { 
+                if (Orders.All(o => o.Remains == 0 || o.Supplier.IsActive == false || o.IsActive == false))
+                {
                     if (Orders.Count == 1)
                         return ProductOrderAndRemainsState.OneSupplierNullRemains;
                     else
@@ -190,7 +190,7 @@ namespace ClientApp.ViewModels
 
         public int ItemsCount
         {
-            get 
+            get
             {
                 if (Categories != null)
                     return Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity);
@@ -200,7 +200,7 @@ namespace ClientApp.ViewModels
 
         public int ProductsNamesCount
         {
-            get 
+            get
             {
                 if (Categories != null)
                     return Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(o => o.ProductId).Count();
@@ -210,7 +210,8 @@ namespace ClientApp.ViewModels
 
         public int SuppliersCount
         {
-            get {
+            get
+            {
                 if (Categories != null)
                     return Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(o => o.SupplierId).Count();
                 return 0;
@@ -219,26 +220,23 @@ namespace ClientApp.ViewModels
 
         public decimal TotalSum
         {
-            get 
+            get
             {
                 if (Categories != null)
-                return Categories.Where(c => c.IsSelected).Sum(c => c.Products.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity)));
+                    return Categories.Where(c => c.IsSelected).Sum(c => c.Products.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity)));
                 return 0;
             }
         }
 
-        public bool RequestIsReadyToProceed
+        public bool CheckIfRequestIsReadyToProceed()
         {
-            get
+            if (Categories != null)
             {
-                if (Categories != null)
-                {
-                    var a = Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.Select(p => p.OrderAndRemainsState));
+                var a = Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.Select(p => p.OrderAndRemainsState));
 
-                    return a.All(st => st == ProductOrderAndRemainsState.Ok) && User.IsAdmin && a.Count() > 0;
-                }
-                return false;
+                return a.All(st => st == ProductOrderAndRemainsState.Ok) && User.IsAdmin && a.Count() > 0;
             }
+            return false;
         }
 
         private async void ReloadRequestData(bool requeryProductsDB)
@@ -311,7 +309,7 @@ namespace ClientApp.ViewModels
                         IsOfContractedSupplier = p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)),
                         IsFavoriteForUser = FavoriteProductsIds.Contains(p.Id)
                     }))
-                })) ;
+                }));
             }
             else
             {
@@ -329,7 +327,6 @@ namespace ClientApp.ViewModels
                     }))
                 }));
             }
-            if (RequestIsReadyToProceed == true) return;
         }
 
         private void ProceedRequest()
@@ -337,11 +334,11 @@ namespace ClientApp.ViewModels
             int LastRequestCode;
             using (MarketDbContext db = new MarketDbContext())
             {
-                LastRequestCode = db.ArchivedRequests.Count() > 0? db.ArchivedRequests.Max(r => r.Code): 0;
+                LastRequestCode = db.ArchivedRequests.Count() > 0 ? db.ArchivedRequests.Max(r => r.Code) : 0;
             }
+
             List<ArchivedRequest> requestsToAdd = Categories.Where(c => c.IsSelected).SelectMany(c => c.Products.SelectMany(p => p.Orders)).GroupBy(c => c.Supplier).Select(s => new ArchivedRequest
             {
-                Id = new Guid(),
                 Client = User.Client,
                 ClientId = User.ClientId,
                 SenderName = User.Name,
@@ -365,12 +362,12 @@ namespace ClientApp.ViewModels
                 },
                 ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>
                 {
-                        new ArchivedRequestsStatus { ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
+                        new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
                         new ArchivedRequestsStatus { ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
                 },
                 Orders = new ObservableCollection<ArchivedOrder>(Orders.Where(o => o.SupplierId == s.Key.Id).Select(o => new ArchivedOrder
                 {
-                    Id = new Guid(),
+                    Id = Guid.NewGuid(),
                     OfferId = o.Id,
                     SupplierProductCode = o.SupplierProductCode,
                     Price = o.PriceForClient,
@@ -389,7 +386,12 @@ namespace ClientApp.ViewModels
 
             foreach (ArchivedRequest request in requestsToAdd)
             {
-                request.Code = LastRequestCode+1;
+                request.Id = Guid.NewGuid();
+                foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                    status.ArchivedRequestId = request.Id;
+                foreach (ArchivedOrder order in request.Orders)
+                    order.ArchivedRequestId = request.Id;
+                request.Code = LastRequestCode + 1;
                 LastRequestCode++;
             }
 
@@ -426,7 +428,7 @@ namespace ClientApp.ViewModels
         {
             string dialogText;
             if (IsGroupingByCategories)
-                dialogText = "Вы действительно хотите все выбранные товары в категории \"" + selectedCategory.Name +"\"?";
+                dialogText = "Вы действительно хотите все выбранные товары в категории \"" + selectedCategory.Name + "\"?";
             else
                 dialogText = "Вы действительно хотите все выбранные товары от поставщика \"" + selectedCategory.Name + "\"?";
 
@@ -469,7 +471,6 @@ namespace ClientApp.ViewModels
             PageService = pageService;
             DialogService = dialogService;
 
-
             ShowSearchSubPageCommand = new CommandType();
             ShowSearchSubPageCommand.Create(_ => PageService.ShowSearchSubPage(User));
             AddRemoveProductToFavouritesCommand = new CommandType();
@@ -483,7 +484,7 @@ namespace ClientApp.ViewModels
             SwitchGroupingCommand = new CommandType();
             SwitchGroupingCommand.Create(_ => { IsGroupingByCategories = !IsGroupingByCategories; ReloadRequestData(false); });
             ProceedRequestCommand = new CommandType();
-            ProceedRequestCommand.Create(_ => ProceedRequest(), _ => RequestIsReadyToProceed);
+            ProceedRequestCommand.Create(_ => ProceedRequest(), _ => CheckIfRequestIsReadyToProceed());
             RemoveProductCommand = new CommandType();
             RemoveProductCommand.Create(p => RemoveProduct((ProductForRequestView)p));
             RemoveProductsCategoryCommand = new CommandType();

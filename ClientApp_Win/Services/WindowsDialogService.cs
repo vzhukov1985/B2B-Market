@@ -15,7 +15,7 @@ namespace ClientApp_Win.Services
 
         public void ShowErrorDlg(string Text)
         {
-            MessageBox.Show(Text, ClientAppResourceManager.GetString("UI_ErrorDlg_Caption"));
+            MessageBox.Show(Text, "Ошибка");
         }
 
         public bool ShowOkCancelDialog(string text, string caption)

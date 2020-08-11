@@ -37,7 +37,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
-        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>

@@ -310,7 +310,10 @@ namespace OperatorApp.ViewModels
                     QuantityUnitsToMatch = new ObservableCollection<MatchQuantityUnit>(await db.MatchQuantityUnits
                         .Include(mqu => mqu.Supplier)
                         .Where(mqu => ShowUncheckedOnly ? mqu.QuantityUnitId == null : true)
-                        .Where(mqu => SearchMatchQuantityUnitsText == null ? true : mqu.SupplierQUShortName.Contains(SearchMatchQuantityUnitsText) || mqu.SupplierQUFullName.Contains(SearchMatchQuantityUnitsText) || mqu.Supplier.ShortName.Contains(SearchMatchQuantityUnitsText))
+                        .Where(mqu => SearchMatchQuantityUnitsText == null ? true :
+                            EF.Functions.Like(mqu.SupplierQUShortName, $"%{SearchMatchQuantityUnitsText}%") ||
+                            EF.Functions.Like(mqu.SupplierQUFullName, $"%{SearchMatchQuantityUnitsText}%") ||
+                            EF.Functions.Like(mqu.Supplier.ShortName, $"%{SearchMatchQuantityUnitsText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -320,7 +323,9 @@ namespace OperatorApp.ViewModels
                 if (UpdateQuantityUnits)
                 {
                     QuantityUnits = new ObservableCollection<QuantityUnit>(await db.QuantityUnits
-                        .Where(qu => SearchQuantityUnitsText == null ? true : qu.ShortName.Contains(SearchQuantityUnitsText) || qu.FullName.Contains(SearchQuantityUnitsText))
+                        .Where(qu => SearchQuantityUnitsText == null ? true :
+                            EF.Functions.Like(qu.ShortName, $"%{SearchQuantityUnitsText}%") ||
+                            EF.Functions.Like(qu.FullName, $"%{SearchQuantityUnitsText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

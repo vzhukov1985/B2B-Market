@@ -26,17 +26,6 @@ namespace ClientApp.ViewModels
 		private readonly IDialogService DialogService;
 		private readonly IPageService PageService;
 
-		private bool _isLoadingSpinnerVisible;
-		public bool IsLoadingSpinnerVisible
-		{
-			get { return _isLoadingSpinnerVisible; }
-			set
-			{
-				_isLoadingSpinnerVisible = value;
-				OnPropertyChanged("IsLoadingSpinnerVisible");
-			}
-		}
-
 		private string _login;
 		public string Login
 		{
@@ -63,7 +52,7 @@ namespace ClientApp.ViewModels
 		{
 			using (MarketDbContext db = new MarketDbContext())
 			{
-				ClientUser user = await db.ClientsUsers.Where(o => o.Login == Login).FirstOrDefaultAsync();
+				ClientUser user = await db.ClientsUsers.AsNoTracking().Where(o => o.Login == Login).FirstOrDefaultAsync();
 				if ((user != null) && (Authentication.CheckPassword(password, user.PasswordHash)))
 				{
 					if (password == user.InitialPassword)
@@ -74,21 +63,18 @@ namespace ClientApp.ViewModels
 					{
 						PageService.ShowMainPage(user);
 					}
-					
 					return;
 				}
 			}
-			DialogService.ShowErrorDlg(ClientAppResourceManager.GetString("Error_BadLoginPassword"));
+			DialogService.ShowErrorDlg("Неверный логин или пароль");
 		}
 
 		public CommandType AuthorizeCommand { get; }
-		public CommandType PreLoadLibrariesCommand { get; }
 
 		public AuthorizationPageVM(IPageService pageService, IDialogService dialogService)
 		{
 			PageService = pageService;
 			DialogService = dialogService;
-			IsLoadingSpinnerVisible = false;
 
 			AuthorizeCommand = new CommandType();
 			AuthorizeCommand.Create(o => { Authorize((string)o); });

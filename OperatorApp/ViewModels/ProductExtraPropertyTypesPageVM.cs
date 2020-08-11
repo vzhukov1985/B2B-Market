@@ -306,7 +306,9 @@ namespace OperatorApp.ViewModels
                     ProductExtraPropertyTypesToMatch = new ObservableCollection<MatchProductExtraPropertyType>(await db.MatchProductExtraPropertyTypes
                         .Include(mpept => mpept.Supplier)
                         .Where(mpept => ShowUncheckedOnly ? mpept.ProductExtraPropertyTypeId == null : true)
-                        .Where(mpept => SearchMatchProductExtraPropertyTypesText == null ? true : mpept.SupplierProductExtraPropertyTypeName.Contains(SearchMatchProductExtraPropertyTypesText) || mpept.Supplier.ShortName.Contains(SearchMatchProductExtraPropertyTypesText))
+                        .Where(mpept => SearchMatchProductExtraPropertyTypesText == null ? true :
+                            EF.Functions.Like(mpept.SupplierProductExtraPropertyTypeName, $"%{SearchMatchProductExtraPropertyTypesText}%") ||
+                            EF.Functions.Like(mpept.Supplier.ShortName, $"%{SearchMatchProductExtraPropertyTypesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -316,7 +318,7 @@ namespace OperatorApp.ViewModels
                 if (UpdateProductExtraPropertyTypes)
                 {
                     ProductExtraPropertyTypes = new ObservableCollection<ProductExtraPropertyType>(await db.ProductExtraPropertyTypes
-                        .Where(pept => SearchProductExtraPropertyTypesText == null ? true : pept.Name.Contains(SearchProductExtraPropertyTypesText))
+                        .Where(pept => SearchProductExtraPropertyTypesText == null ? true : EF.Functions.Like(pept.Name, $"%{SearchProductExtraPropertyTypesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

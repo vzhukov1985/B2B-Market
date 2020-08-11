@@ -64,23 +64,24 @@ namespace ClientApp.ViewModels
 
         private void ShowContractedSuppliersProducts()
         {
-            PageService.ShowOffersSubPage(User, ClientAppResourceManager.GetString("UI_MainSubPage_AllContractedSuppliers"), null, ContractedSuppliersIds);
+            PageService.ShowOffersSubPage(User, "Все товары", null, ContractedSuppliersIds);
         }
 
-        private async void LoadTopCategoriesAndSuppliersAsync()
+        private async void QueryDb()
         {
+            List<Supplier> unsortedSuppliersList;
             using (MarketDbContext db = new MarketDbContext())
             {
-                TopCategories = new ObservableCollection<TopCategory>(await db.TopCategories.ToListAsync());
+                TopCategories = new ObservableCollection<TopCategory>(await db.TopCategories.AsNoTracking().ToListAsync());
 
-                Suppliers = new ObservableCollection<Supplier>(await db.Suppliers
+                unsortedSuppliersList =await db.Suppliers
+                    .AsNoTracking()
                     .Where(s => s.IsActive == true)
-                    .OrderByDescending(s => ContractedSuppliersIds.Count == 0 || ContractedSuppliersIds.Contains(s.Id))
-                    .ThenBy(s => s.FullName)
-                    .ToListAsync()); ;
+                    .ToListAsync();
             }
-            foreach (Supplier supplier in Suppliers)
+            foreach (Supplier supplier in unsortedSuppliersList)
                 supplier.IsContractedWithClient = ContractedSuppliersIds.Contains(supplier.Id);
+            Suppliers = new ObservableCollection<Supplier>(unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.ShortName));
         }
 
         public CommandType ShowSearchSubPageCommand { get; }
@@ -106,7 +107,7 @@ namespace ClientApp.ViewModels
 
             ContractedSuppliersIds = new List<Guid>(User.Client.Contracts.Select(c => c.Supplier.Id));
 
-            LoadTopCategoriesAndSuppliersAsync();
+            QueryDb();
         }
 
     }

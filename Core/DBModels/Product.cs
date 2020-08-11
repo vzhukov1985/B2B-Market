@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -224,34 +225,15 @@ namespace Core.DBModels
             }
         }
 
-        private async void LoadPictureAsync()
-        {
-            Picture = await HTTPManager.GetProductPictureAsync(Id);
-        }
-                
-        private byte[] _picture;
         [NotMapped]
-        public byte[] Picture
+        public Uri PictureUri
         {
             get
             {
-                if (_picture == null)
-                {
-                    LoadPictureAsync();
-                    return null;
-                }
-
-                if (_picture.SequenceEqual(Encoding.ASCII.GetBytes("NoPicture")))
-                    return null;
-
-                return _picture;
-            }
-            set
-            {
-                _picture = value;
-                OnPropertyChanged("Picture");
+                return HTTPManager.GetMatchedProductPictureUri(Id);
             }
         }
+
 
         private bool _isOfContractedSupplier;
         [NotMapped]

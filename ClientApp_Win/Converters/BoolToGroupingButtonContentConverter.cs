@@ -12,7 +12,7 @@ namespace ClientApp_Win.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? ClientAppResourceManager.GetString("UI_RequestSubPage_GroupingByCategories") : ClientAppResourceManager.GetString("UI_RequestSubPage_GroupingBySuppliers");
+            return (bool)value ? "по категориям" : "по поставщикам";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

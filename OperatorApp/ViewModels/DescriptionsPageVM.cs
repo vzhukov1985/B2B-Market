@@ -105,8 +105,14 @@ namespace OperatorApp.ViewModels
                 {
                     if (DialogService.ShowOkCancelDialog("Описание было изменено, но не сохранено. Отменить изменения?", "ВНИМАНИЕ!!!") == false)
                     {
-
-                        return; //TODO: Cancel ListView Wrong update
+                        CurrentDescriptionWasChanged = false;
+                        int ind = Products.IndexOf(_selectedProduct);
+                        var p = _selectedProduct;
+                        Products.Remove(_selectedProduct);
+                        Products.Insert(ind, p);
+                        SelectedProduct = Products[ind];
+                        CurrentDescriptionWasChanged = true;
+                        return;
                     }
                     else
                     {
@@ -195,14 +201,14 @@ namespace OperatorApp.ViewModels
         {
             foreach (Offer offer in product.Offers)
             {
-                Stream xmlReadStream = FTPManager.GetReqProdDescStreamIfAvailable(offer.Supplier.FTPAccess);
+                Stream xmlReadStream = FTPManager.GetReqProdDescStreamIfAvailable(offer.Supplier.FTPUser, offer.Supplier.FTPPassword);
                 if (xmlReadStream != null)
                 {
                     MemoryStream streamToWrite = XMLProcessor.UpdateReqProdDesc(xmlReadStream, offer);
                     xmlReadStream.Close();
                     if (streamToWrite != null)
                     {
-                        if (FTPManager.UpdateReqProdDescFile(streamToWrite, offer.Supplier.FTPAccess) == false)
+                        if (FTPManager.UpdateReqProdDescFile(streamToWrite, offer.Supplier.FTPUser, offer.Supplier.FTPPassword) == false)
                             DialogService.ShowMessageDialog("Ошибка связи с сервером. Попробуйте позже", "Ошибка");
                         streamToWrite.Close();
                     }
@@ -210,7 +216,7 @@ namespace OperatorApp.ViewModels
                 else
                 {
                     MemoryStream streamToWrite = XMLProcessor.CreateReqProdDesc(offer);
-                    if (FTPManager.UpdateReqProdDescFile(streamToWrite, offer.Supplier.FTPAccess) == false)
+                    if (FTPManager.UpdateReqProdDescFile(streamToWrite, offer.Supplier.FTPUser, offer.Supplier.FTPPassword) == false)
                         DialogService.ShowMessageDialog("Ошибка связи с сервером. Попробуйте позже", "Ошибка");
                     streamToWrite.Close();
                 }
@@ -267,7 +273,7 @@ namespace OperatorApp.ViewModels
         private List<ConflictedDescription> allConflictedDescs;
         private List<Guid> matchedDescsGuids;
 
-        private void QueryConflictedNoPictureGuids()
+        private void QueryConflictedNoDescGuids()
         {
             using (MarketDbContext db = new MarketDbContext())
             {
@@ -293,16 +299,14 @@ namespace OperatorApp.ViewModels
                     .ThenInclude(ep => ep.PropertyType)
                     .Include(p => p.VolumeType)
                     .Include(p => p.VolumeUnit)
-                    .Select(p => new ProductForDescView(p)
-                    {
-                        HasDescription = matchedDescsGuids == null ? false : matchedDescsGuids.Contains(p.Id),
-                        HasDescriptionConflict = allConflictedDescs == null ? false : allConflictedDescs.Select(cp => cp.ProductId).Contains(p.Id),
-                    })
+                    .Select(p => new ProductForDescView(p))
                     .ToListAsync());
             }
 
             foreach (ProductForDescView product in Products)
             {
+                product.HasDescription = matchedDescsGuids == null ? false : matchedDescsGuids.Contains(product.Id);
+                product.HasDescriptionConflict = allConflictedDescs == null ? false : allConflictedDescs.Select(cp => cp.ProductId).Contains(product.Id);
                 product.ConflictedDescs = allConflictedDescs == null ? null : allConflictedDescs.Where(cp => cp.ProductId == product.Id).ToList();
             }
 
@@ -339,7 +343,7 @@ namespace OperatorApp.ViewModels
             RequestDescsForProductCommand = new CommandType();
             RequestDescsForProductCommand.Create(_ => RequestDescsForProduct(SelectedProduct), _ => SelectedProduct != null && SelectedProduct.Offers != null && SelectedProduct.Offers.Count > 0);
             RequestDescsForAllProductsCommand = new CommandType();
-            RequestDescsForAllProductsCommand.Create(_ => RequestDescsForAllProducts());
+            RequestDescsForAllProductsCommand.Create(_ => RequestDescsForAllProducts(), _ => ProductsWithoutDescCount > 0);
             CurrentDescriptionChangedCommand = new CommandType();
             CurrentDescriptionChangedCommand.Create(_ => CurrentDescriptionWasChanged = true);
             UpdateCurrentDescriptionCommand = new CommandType();
@@ -348,7 +352,7 @@ namespace OperatorApp.ViewModels
             ShowPreviousPageCommand = new CommandType();
             ShowPreviousPageCommand.Create(_ => PageService.ShowOffersPage());
             
-            QueryConflictedNoPictureGuids();
+            QueryConflictedNoDescGuids();
             QueryDb();
         }
     }

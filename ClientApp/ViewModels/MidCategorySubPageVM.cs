@@ -55,19 +55,36 @@ namespace ClientApp.ViewModels
                 OnPropertyChanged("SubCategories");
             }
         }
+
         private async void CategorySelected(MidCategory selectedCategory)
         {
-            if (selectedCategory.Name == ClientAppResourceManager.GetString("UI_CategoriesSubPage_AllProducts"))
+            if (selectedCategory.Name == "Все товары")
             {
                 var AllMidCategoriesGuids = SubCategories.Select(sc => sc.Id);
                 List<Guid> filterGuids;
                 using (MarketDbContext db = new MarketDbContext())
-                     filterGuids = await db.ProductCategories.Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync();
+                {
+                    filterGuids = await db.ProductCategories.AsNoTracking().Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync();
+                }
                 PageService.ShowOffersSubPage(User, UpperCategory.Name, filterGuids, null);
             }
             else
             {
                 PageService.ShowProductCategoriesSubPage(User, selectedCategory);
+            }
+        }
+
+        private void QueryDb()
+        {
+            using (MarketDbContext db = new MarketDbContext())
+                SubCategories = new ObservableCollection<MidCategory>(db.MidCategories.AsNoTracking().Where(c => c.TopCategoryId == UpperCategory.Id).OrderBy(c => c.Name));
+
+            SubCategories.Insert(0, new MidCategory { Name = "Все товары" });
+
+            if (SubCategories.Count < 3)
+            {
+                IsRedirectOnLoad = true;
+                CategorySelectedCommand.Execute(SubCategories[SubCategories.Count - 1]);
             }
         }
 
@@ -91,16 +108,7 @@ namespace ClientApp.ViewModels
             CategorySelectedCommand = new CommandType();
             CategorySelectedCommand.Create(c => CategorySelected((MidCategory)c));
 
-            using (MarketDbContext db = new MarketDbContext())
-                SubCategories = new ObservableCollection<MidCategory>(db.MidCategories.Where(c => c.TopCategoryId == UpperCategory.Id).OrderBy(c => c.Name).ToList());
-
-            SubCategories.Insert(0, new MidCategory { Name = ClientAppResourceManager.GetString("UI_CategoriesSubPage_AllProducts") });
-            
-            if (SubCategories.Count < 3)
-            {
-                IsRedirectOnLoad = true;
-                CategorySelectedCommand.Execute(SubCategories[SubCategories.Count - 1]);
-            }
+            QueryDb();
         }
     }
 }

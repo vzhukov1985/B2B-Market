@@ -306,7 +306,9 @@ namespace OperatorApp.ViewModels
                     ProductCategoriesToMatch = new ObservableCollection<MatchProductCategory>(await db.MatchProductCategories
                         .Include(mvt => mvt.Supplier)
                         .Where(mvt => ShowUncheckedOnly ? mvt.ProductCategoryId == null : true)
-                        .Where(mvt => SearchMatchProductCategoriesText == null ? true : mvt.SupplierProductCategoryName.Contains(SearchMatchProductCategoriesText) || mvt.Supplier.ShortName.Contains(SearchMatchProductCategoriesText))
+                        .Where(mvt => SearchMatchProductCategoriesText == null ? true :
+                            EF.Functions.Like(mvt.SupplierProductCategoryName, $"%{SearchMatchProductCategoriesText}%") ||
+                            EF.Functions.Like(mvt.Supplier.ShortName, $"%{SearchMatchProductCategoriesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -316,7 +318,7 @@ namespace OperatorApp.ViewModels
                 if (UpdateProductCategories)
                 {
                     ProductCategories = new ObservableCollection<ProductCategory>(await db.ProductCategories
-                        .Where(vt => SearchProductCategoriesText == null ? true : vt.Name.Contains(SearchProductCategoriesText))
+                        .Where(vt => SearchProductCategoriesText == null ? true : EF.Functions.Like(vt.Name, $"%{SearchProductCategoriesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

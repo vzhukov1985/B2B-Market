@@ -46,6 +46,8 @@ namespace Core.DBModels
             set
             {
                 _archivedRequest = value;
+                if (_archivedRequest != null)
+                    ArchivedRequestId = ArchivedRequest.Id;
                 OnPropertyChanged("ArchivedRequest");
             }
         }
@@ -196,6 +198,25 @@ namespace Core.DBModels
                 _product = value;
                 OnPropertyChanged("Product");
             }
+        }
+
+        public static ArchivedOrder CloneForDB(ArchivedOrder order)
+        {
+            return new ArchivedOrder
+            {
+                Id = order.Id,
+                ArchivedRequestId = order.ArchivedRequestId,
+                SupplierProductCode = order.SupplierProductCode,
+                ProductName = order.ProductName,
+                ProductCategory = order.ProductCategory,
+                ProductCode = order.ProductCode,
+                ProductVolumeType = order.ProductVolumeType,
+                ProductVolumeUnit = order.ProductVolumeUnit,
+                ProductVolume = order.ProductVolume,
+                QuantityUnit = order.QuantityUnit,
+                Quantity = order.Quantity,
+                Price = order.Price
+            };
         }
 
     }

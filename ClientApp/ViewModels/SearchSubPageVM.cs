@@ -43,7 +43,7 @@ namespace ClientApp.ViewModels
             SearchCommand = new CommandType();
             SearchCommand.Create(txt => PageService.ShowOffersSubPage(
                 User,
-                ClientAppResourceManager.GetString("UI_SearchSubPage_SearchResults")+" '"+ (string)txt+"'",
+                "Результаты поиска  '"+ (string)txt+"'",
                 null, 
                 null, 
                 (string)txt));

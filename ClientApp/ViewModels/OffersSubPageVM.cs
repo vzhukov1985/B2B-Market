@@ -81,13 +81,14 @@ namespace ClientApp.ViewModels
 
         private async void QueryDb(bool ShowFavoritesOnly = false, List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")
         {
+            ContractedSuppliersIds = new ObservableCollection<Guid>(User.Client.Contracts.Select(p => p.Supplier.Id).ToList());
+
+            FavoriteProductsIds = new ObservableCollection<Guid>(User.FavoriteProducts.Select(f => f.Product.Id).ToList());
+
+            List<Product> unsortedProductsList;
             using (MarketDbContext db = new MarketDbContext())
             {
-                ContractedSuppliersIds = new ObservableCollection<Guid>(User.Client.Contracts.Select(p => p.Supplier.Id).ToList());
-
-                FavoriteProductsIds = new ObservableCollection<Guid>(User.FavoriteProducts.Select(f => f.Product.Id).ToList());
-                
-                Products = new ObservableCollection<Product>(await db.Products
+                unsortedProductsList = await db.Products
                      .Include(p => p.Offers)
                      .ThenInclude(o => o.QuantityUnit)
                      .Include(p => p.Offers)
@@ -99,21 +100,19 @@ namespace ClientApp.ViewModels
                      .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
                      .Where(p => supplierFilter == null ? true : p.Offers.Select(of => of.SupplierId).Any(id => supplierFilter.Contains(id)))
                      .Where(p => ShowFavoritesOnly ? FavoriteProductsIds.Contains(p.Id) : true)
-                     .Where(p => searchText == "" ? true : (p.Name.Contains(searchText)) || (p.Category.Name.Contains(searchText)))
-                     .OrderByDescending(p => p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)))
-                     .ThenBy(p => p.Category.Name)
-                     .ThenBy(p => p.Name)
-                     .ToListAsync()
-                     );
+                     .Where(p => searchText == "" ? true : EF.Functions.Like(p.Name, $"%{searchText}%") || EF.Functions.Like(p.Category.Name, $"%{searchText}%"))
+                     .ToListAsync();
             }
 
-            foreach (Product product in Products)
+            foreach (Product product in unsortedProductsList)
             {
                 product.IsOfContractedSupplier = product.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id));
                 product.IsFavoriteForUser = FavoriteProductsIds.Contains(product.Id);
                 product.BestRetailPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.RetailPrice).FirstOrDefault();
                 product.BestDiscountPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.DiscountPrice).FirstOrDefault();
             }
+            
+            Products = new ObservableCollection<Product>(unsortedProductsList.OrderBy(p => p.Category.Name).ThenBy(p => p.Name));
         }
 
         public CommandType ShowSearchSubPageCommand { get; }
@@ -137,6 +136,6 @@ namespace ClientApp.ViewModels
             NavigationBackCommand.Create(_ => PageService.SubPageNavigationBack());
 
             QueryDb(ShowFavoritesOnly, categoryFilter, supplierFilter, searchText);
-      }
+        }
     }
 }

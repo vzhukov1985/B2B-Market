@@ -93,5 +93,19 @@ namespace Core.DBModels
                 OnPropertyChanged("Email");
             }
         }
+
+        public static ArchivedSupplier CloneForDB(ArchivedSupplier archivedSupplier)
+        {
+            return new ArchivedSupplier
+            {
+                Address = archivedSupplier.Address,
+                BIN = archivedSupplier.BIN,
+                Email = archivedSupplier.Email,
+                FullName = archivedSupplier.FullName,
+                Id = archivedSupplier.Id,
+                Phone = archivedSupplier.Phone,
+                ShortName = archivedSupplier.ShortName
+            };
+        }
     }
 }

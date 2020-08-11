@@ -41,7 +41,8 @@ namespace Core.Services
 
     public class XMLProcessor
     {
-        public static void ExtractAllProductsToXML(string fileName, Guid supplierId)
+        //Obsolete func
+ /*       public static void ExtractAllProductsToXML(string fileName, Guid supplierId)
         {
             List<Offer> offers;
             Supplier supplier;
@@ -137,7 +138,7 @@ namespace Core.Services
             xExtraction.Add(xOffers);
             xDoc.Add(xExtraction);
             xDoc.Save(fileName);
-        }
+        }*/
 
         public static void ProcessOffersXMLFromFile(string xmlFile, StreamWriter logFileStream)
         {
@@ -473,7 +474,7 @@ namespace Core.Services
                 string supplierPicFullFilePath = xmlFileDirectory + @"\" + supplierShortFilePath;
                 if (File.Exists(supplierPicFullFilePath))
                 {
-                    if (Path.GetExtension(supplierPicFullFilePath).ToUpper() == ".PNG")
+                    if (Path.GetExtension(supplierPicFullFilePath).ToUpper() == B2BPaths.PictureExtension.ToUpper())
                     {
                         MatchOffer matchOffer;
                         using (MarketDbContext db = new MarketDbContext())
@@ -489,7 +490,7 @@ namespace Core.Services
                                 {
                                     if (db.UnmatchedPics.Where(up => up.SupplierId == supplierId && up.SupplierProductCode == supplierProductCode).FirstOrDefault() == null)
                                     {
-                                        string destFileName = MarketDbContext.b2bDataDir + @"\Pictures\Products\Unmatched\" + newUnmatchedPicGuid.ToString() + ".png";
+                                        string destFileName = B2BPaths.b2bDataLocalDir + B2BPaths.UnmatchedProductsPicturesPath + "/" + newUnmatchedPicGuid.ToString() + B2BPaths.PictureExtension;
                                         File.Copy(supplierPicFullFilePath, destFileName);
                                         db.UnmatchedPics.Add(new UnmatchedPic { Id = newUnmatchedPicGuid, SupplierId = supplierId, SupplierProductCode = supplierProductCode });
                                         newUnmatchedPicsAdded++;
@@ -504,7 +505,7 @@ namespace Core.Services
                                 {
                                     productId = db.Offers.Find(matchOffer.OfferId).ProductId;
                                 }
-                                string destFileName = MarketDbContext.b2bDataDir + @"\Pictures\Products\Matched\" + productId.ToString() + ".png";
+                                string destFileName = B2BPaths.b2bDataLocalDir + B2BPaths.MatchedProductsPicturesPath + "/" + productId.ToString() + B2BPaths.PictureExtension;
 
                                 if (File.Exists(destFileName))
                                 {
@@ -516,7 +517,7 @@ namespace Core.Services
                                         {
                                             if (db.ConflictedPics.Where(up => up.SupplierId == supplierId && up.ProductId == productId).FirstOrDefault() == null)
                                             {
-                                                destFileName = MarketDbContext.b2bDataDir + @"\Pictures\Products\Conflicted\" + newConflictedPicGuid.ToString() + ".png";
+                                                destFileName = B2BPaths.b2bDataLocalDir + B2BPaths.ConflictedProductsPicturesPath + "/" + newConflictedPicGuid.ToString() + B2BPaths.PictureExtension;
                                                 File.Copy(supplierPicFullFilePath, destFileName);
                                                 db.ConflictedPics.Add(new ConflictedPic { Id = newConflictedPicGuid, SupplierId = supplierId, ProductId = productId });
                                                 db.SaveChanges();

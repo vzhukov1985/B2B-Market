@@ -23,7 +23,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Text="{x:Static resx:UILang.UI_AuthPage_AuthorizationHeader}" FontSize="45" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        <TextBlock Grid.Row="0" Text="Авторизация" FontSize="45" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
         <Image Source="{Binding Source={x:Static resxcore:CoreResources.Market_Logo}}" Height="300" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" >
@@ -35,12 +35,11 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static resx:UILang.UI_AuthPage_LoginField}" FontSize="20" FontWeight="DemiBold" Margin="0,0,5,0" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Логин:" FontSize="20" FontWeight="DemiBold" Margin="0,0,5,0" HorizontalAlignment="Right"/>
             <TextBox Grid.Row="0" Grid.Column="1" Width="200" FontSize="20" Margin="0,0,0,5" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static resx:UILang.UI_AuthPage_PasswordField}" FontSize="20" FontWeight="DemiBold" VerticalAlignment="Center" Margin="0,0,5,0" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Пароль:" FontSize="20" FontWeight="DemiBold" VerticalAlignment="Center" Margin="0,0,5,0" />
             <PasswordBox x:Name="pwdBox" Grid.Row="1" Grid.Column="1" Width="200" FontSize="20" Margin="0,5,0,0"/>
         </Grid>
-        <!--<ctrl:LoadingSpinner x:Name="LoadingSpinner" Grid.Row="1" Visibility="{Binding IsLoadingSpinnerVisible, Converter={StaticResource BoolToVisibility}}"/>-->
-        <Button Grid.Row="2" Content="{x:Static resx:UILang.UI_AuthPage_Enter}" Style="{StaticResource BlueButton}" Width="180" Height="50" VerticalAlignment="Top" FontSize="20" FontWeight="DemiBold" Click="EnterButton_Click" IsDefault="True"/>
+        <Button Grid.Row="2" Content="Войти" Style="{StaticResource BlueButton}" Width="180" Height="50" VerticalAlignment="Top" FontSize="20" FontWeight="DemiBold" Click="EnterButton_Click" IsDefault="True"/>
     </Grid>
 </Page>

@@ -32,6 +32,8 @@ namespace Core.DBModels
             set
             {
                 _archivedRequest = value;
+                if (_archivedRequest != null)
+                    ArchivedRequestId = _archivedRequest.Id;
                 OnPropertyChanged("ArchivedRequest");
             }
         }
@@ -54,6 +56,8 @@ namespace Core.DBModels
             set
             {
                 _archivedRequestStatusType = value;
+                if (_archivedRequestStatusType != null)
+                    ArchivedRequestStatusTypeId = _archivedRequestStatusType.Id;
                 OnPropertyChanged("ArchivedRequestStatusType");
             }
         }
@@ -67,6 +71,16 @@ namespace Core.DBModels
                 _dateTime = value;
                 OnPropertyChanged("DateTime");
             }
+        }
+
+        public static ArchivedRequestsStatus CloneForDb(ArchivedRequestsStatus status)
+        {
+            return new ArchivedRequestsStatus
+            {
+                ArchivedRequestId = status.ArchivedRequestId,
+                ArchivedRequestStatusTypeId = status.ArchivedRequestStatusTypeId,
+                DateTime = status.DateTime
+            };
         }
     }
 }

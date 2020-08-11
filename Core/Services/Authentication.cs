@@ -9,7 +9,7 @@ namespace Core.Services
 {
     public static class Authentication
     {
-        private static readonly string hardcodedSalt = "q98`Рsd~вя$";
+        private static readonly string hardcodedSalt = B2BPaths.ClientUserPwdSalt;
         private static readonly Random random = new Random();
         public static bool IsLoginAlreadyExists(string loginToCheck, Guid userId)
         {

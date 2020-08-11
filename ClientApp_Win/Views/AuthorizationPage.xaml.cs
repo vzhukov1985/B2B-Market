@@ -25,7 +25,6 @@ namespace ClientApp_Win.Views
         public AuthorizationPage()
         {
             InitializeComponent();
-            DataContext = new AuthorizationPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService());
         }
 
         private void EnterButton_Click(object sender, RoutedEventArgs e)

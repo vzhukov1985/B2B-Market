@@ -13,7 +13,7 @@ namespace ClientApp_Win.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            byte[] imgData = (bool)value ? ClientApp.Resources.UILang.UI_Image_Favorite_On : ClientApp.Resources.UILang.UI_Image_Favorite_Off;
+            byte[] imgData = (bool)value ? ClientApp.Resources.Images.UI_Image_Favorite_On : ClientApp.Resources.Images.UI_Image_Favorite_Off;
             using (var ms = new System.IO.MemoryStream(imgData))
             {
                 var image = new BitmapImage();

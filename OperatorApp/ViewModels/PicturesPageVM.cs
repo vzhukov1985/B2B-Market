@@ -115,7 +115,7 @@ namespace OperatorApp.ViewModels
             {
                 _selectedProductConflictedPictureIndex = value;
 
-                if (SelectedProduct.ConflictedPics != null && SelectedProduct.ConflictedPics.Count > 0)
+                if (SelectedProduct != null && SelectedProduct.ConflictedPics != null && SelectedProduct.ConflictedPics.Count > 0)
                 {
                     SelectedProductConflictedPicture = FTPManager.GetConflictedPicture(SelectedProduct.ConflictedPics[value].Id);
                 }
@@ -197,7 +197,11 @@ namespace OperatorApp.ViewModels
                 SelectedProduct.ConflictedPics = null;
                 ProductsWithConflictedPicsCount--;
                 SelectedProduct.HasPictureConflict = false;
-                SelectedProduct.Picture = SelectedProductConflictedPicture.ToArray();
+                var prod = SelectedProduct;
+                int ind = Products.IndexOf(SelectedProduct);
+                Products.RemoveAt(ind);
+                Products.Insert(ind, prod);
+                SelectedProduct.OnPropertyChanged("PictureUri");
                 SelectedProductConflictedPicture = null;
             }
         }
@@ -221,6 +225,8 @@ namespace OperatorApp.ViewModels
                 ProductsWithConflictedPicsCount--;
                 SelectedProduct.HasPictureConflict = false;
                 SelectedProductConflictedPicture = null;
+                int ind = Products.IndexOf(SelectedProduct);
+                SelectedProduct = Products[ind + 1];
             }
         }
 
@@ -257,7 +263,11 @@ namespace OperatorApp.ViewModels
                     SelectedProduct.HasPicture = true;
                     ProductsWithoutPicturesCount--;
                 }
-                SelectedProduct.Picture = CustomPicture;
+                var prod = SelectedProduct;
+                int ind = Products.IndexOf(SelectedProduct);
+                Products.RemoveAt(ind);
+                Products.Insert(ind, prod);
+                SelectedProduct.OnPropertyChanged("PictureUri");
                 CustomPicture = null;
             }
         }
@@ -266,14 +276,14 @@ namespace OperatorApp.ViewModels
         {
             foreach (Offer offer in product.Offers)
             {
-                Stream xmlReadStream = FTPManager.GetReqProdPicsStreamIfAvailable(offer.Supplier.FTPAccess);
+                Stream xmlReadStream = FTPManager.GetReqProdPicsStreamIfAvailable(offer.Supplier.FTPUser, offer.Supplier.FTPPassword);
                 if (xmlReadStream != null)
                 {
                     MemoryStream streamToWrite = XMLProcessor.UpdateReqProdPics(xmlReadStream, offer);
                     xmlReadStream.Close();
                     if (streamToWrite != null)
                     {
-                        if (FTPManager.UpdateReqProdPicsFile(streamToWrite, offer.Supplier.FTPAccess) == false)
+                        if (FTPManager.UpdateReqProdPicsFile(streamToWrite, offer.Supplier.FTPUser, offer.Supplier.FTPPassword) == false)
                             DialogService.ShowMessageDialog("Ошибка связи с сервером. Попробуйте позже", "Ошибка");
                         streamToWrite.Close();
                     }
@@ -281,7 +291,7 @@ namespace OperatorApp.ViewModels
                 else
                 {
                     MemoryStream streamToWrite = XMLProcessor.CreateReqProdPics(offer);
-                    if (FTPManager.UpdateReqProdPicsFile(streamToWrite, offer.Supplier.FTPAccess) == false)
+                    if (FTPManager.UpdateReqProdPicsFile(streamToWrite, offer.Supplier.FTPUser, offer.Supplier.FTPPassword) == false)
                         DialogService.ShowMessageDialog("Ошибка связи с сервером. Попробуйте позже", "Ошибка");
                     streamToWrite.Close();
                 }
@@ -290,7 +300,7 @@ namespace OperatorApp.ViewModels
 
         private void RequestPicturesForAllProducts()
         {
-            //TODO: Make optimization for creating multiple descriptions requests
+            //TODO: Make optimization for creating multiple pictures requests
             foreach(Product product in Products.Where(p => p.HasPicture == false))
             {
                 RequestPicturesForProduct(product);
@@ -306,8 +316,7 @@ namespace OperatorApp.ViewModels
             {
                 allConflictedPics = db.ConflictedPics.AsNoTracking().ToList();
             }
-
-            matchedPicsGuids = new DirectoryInfo(MarketDbContext.b2bDataDir + @"\Pictures\Products\Matched\").GetFiles().Select(f => new Guid(Path.GetFileNameWithoutExtension(f.Name))).OrderBy(s => s).ToList();
+            matchedPicsGuids = FTPManager.GetProductsMatchedPicturesGuids();
         }
 
 
@@ -324,16 +333,14 @@ namespace OperatorApp.ViewModels
                     .ThenInclude(ep => ep.PropertyType)
                     .Include(p => p.VolumeType)
                     .Include(p => p.VolumeUnit)
-                    .Select(p => new ProductForPictureView(p)
-                    {
-                        HasPicture = matchedPicsGuids == null ? false : matchedPicsGuids.Contains(p.Id),
-                        HasPictureConflict = allConflictedPics == null ? false : allConflictedPics.Select(cp => cp.ProductId).Contains(p.Id),
-                    })
+                    .Select(p => new ProductForPictureView(p))
                     .ToListAsync());
             }
 
             foreach(ProductForPictureView product in Products)
             {
+                product.HasPicture = matchedPicsGuids == null ? false : matchedPicsGuids.Contains(product.Id);
+                product.HasPictureConflict = allConflictedPics == null ? false : allConflictedPics.Select(cp => cp.ProductId).Contains(product.Id);
                 product.ConflictedPics = allConflictedPics == null ? null : allConflictedPics.Where(cp => cp.ProductId == product.Id).ToList(); 
             }
 
@@ -378,7 +385,7 @@ namespace OperatorApp.ViewModels
             RequestPicturesForProductCommand = new CommandType();
             RequestPicturesForProductCommand.Create(_ => RequestPicturesForProduct(SelectedProduct), _ => SelectedProduct != null && SelectedProduct.Offers != null && SelectedProduct.Offers.Count > 0);
             RequestPicturesForAllProductsCommand = new CommandType();
-            RequestPicturesForAllProductsCommand.Create(_ => RequestPicturesForAllProducts());
+            RequestPicturesForAllProductsCommand.Create(_ => RequestPicturesForAllProducts(), _ => ProductsWithoutPicturesCount > 0);
 
             ShowPreviousPageCommand = new CommandType();
             ShowPreviousPageCommand.Create(_ => PageService.ShowOffersPage());

@@ -11,7 +11,6 @@ using System.Linq;
 
 namespace Core.DBModels
 {
-    
     public class Supplier : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -142,14 +141,25 @@ namespace Core.DBModels
             }
         }
 
-        private string _ftpAccess;
-        public string FTPAccess
+        private string _ftpUser;
+        public string FTPUser
         {
-            get { return _ftpAccess; }
+            get { return _ftpUser; }
             set
             {
-                _ftpAccess = value;
-                OnPropertyChanged("FTPAccess");
+                _ftpUser = value;
+                OnPropertyChanged("FTPUser");
+            }
+        }
+
+        private string _ftpPassword;
+        public string FTPPassword
+        {
+            get { return _ftpPassword; }
+            set
+            {
+                _ftpPassword = value;
+                OnPropertyChanged("FTPPassword");
             }
         }
 
@@ -188,32 +198,12 @@ namespace Core.DBModels
             }
         }
 
-        private async void LoadPictureAsync()
-        {
-            Picture = await HTTPManager.GetSupplierPictureAsync(Id);
-        }
-
-        private byte[] _picture;
         [NotMapped]
-        public byte[] Picture
+        public Uri PictureUri
         {
             get
             {
-                if (_picture == null)
-                {
-                    LoadPictureAsync();
-                    return null;
-                }
-
-                if (_picture.SequenceEqual(Encoding.ASCII.GetBytes("NoPicture")))
-                    return null;
-
-                return _picture;
-            }
-            set
-            {
-                _picture = value;
-                OnPropertyChanged("Picture");
+                return HTTPManager.GetSupplierPictureUri(Id);
             }
         }
 

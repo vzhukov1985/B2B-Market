@@ -60,6 +60,7 @@ namespace ClientApp.ViewModels
             using (MarketDbContext db = new MarketDbContext())
             {
                   ArchivedRequests = new ObservableCollection<ArchivedRequest>(await db.ArchivedRequests
+                      .AsNoTracking()
                       .Where(r => r.ClientId == User.ClientId)
                       .Include(r => r.ArchivedRequestsStatuses)
                       .ThenInclude(rs => rs.ArchivedRequestStatusType)
@@ -69,7 +70,7 @@ namespace ClientApp.ViewModels
 
                 ArchivedRequestsByMonth = ArchivedRequests.GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy")).ToDictionary(g => g.Key, g => new ObservableCollection<ArchivedRequest>(g));
             }
-
+   
         }
 
         public CommandType NavigationBackCommand { get; }

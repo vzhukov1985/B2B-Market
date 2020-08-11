@@ -70,11 +70,10 @@ namespace ClientApp.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                Request.Orders = new ObservableCollection<ArchivedOrder>(await db.ArchivedOrders.Where(o => o.ArchivedRequestId == Request.Id).ToListAsync());
-
-                OrdersGroup = Request.Orders.GroupBy(o => o.ProductCategory).ToDictionary(g => g.Key, g => new ObservableCollection<ArchivedOrder>(g));
-                Request.ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>(Request.ArchivedRequestsStatuses.OrderBy(s => s.DateTime));
+                Request.Orders = new ObservableCollection<ArchivedOrder>(await db.ArchivedOrders.AsNoTracking().Where(o => o.ArchivedRequestId == Request.Id).ToListAsync());
             }
+            OrdersGroup = Request.Orders.GroupBy(o => o.ProductCategory).ToDictionary(g => g.Key, g => new ObservableCollection<ArchivedOrder>(g));
+            Request.ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>(Request.ArchivedRequestsStatuses.OrderBy(s => s.DateTime));
         }
 
         public CommandType NavigationBackCommand { get; }
@@ -89,9 +88,8 @@ namespace ClientApp.ViewModels
             NavigationBackCommand.Create(_ => PageService.SubPageNavigationBack());
 
             Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplier.FullName;
-            
+
             QueryDb();
-            
         }
     }
 }

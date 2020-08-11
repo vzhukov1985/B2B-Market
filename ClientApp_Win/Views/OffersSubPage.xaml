@@ -6,6 +6,7 @@
       xmlns:resx="clr-namespace:ClientApp.Resources;assembly=ClientApp"
       xmlns:conv="clr-namespace:ClientApp_Win.Converters"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
       xmlns:local="clr-namespace:ClientApp_Win.Views"
       mc:Ignorable="d" 
       d:DesignHeight="741" d:DesignWidth="560" MinWidth="10"
@@ -15,6 +16,7 @@
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -24,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
-        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
@@ -32,7 +34,7 @@
             </i:Interaction.Triggers>
         </Image>
 
-        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
@@ -54,8 +56,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Image Grid.Column="0" Source="{Binding Path=Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" Height="150" Width="150" RenderOptions.BitmapScalingMode="Fant" />
-                                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.Contracted}}" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5" Visibility="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToVisibilityConverter}}" RenderOptions.BitmapScalingMode="Fant"/>
+                                <Image Grid.Column="0" Source="{Binding PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" Height="150" Width="150" RenderOptions.BitmapScalingMode="Fant" />
+                                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:Images.Contracted}}" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5" Visibility="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToVisibilityConverter}}" RenderOptions.BitmapScalingMode="Fant"/>
 
                                 <Grid Grid.Column="1" Margin="15,25,5,20">
                                     <Grid.RowDefinitions>

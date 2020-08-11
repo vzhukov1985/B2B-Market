@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +22,22 @@ namespace OperatorApp_Win.Views
         public PicturesPage()
         {
             InitializeComponent();
+        }
+
+        private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+        /*    var image = new BitmapImage();
+            using (var mem = new MemoryStream(OperatorApp.Resources.Images.EmptyPicture))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                
+                image.StreamSource = mem;
+                image.EndInit();
+           }
+            ((Image)sender).Source = image;*/
         }
     }
 }

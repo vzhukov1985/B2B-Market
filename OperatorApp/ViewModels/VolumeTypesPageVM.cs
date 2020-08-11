@@ -306,7 +306,9 @@ namespace OperatorApp.ViewModels
                     VolumeTypesToMatch = new ObservableCollection<MatchVolumeType>(await db.MatchVolumeTypes
                         .Include(mvt => mvt.Supplier)
                         .Where(mvt => ShowUncheckedOnly ? mvt.VolumeTypeId == null : true)
-                        .Where(mvt => SearchMatchVolumeTypesText == null ? true : mvt.SupplierVolumeTypeName.Contains(SearchMatchVolumeTypesText) || mvt.Supplier.ShortName.Contains(SearchMatchVolumeTypesText))
+                        .Where(mvt => SearchMatchVolumeTypesText == null ? true :
+                            EF.Functions.Like(mvt.SupplierVolumeTypeName, $"%{SearchMatchVolumeTypesText}%") ||
+                            EF.Functions.Like(mvt.Supplier.ShortName, $"%{SearchMatchVolumeTypesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -316,7 +318,7 @@ namespace OperatorApp.ViewModels
                 if (UpdateVolumeTypes)
                 {
                     VolumeTypes = new ObservableCollection<VolumeType>(await db.VolumeTypes
-                        .Where(vt => SearchVolumeTypesText == null ? true : vt.Name.Contains(SearchVolumeTypesText))
+                        .Where(vt => SearchVolumeTypesText == null ? true : EF.Functions.Like(vt.Name, $"%{SearchVolumeTypesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

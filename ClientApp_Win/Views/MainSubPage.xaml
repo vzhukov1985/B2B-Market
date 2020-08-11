@@ -6,6 +6,7 @@
       xmlns:resx="clr-namespace:ClientApp.Resources;assembly=ClientApp"
       xmlns:conv="clr-namespace:ClientApp_Win.Converters"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
       xmlns:local="clr-namespace:ClientApp_Win.Views"
       mc:Ignorable="d" 
       d:DesignHeight="741" d:DesignWidth="560"
@@ -13,6 +14,7 @@
 
     <Page.Resources>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
     </Page.Resources>
     
     <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="True">
@@ -29,7 +31,7 @@
             
 
             <Border Grid.Row="0" Background="LightGray" BorderBrush="White" BorderThickness="0,0,0,1"/>
-            <TextBox Grid.Row="0" Text="{x:Static resx:UILang.UI_SubPages_SearchHint}" Foreground="DarkGray" FontSize="17" Height="28" Margin="20,10,20,10" >
+            <TextBox Grid.Row="0" Text="Поиск товара" Foreground="DarkGray" FontSize="17" Height="28" Margin="20,10,20,10" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                         <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
@@ -38,7 +40,7 @@
             </TextBox>
 
             <Grid Grid.Row="1" Background="LightGray">
-                <TextBlock Text="{x:Static resx:UILang.UI_MainSubPage_Categories}" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
+                <TextBlock Text="КАТЕГОРИИ" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
             </Grid>
 
             <ItemsControl Grid.Row="2" ItemsSource="{Binding TopCategories}" Margin="0,0,0,0">
@@ -50,7 +52,7 @@
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Image Grid.Column="0" Source="{Binding Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" HorizontalAlignment="Left" Margin="10,0,0,0" RenderOptions.BitmapScalingMode="Fant"/>
+                                <Image Grid.Column="0" Source="{Binding PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" HorizontalAlignment="Left" Margin="10,0,0,0" RenderOptions.BitmapScalingMode="Fant"/>
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Left" TextAlignment="Right" VerticalAlignment="Center" Margin="15,0,0,0"/>
 
                                 <i:Interaction.Triggers>
@@ -66,7 +68,7 @@
             </ItemsControl>
 
             <Grid Grid.Row="3" Background="LightGray">
-                <TextBlock Text="{x:Static resx:UILang.UI_MainSubPage_Suppliers}" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
+                <TextBlock Text="ПОСТАВЩИКИ" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
             </Grid>
 
             <Border Grid.Row="4" BorderThickness="0,0,0,1" BorderBrush="LightGray">
@@ -75,8 +77,8 @@
                         <ColumnDefinition Width="180"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.Contracted}}" Width="100" Height="100" HorizontalAlignment="Center" Margin="10,7,0,7" RenderOptions.BitmapScalingMode="Fant"/>
-                    <TextBlock Grid.Column="1" Text="{x:Static resx:UILang.UI_MainSubPage_AllContractedSuppliers}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Left" TextAlignment="Right" VerticalAlignment="Center" Margin="15,0,0,0" Foreground="Green"/>
+                    <Image Grid.Column="0" Source="{Binding Source={x:Static resx:Images.Contracted}}" Width="100" Height="100" HorizontalAlignment="Center" Margin="10,7,0,7" RenderOptions.BitmapScalingMode="Fant"/>
+                    <TextBlock Grid.Column="1" Text="Наши поставщики" FontSize="28" FontWeight="Bold" HorizontalAlignment="Left" TextAlignment="Right" VerticalAlignment="Center" Margin="15,0,0,0" Foreground="Green"/>
 
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseLeftButtonDown">
@@ -97,7 +99,7 @@
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Image Grid.Column="0" Source="{Binding Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" HorizontalAlignment="Center" Margin="10,7,0,7" RenderOptions.BitmapScalingMode="Fant"/>
+                                <Image Grid.Column="0" Source="{Binding PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" HorizontalAlignment="Center" Margin="10,7,0,7" RenderOptions.BitmapScalingMode="Fant"/>
                                 <TextBlock Grid.Column="1" Text="{Binding FullName}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Left" TextAlignment="Right" VerticalAlignment="Center" Margin="15,0,0,0" Foreground="{Binding IsContractedWithClient, Converter={StaticResource BoolToContractedColorConverter}}"/>
 
                                 <i:Interaction.Triggers>

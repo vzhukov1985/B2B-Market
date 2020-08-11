@@ -71,17 +71,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\UILang.Designer.cs">
+    <Compile Update="Resources\Images.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>UILang.resx</DependentUpon>
+      <DependentUpon>Images.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\UILang.resx">
+    <EmbeddedResource Update="Resources\Images.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>UILang.Designer.cs</LastGenOutput>
+      <LastGenOutput>Images.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

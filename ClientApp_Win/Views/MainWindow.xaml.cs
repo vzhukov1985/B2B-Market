@@ -29,6 +29,8 @@ namespace ClientApp_Win.Views
         {
             InitializeComponent();
             WindowsPageService.NavigationService = frmMainFrame.NavigationService;
+            WindowsPageService pageService = new WindowsPageService();
+            pageService.ShowAuthorizationPage();
         }
     }
 }

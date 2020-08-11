@@ -12,6 +12,7 @@ namespace ClientApp.Services
         void ShowMainPage(ClientUser user);
 
         void SubPageNavigationBack();
+        void RemoveSubNavigationBackEntry();
 
         void ShowMainSubPage(ClientUser user);
         void ShowMidCategoriesSubPage(ClientUser user, TopCategory topCategory);

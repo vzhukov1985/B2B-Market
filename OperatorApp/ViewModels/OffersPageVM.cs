@@ -176,10 +176,6 @@ namespace OperatorApp.ViewModels
                         db.UnmatchedPics.Remove(unmatchedPicRecord);
                         db.SaveChanges();
                     }
-                    if (resultTryToMoveToMatched == true)
-                    {
-                        SelectedProduct.Picture = null; //TODO: Sometimes pic is not updated
-                    }
                 }
             }
         }
@@ -270,6 +266,7 @@ namespace OperatorApp.ViewModels
             {
                 Id = newProductId,
                 Name = SelectedMatchOffer.ProductName,
+                Code = Products == null || Products.Count == 0 ? 1 : Products.Max(p => p.Code)+1,
                 Category = availableCategories.Where(pc => pc.Id == SelectedMatchOffer.MatchProductCategory.ProductCategoryId).FirstOrDefault(),
                 VolumeType = availableVolumeTypes.Where(vt => vt.Id == SelectedMatchOffer.MatchVolumeType.VolumeTypeId).FirstOrDefault(),
                 VolumeUnit = availableVolumeUnits.Where(vu => vu.Id == SelectedMatchOffer.MatchVolumeUnit.VolumeUnitId).FirstOrDefault(),
@@ -531,7 +528,9 @@ namespace OperatorApp.ViewModels
                     if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Вы уверены, что хотите удалить продукт \"" + SelectedProduct.Name + "\"?", "ВНИМАНИЕ!!!"))
                     {
                         db.ProductExtraProperties.RemoveRange(SelectedProduct.ExtraProperties.Select(ep => ProductExtraProperty.CloneForDB(ep)));
-                        db.ProductDescriptions.Remove(db.ProductDescriptions.Find(SelectedProduct.Id));
+                        var prodDesc = db.ProductDescriptions.Find(SelectedProduct.Id);
+                        if (prodDesc != null)
+                            db.ProductDescriptions.Remove(prodDesc);
                         db.Products.Remove(Product.CloneForDB(SelectedProduct));
                         await db.SaveChangesAsync();
                         Products.Remove(SelectedProduct);
@@ -586,10 +585,10 @@ namespace OperatorApp.ViewModels
                         .ThenInclude(mpep => mpep.MatchProductExtraPropertyType)
                         .Where(otm => ShowUncheckedOnly ? otm.OfferId == null : true)
                         .Where(otm => SearchMatchOffersText == null ? true :
-                            otm.MatchProductCategory.SupplierProductCategoryName.Contains(SearchMatchOffersText) ||
-                            otm.ProductName.Contains(SearchMatchOffersText) ||
-                            otm.SupplierProductCode.Contains(SearchMatchOffersText) ||
-                            otm.Supplier.ShortName.Contains(SearchMatchOffersText))
+                            EF.Functions.Like(otm.MatchProductCategory.SupplierProductCategoryName, $"%{SearchMatchOffersText}%") ||
+                            EF.Functions.Like(otm.ProductName, $"%{SearchMatchOffersText}%") ||
+                            EF.Functions.Like(otm.SupplierProductCode, $"%{SearchMatchOffersText}%") ||
+                            EF.Functions.Like(otm.Supplier.ShortName, $"%{SearchMatchOffersText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -606,8 +605,8 @@ namespace OperatorApp.ViewModels
                         .Include(p => p.VolumeType)
                         .Include(p => p.VolumeUnit)
                         .Where(p => SearchProductsText == null ? true :
-                        p.Name.Contains(SearchProductsText) ||
-                        p.Category.Name.Contains(SearchProductsText))
+                            EF.Functions.Like(p.Name, $"%{SearchProductsText}%") ||
+                            EF.Functions.Like(p.Category.Name, $"%{SearchProductsText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

@@ -2,6 +2,7 @@
 using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -158,36 +159,34 @@ namespace ClientApp.ViewModels
                             CurrentOrder newRequestOrder = new CurrentOrder
                             {
                                 ClientId = User.ClientId,
+                                Client = User.Client,
                                 OfferId = offer.Id,
+                                Offer = Offers.Where(of => of.Id == offer.Id).FirstOrDefault(),
                                 Quantity = offer.OrderQuantity
                             };
-                            db.CurrentOrders.Add(newRequestOrder);
+                            db.CurrentOrders.Add(CurrentOrder.CloneForDB(newRequestOrder));
+                            var sup = CurrentRequestOrders.Where(c => c.Offer.SupplierId == newRequestOrder.Offer.SupplierId).Select(c => c.Offer.Supplier).FirstOrDefault();
+                            newRequestOrder.Offer.Supplier = sup == null ? offer.Supplier : sup;
+                            CurrentRequestOrders.Add(newRequestOrder);
                         }
                         else
                         {
                             if (offer.OrderQuantity == 0)
                             {
-                                db.CurrentOrders.Remove(currentRequestOrder);
+                                db.CurrentOrders.Remove(CurrentOrder.CloneForDB(currentRequestOrder));
+                                CurrentRequestOrders.Remove(currentRequestOrder);
                             }
                             else
                             {
 
                                 currentRequestOrder.Quantity = offer.OrderQuantity;
-                                db.CurrentOrders.Update(currentRequestOrder);
+                                db.CurrentOrders.Update(CurrentOrder.CloneForDB(currentRequestOrder));
                             }
                         }
                         offer.OrderQuantityBeforeUserChanges = offer.OrderQuantity;
                     }
                 }
                 db.SaveChanges();
-
-                //TODO: Check if it can be done on the client side
-                CurrentRequestOrders = User.Client.CurrentOrders = new ObservableCollection<CurrentOrder>(db.CurrentOrders
-                    .Where(o => o.ClientId == User.ClientId)
-                    .Include(o => o.Offer)
-                    .ThenInclude(o => o.QuantityUnit)
-                    .Include(o => o.Offer)
-                    .ThenInclude(o => o.Supplier));
             }
 
             AreChangesWereMade = false;
@@ -197,12 +196,12 @@ namespace ClientApp.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                Product.ExtraProperties = new ObservableCollection<ProductExtraProperty>(await db.ProductExtraProperties.Where(pep => pep.ProductId == Product.Id).Include(pep => pep.PropertyType).ToListAsync());
+                Product.ExtraProperties = new ObservableCollection<ProductExtraProperty>(await db.ProductExtraProperties.AsNoTracking().Where(pep => pep.ProductId == Product.Id).Include(pep => pep.PropertyType).ToListAsync());
                 Product.Description = await db.ProductDescriptions.FindAsync(Product.Id);
             }
         }
 
-        private ObservableCollection<CurrentOrder> CurrentRequestOrders;
+        private readonly ObservableCollection<CurrentOrder> CurrentRequestOrders;
         private readonly List<Offer> Offers;
 
         public CommandType ShowSearchSubPageCommand { get; }
@@ -247,25 +246,25 @@ namespace ClientApp.ViewModels
                 .OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id))
                 .ThenBy(o => o.Supplier.ShortName).ToList();
 
-            OffersWithOrders = new ObservableCollection<OfferWithOrder>(Offers.Select(offer => new OfferWithOrder
+            OffersWithOrders = new ObservableCollection<OfferWithOrder>(Offers.Select(of => new OfferWithOrder
             {
-                Id = offer.Id,
-                SupplierProductCode = offer.SupplierProductCode,
-                IsActive = offer.IsActive,
-                Product = offer.Product,
-                ProductId = offer.ProductId,
-                Supplier = offer.Supplier,
-                SupplierId = offer.SupplierId,
-                DiscountPrice = offer.DiscountPrice,
-                RetailPrice = offer.RetailPrice,
-                QuantityUnit = offer.QuantityUnit,
-                QuantityUnitId = offer.QuantityUnitId,
-                Remains = (offer.IsActive) && (offer.Supplier.IsActive) ? offer.Remains : 0,
+                Id = of.Id,
+                SupplierProductCode = of.SupplierProductCode,
+                IsActive = of.IsActive,
+                Product = of.Product,
+                ProductId = of.ProductId,
+                Supplier = of.Supplier,
+                SupplierId = of.SupplierId,
+                DiscountPrice = of.DiscountPrice,
+                RetailPrice = of.RetailPrice,
+                QuantityUnit = of.QuantityUnit,
+                QuantityUnitId = of.QuantityUnitId,
+                Remains = (of.IsActive) && (of.Supplier.IsActive) ? of.Remains : 0,
 
-                IsOfContractedSupplier = ContractedSuppliersIds.Contains(offer.Supplier.Id),
-                PriceForClient = ContractedSuppliersIds.Contains(offer.Supplier.Id) ? offer.DiscountPrice : offer.RetailPrice,
-                OrderQuantityBeforeUserChanges = CurrentRequestOrders.Where(o => o.OfferId == offer.Id).Select(o => o.Quantity).FirstOrDefault(),
-                OrderQuantity = CurrentRequestOrders.Where(o => o.OfferId == offer.Id).Select(o => o.Quantity).FirstOrDefault()
+                IsOfContractedSupplier = ContractedSuppliersIds.Contains(of.Supplier.Id),
+                PriceForClient = ContractedSuppliersIds.Contains(of.Supplier.Id) ? of.DiscountPrice : of.RetailPrice,
+                OrderQuantityBeforeUserChanges = CurrentRequestOrders.Where(o => o.OfferId == of.Id).Select(o => o.Quantity).FirstOrDefault(),
+                OrderQuantity = CurrentRequestOrders.Where(o => o.OfferId == of.Id).Select(o => o.Quantity).FirstOrDefault()
             }));
 
             AreChangesWereMade = false;

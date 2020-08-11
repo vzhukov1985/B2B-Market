@@ -277,7 +277,7 @@ namespace OperatorApp.ViewModels
                 {
                     ProductCategories = new ObservableCollection<ProductCategory>(await db.ProductCategories
                         .Where(pcm => ShowUncheckedOnly ? pcm.MidCategoryId == null : true)
-                        .Where(pcm => SearchProductCategoriesText == null ? true : pcm.Name.Contains(SearchProductCategoriesText))
+                        .Where(pcm => SearchProductCategoriesText == null ? true : EF.Functions.Like(pcm.Name, $"%{SearchProductCategoriesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -287,7 +287,7 @@ namespace OperatorApp.ViewModels
                 if (UpdateMidCategories)
                 {
                     MidCategories = new ObservableCollection<MidCategory>(await db.MidCategories
-                        .Where(vt => SearchMidCategoriesText == null ? true : vt.Name.Contains(SearchMidCategoriesText))
+                        .Where(vt => SearchMidCategoriesText == null ? true : EF.Functions.Like(vt.Name, $"%{SearchMidCategoriesText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

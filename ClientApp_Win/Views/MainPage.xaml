@@ -23,7 +23,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.UserSettings}}" Height="25" HorizontalAlignment="Left" Margin="14,4,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant"/>
+                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:Images.UserSettings}}" Height="25" HorizontalAlignment="Left" Margin="14,4,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant"/>
                 
                 <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontWeight="DemiBold">
                     <TextBlock.Text>
@@ -49,40 +49,40 @@
             <Button Style="{StaticResource BlueButton}" Grid.Column="0" Command="{Binding ShowMainSubPageCommand}" Margin="0,0,1,0">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <Image Source="{Binding Source={x:Static resx:UILang.Home}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
-                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_MainButton}" HorizontalAlignment="Center"/>
+                        <Image Source="{Binding Source={x:Static resx:Images.Home}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Главная" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
             <Button Grid.Column="1" Style="{StaticResource BlueButton}" Command="{Binding ShowSearchSubPageCommand}" Margin="0,0,1,0">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <Image Source="{Binding Source={x:Static resx:UILang.Search_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
-                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_SearchButton}" HorizontalAlignment="Center"/>
+                        <Image Source="{Binding Source={x:Static resx:Images.Search_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Поиск" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
             <Button Grid.Column="2" Style="{StaticResource BlueButton}" Command="{Binding ShowFavoritesSubPageCommand}" Margin="0,0,1,0">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <Image Source="{Binding Source={x:Static resx:UILang.Favorite_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
-                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_FavoritesButton}" HorizontalAlignment="Center"/>
+                        <Image Source="{Binding Source={x:Static resx:Images.Favorite_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Избранное" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
             <Button Grid.Column="3" Style="{StaticResource BlueButton}" Command="{Binding ShowCurrentRequestSubPageCommand}" Margin="0,0,1,0">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <Image Source="{Binding Source={x:Static resx:UILang.Order_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
-                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_CurrentRequestButton}" HorizontalAlignment="Center"/>
+                        <Image Source="{Binding Source={x:Static resx:Images.Order_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Текущая заявка" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
             <Button Grid.Column="4" Style="{StaticResource BlueButton}" Command="{Binding ShowArchivedRequestsSubPageCommand}">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <Image Source="{Binding Source={x:Static resx:UILang.OrdersHistory_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
-                        <TextBlock Text="{x:Static resx:UILang.UI_MainPage_ArchivedRequestsButton}" HorizontalAlignment="Center"/>
+                        <Image Source="{Binding Source={x:Static resx:Images.OrdersHistory_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="История заказов" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>
             </Button>

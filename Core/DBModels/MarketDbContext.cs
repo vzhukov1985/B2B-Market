@@ -8,6 +8,7 @@ using Core;
 using System.Configuration;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Core.Services;
 
 namespace Core.DBModels
 {
@@ -17,8 +18,8 @@ namespace Core.DBModels
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(Settings.Default.DbConnectionString);
-                optionsBuilder.EnableSensitiveDataLogging(true); //TODO: Delete while deployment
+                optionsBuilder.UseMySql(StringCipher.Decrypt(B2BPaths.EncryptedDbConnectionString, B2BPaths.DbConnectionSalt));
+                optionsBuilder.EnableSensitiveDataLogging(true); //TODO: Delete when deploy
             }
         }
 
@@ -73,21 +74,17 @@ namespace Core.DBModels
         public virtual DbSet<UnmatchedDescription> UnmatchedDescriptions { get; set; }
         public virtual DbSet<ConflictedDescription> ConflictedDescriptions { get; set; }
 
-
-
-        // public static readonly string b2bDataDir = @"\\192.168.1.1\Media Server\B2B FTP Server"; Local
-        public static readonly string b2bDataDir = @"D:/B2B FTP Server Mirror";
-
+        
         public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-
                 if (selectedProduct.IsFavoriteForUser)
                 {
                     selectedProduct.IsFavoriteForUser = false;
                     Favorite favoriteToRemove = db.Favorites.Where(f => (f.ClientUserId == User.Id) && (f.ProductId == selectedProduct.Id)).FirstOrDefault();
                     db.Favorites.Remove(favoriteToRemove);
+                    User.FavoriteProducts.Remove(User.FavoriteProducts.Where(fp => fp.ClientUserId == User.Id && fp.ProductId == selectedProduct.Id).FirstOrDefault());
                 }
                 else
                 {
@@ -97,9 +94,15 @@ namespace Core.DBModels
                         ClientUserId = User.Id,
                         ProductId = selectedProduct.Id
                     });
+                    User.FavoriteProducts.Add(new Favorite
+                    {
+                        ClientUserId = User.Id,
+                        ProductId = selectedProduct.Id,
+                        ClientUser = User,
+                        Product = selectedProduct
+                    });
                 }
                 db.SaveChanges();
-                User.FavoriteProducts = new ObservableCollection<Favorite>(db.Favorites.Include(f => f.Product).Where(f => f.ClientUserId == User.Id));
             }
         }
 

@@ -17,9 +17,12 @@ namespace ClientApp_Win.Services
         public static NavigationService NavigationService;
         public static NavigationService SubNavigationService;
 
+       
+
         public void ShowAuthorizationPage()
         {
-            NavigationService.Navigate(new AuthorizationPage());
+            AuthorizationPage authorizationPage = new AuthorizationPage { DataContext = new AuthorizationPageVM<RelayCommand>(new WindowsPageService(), new WindowsDialogService()) };
+            NavigationService.Navigate(authorizationPage);
         }
 
         public void ShowFirstLoginPage(ClientUser user)
@@ -37,6 +40,11 @@ namespace ClientApp_Win.Services
         public void SubPageNavigationBack()
         {
             SubNavigationService.GoBack();
+        }
+
+        public void RemoveSubNavigationBackEntry()
+        {
+            SubNavigationService.RemoveBackEntry();
         }
 
         public void ShowMainSubPage(ClientUser user)
@@ -82,7 +90,7 @@ namespace ClientApp_Win.Services
 
         public void ShowFavoritesSubPage(ClientUser user)
         {
-            OffersSubPage offersSubPage = new OffersSubPage { DataContext = new OffersSubPageVM<RelayCommand>(user, new WindowsPageService(), ClientAppResourceManager.GetString("UI_MainPage_FavoritesButton"), true) };
+            OffersSubPage offersSubPage = new OffersSubPage { DataContext = new OffersSubPageVM<RelayCommand>(user, new WindowsPageService(), "Избранное", true) };
             SubNavigationService.Navigate(offersSubPage);
         }
 
@@ -90,6 +98,7 @@ namespace ClientApp_Win.Services
         {
             CurrentRequestSubPage crSubPage = new CurrentRequestSubPage { DataContext = new CurrentRequestSubPageVM<RelayCommand>(user, new WindowsPageService(), new WindowsDialogService()) };
             SubNavigationService.Navigate(crSubPage);
+
         }
 
         public void ShowCurrentRequestConfirmSubPage(ClientUser user, List<ArchivedRequest> requests)
@@ -120,7 +129,7 @@ namespace ClientApp_Win.Services
                 if (dc.AreChangesWereMade)
                 {
                     WindowsDialogService dialogService = new WindowsDialogService();
-                    if (dialogService.ShowOkCancelDialog(ClientAppResourceManager.GetString("UI_ProductSubPage_HasChangesDlgText"), ClientAppResourceManager.GetString("UI_ProductSubPage_HasChangesDlgCaption")) == false)
+                    if (dialogService.ShowOkCancelDialog("Внимание! Изменения, которые вы сделали, не сохранены и будут сброшены при переходе с этой страницы", "Внимание!") == false)
                         e.Cancel = true;
                 }
             }

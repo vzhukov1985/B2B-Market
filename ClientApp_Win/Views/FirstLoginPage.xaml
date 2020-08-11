@@ -22,12 +22,12 @@
                 <TextBlock Text="{Binding User.Name}" FontSize="30" FontWeight="Bold"/>
                 <TextBlock Text="," FontSize="30" FontWeight="Bold"/>
             </StackPanel>
-            <TextBlock Text="{x:Static resx:UILang.UI_FirstLoginPage_Welcome}" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
+            <TextBlock Text="Добро пожаловать в В2В Market!" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="30,0,30,0">
-            <TextBlock  Text="{x:Static resx:UILang.UI_FirstLoginPage_Info1}" HorizontalAlignment="Center" FontSize="20" TextWrapping="Wrap" TextAlignment="Center"/>
-            <TextBlock Text="{x:Static resx:UILang.UI_FirstLoginPage_Info2}" HorizontalAlignment="Center" FontSize="20" Margin="0,20,0,0"/>
+            <TextBlock  Text="Вы выполнили первый вход в систему B2B Market или ваш пароль был сброшен администратором." HorizontalAlignment="Center" FontSize="20" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock Text="Введите новый личный пароль для входа в систему:" HorizontalAlignment="Center" FontSize="20" Margin="0,20,0,0"/>
         </StackPanel>
         
         <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -40,12 +40,12 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static resx:UILang.UI_FirstLoginPage_Password1_Field}" FontSize="20" FontWeight="DemiBold" Margin="0,0,5,0" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Новый пароль:" FontSize="20" FontWeight="DemiBold" Margin="0,0,5,0" HorizontalAlignment="Right"/>
             <PasswordBox x:Name="pwdBox1" Grid.Row="0" Grid.Column="1" Width="200" FontSize="20" Margin="0,0,0,5"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static resx:UILang.UI_FirstLoginPage_Password2_Field}" FontSize="20" FontWeight="DemiBold" VerticalAlignment="Center" Margin="0,0,5,0" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Введите еще раз:" FontSize="20" FontWeight="DemiBold" VerticalAlignment="Center" Margin="0,0,5,0" />
             <PasswordBox x:Name="pwdBox2" Grid.Row="1" Grid.Column="1" Width="200" FontSize="20" Margin="0,5,0,0"/>
         </Grid>
 
-        <Button Grid.Row="3" Content="{x:Static resx:UILang.UI_FirstLoginPage_Continue_Button}" Width="300" Height="40" VerticalAlignment="Top" FontSize="18" FontWeight="DemiBold" Click="ContinueButton_Click"/>
+        <Button Grid.Row="3" Content="Продолжить" Width="300" Height="40" VerticalAlignment="Top" FontSize="18" FontWeight="DemiBold" Click="ContinueButton_Click"/>
     </Grid>
 </Page>

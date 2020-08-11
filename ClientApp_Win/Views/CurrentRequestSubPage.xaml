@@ -18,6 +18,7 @@
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
         <conv:BoolToGroupingButtonContentConverter x:Key="BoolToGroupingButtonContentConverter"/>
         <conv:ProductOrderAndRemainsStateToTextConverter x:Key="ProductOrderAndRemainsStateToTextConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -28,7 +29,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
-        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
@@ -36,7 +37,7 @@
             </i:Interaction.Triggers>
         </Image>
 
-        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
@@ -45,7 +46,7 @@
         </Image>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="{x:Static resx:UILang.UI_MainPage_CurrentRequestButton}" FontSize="19" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Text="Текущая заявка" FontSize="19" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button Content="{Binding IsGroupingByCategories, Converter={StaticResource BoolToGroupingButtonContentConverter}}" Style="{StaticResource BlueButton}" Height="45" Width="200" FontSize="19" FontWeight="DemiBold" Command="{Binding SwitchGroupingCommand}" Margin="10,0,0,0">
             </Button>
         </StackPanel>
@@ -84,7 +85,7 @@
                                 </CheckBox>
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="18" FontWeight="DemiBold" Margin="7,3,0,3"/>
                                 <TextBlock Grid.Column="2" Text="{Binding Subtotal, StringFormat='Сумма: {0:G20} тг'}" FontSize="18" FontWeight="DemiBold" Margin="0,3,7,3"/>
-                                <Image Grid.Column="3" Source="{Binding Source={x:Static resx:UILang.X_Black}}" Width="19" Margin="0,0,17,0" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                                <Image Grid.Column="3" Source="{Binding Source={x:Static resx:Images.X_Black}}" Width="19" Margin="0,0,17,0" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
                                             <i:InvokeCommandAction Command="{Binding Path=DataContext.RemoveProductsCategoryCommand, ElementName=pgRequest}" CommandParameter="{Binding Path=.}"/>
@@ -104,8 +105,8 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
 
-                                                <Image Grid.Column="0" Source="{Binding Path=Picture, TargetNullValue={x:Static resx:UILang.EmptyPicture}, IsAsync=True}" Height="150" Width="150" RenderOptions.BitmapScalingMode="Fant" />
-                                                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.Contracted}}" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5" Visibility="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToVisibilityConverter}}" RenderOptions.BitmapScalingMode="Fant"/>
+                                                <Image Grid.Column="0" Source="{Binding Path=PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" Height="150" Width="150" RenderOptions.BitmapScalingMode="Fant" />
+                                                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:Images.Contracted}}" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5" Visibility="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToVisibilityConverter}}" RenderOptions.BitmapScalingMode="Fant"/>
 
                                                 <Grid Grid.Column="1" Margin="15,25,5,20">
                                                     <Grid.RowDefinitions>
@@ -165,7 +166,7 @@
                                                         <RowDefinition/>
                                                     </Grid.RowDefinitions>
 
-                                                    <Image Grid.Row="0" Source="{Binding Source={x:Static resx:UILang.X_Black}}" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,15,17,0" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                                                    <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.X_Black}}" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,15,17,0" MouseLeftButtonDown="Image_MouseDown" RenderOptions.BitmapScalingMode="Fant">
                                                         <i:Interaction.Triggers>
                                                             <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
                                                                 <i:InvokeCommandAction Command="{Binding Path=DataContext.RemoveProductCommand, ElementName=pgRequest}" CommandParameter="{Binding Path=.}"/>
@@ -219,7 +220,7 @@
                 <TextBlock Text="{Binding SuppliersCount, StringFormat='{}{0} поставщиков'}" FontSize="15" HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <Button Grid.Column="2" Content="{x:Static resx:UILang.UI_RequestSubPage_ProceedRequestButton}" Style="{StaticResource BlueButton}" Command="{Binding ProceedRequestCommand}" FontSize="19" FontWeight="DemiBold" Width="200" Height="50"/>
+            <Button Grid.Column="2" Content="Подтвердить" Style="{StaticResource BlueButton}" Command="{Binding ProceedRequestCommand}" FontSize="19" FontWeight="DemiBold" Width="200" Height="50"/>
 
         </Grid>
 

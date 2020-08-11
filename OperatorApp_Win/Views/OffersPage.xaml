@@ -13,6 +13,7 @@
 
     <Page.Resources>
         <conv:NullCheckedToColorConverter x:Key="NullCheckedToColorConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
         <CollectionViewSource Source="{Binding OffersToMatch}" x:Key="SortOffersCVS">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="ProductName" />
@@ -29,6 +30,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -210,7 +212,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Source="{Binding Path=Picture, TargetNullValue={x:Static resx:Images.EmptyPicture}, IsAsync=True}" Height="150" Width="150"/>
+                                <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Source="{Binding PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" Height="150" Width="150"/>
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Style="{StaticResource ProductOfferHeader}"/>
 
@@ -315,9 +317,12 @@
 
         </Grid>
 
-        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+        <Button Grid.Row="2" Grid.Column="0" Content="Внести новый" Style="{StaticResource BigButton}" Command="{Binding AddNewProductBasedOnMatchCommand}"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="Сопоставить" Style="{StaticResource BigButton}" Command="{Binding MatchOffersCommand}"/>
+
+
+        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -327,17 +332,12 @@
                 <TextBox Style="{StaticResource Field}" Text="{Binding ProductName, StringFormat='Название: {0}'}"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Vertical">
-                <Button Content="Внести новый" Style="{StaticResource BigButton}" Command="{Binding AddNewProductBasedOnMatchCommand}"/>
-                <Button Content="Сопоставить" Style="{StaticResource BigButton}" Command="{Binding MatchOffersCommand}"/>
-            </StackPanel>
-
-            <StackPanel Grid.Column="2" DataContext="{Binding SelectedProduct}" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Grid.Column="1" DataContext="{Binding SelectedProduct}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBox Style="{StaticResource Field}" Text="{Binding Name, StringFormat='Название: {0}'}"/>
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
@@ -345,7 +345,7 @@
             </Grid.ColumnDefinitions>
 
             <Button  Grid.Column="0" Content="Назад" Style="{StaticResource BigButton}" Command="{Binding ShowPreviousPageCommand}" Width="150" Height="50" HorizontalAlignment="Left" Margin="10,10,0,10"/>
-            <TextBox Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource Field}">
+            <TextBox Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource Field}" VerticalAlignment="Center">
                 <TextBox.Text>
                     <MultiBinding StringFormat="Единица измерения кол-ва: {0} ({1})">
                         <Binding Path="SelectedOfferQuantityUnit.ShortName"/>

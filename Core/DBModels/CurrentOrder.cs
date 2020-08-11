@@ -32,6 +32,8 @@ namespace Core.DBModels
             set
             {
                 _client = value;
+                if (_client != null)
+                    ClientId = _client.Id;
                 OnPropertyChanged("Client");
             }
         }
@@ -54,6 +56,8 @@ namespace Core.DBModels
             set
             {
                 _offer = value;
+                if (_offer != null)
+                    OfferId = _offer.Id;
                 OnPropertyChanged("Offer");
             }
         }
@@ -67,6 +71,16 @@ namespace Core.DBModels
                 _quantity = value;
                 OnPropertyChanged("Quantity");
             }
+        }
+
+        public static CurrentOrder CloneForDB(CurrentOrder order)
+        {
+            return new CurrentOrder
+            {
+                ClientId = order.ClientId,
+                OfferId = order.OfferId,
+                Quantity = order.Quantity
+            };
         }
 
     }

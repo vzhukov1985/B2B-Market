@@ -309,7 +309,10 @@ namespace OperatorApp.ViewModels
                     VolumeUnitsToMatch = new ObservableCollection<MatchVolumeUnit>(await db.MatchVolumeUnits
                         .Include(mvu => mvu.Supplier)
                         .Where(mvu => ShowUncheckedOnly ? mvu.VolumeUnitId == null : true)
-                        .Where(mvu => SearchMatchVolumeUnitsText == null ? true : mvu.SupplierVUShortName.Contains(SearchMatchVolumeUnitsText) || mvu.SupplierVUFullName.Contains(SearchMatchVolumeUnitsText) || mvu.Supplier.ShortName.Contains(SearchMatchVolumeUnitsText))
+                        .Where(mvu => SearchMatchVolumeUnitsText == null ? true :
+                            EF.Functions.Like(mvu.SupplierVUShortName, $"%{SearchMatchVolumeUnitsText}%") ||
+                            EF.Functions.Like(mvu.SupplierVUFullName, $"%{SearchMatchVolumeUnitsText}%") ||
+                            EF.Functions.Like(mvu.Supplier.ShortName, $"%{SearchMatchVolumeUnitsText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                          );
@@ -319,7 +322,9 @@ namespace OperatorApp.ViewModels
                 if (UpdateVolumeUnits)
                 {
                     VolumeUnits = new ObservableCollection<VolumeUnit>(await db.VolumeUnits
-                        .Where(vu => SearchVolumeUnitsText == null ? true : vu.ShortName.Contains(SearchVolumeUnitsText) || vu.FullName.Contains(SearchVolumeUnitsText))
+                        .Where(vu => SearchVolumeUnitsText == null ? true :
+                            EF.Functions.Like(vu.ShortName, $"%{SearchVolumeUnitsText}%") ||
+                            EF.Functions.Like(vu.FullName, $"%{SearchVolumeUnitsText}%"))
                         .AsNoTracking()
                         .ToListAsync()
                         );

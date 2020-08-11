@@ -32,7 +32,6 @@ namespace Core.DBModels
         }
 
         private int _code;
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Code
         {
             get { return _code; }
@@ -62,6 +61,8 @@ namespace Core.DBModels
             set
             {
                 _client = value;
+                if (_client != null)
+                    ClientId = _client.Id;
                 OnPropertyChanged("Client");
             }
         }
@@ -128,6 +129,8 @@ namespace Core.DBModels
             set
             {
                 _archivedSupplier = value;
+                if (_archivedSupplier != null)
+                    ArchivedSupplierId = _archivedSupplier.Id;
                 OnPropertyChanged("ArchivedSupplier");
             }
         }
@@ -239,5 +242,23 @@ namespace Core.DBModels
             }
         }
 
+        public static ArchivedRequest CloneForDb(ArchivedRequest request)
+        {
+            return new ArchivedRequest
+            {
+                Id = request.Id,
+                Code = request.Code,
+                ClientId = request.ClientId,
+                SenderName = request.SenderName,
+                SenderSurName = request.SenderSurName,
+                ItemsQuantity = request.ItemsQuantity,
+                ProductsQuantity = request.ProductsQuantity,
+                ArchivedSupplierId = request.ArchivedSupplierId,
+                TotalPrice = request.TotalPrice,
+                DateTimeSent = request.DateTimeSent,
+                DeliveryTime = request.DeliveryTime,
+                Comments = request.Comments
+            };
+        }
     }
 }

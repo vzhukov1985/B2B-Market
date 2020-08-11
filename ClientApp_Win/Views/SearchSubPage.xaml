@@ -21,7 +21,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <Image Grid.Row="0" Grid.Column="0" Source="{Binding Source={x:Static resx:UILang.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Grid.Column="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
                 <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                         <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
@@ -35,7 +35,7 @@
             </TextBox.InputBindings>
         </TextBox>
 
-        <Image Grid.Row="0" Grid.Column="2" Source="{Binding Source={x:Static resx:UILang.Search}}" Height="22" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
+        <Image Grid.Row="0" Grid.Column="2" Source="{Binding Source={x:Static resx:Images.Search}}" Height="22" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
                 <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                         <i:InvokeCommandAction Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=tbSearch, Path=Text}"/>

@@ -124,12 +124,6 @@
   <data name="EmptyPicture" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>EmptyPicture.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Error_BadLoginPassword" xml:space="preserve">
-    <value>Неверный логин или пароль</value>
-  </data>
-  <data name="Error_PasswordsAreNotTheSame" xml:space="preserve">
-    <value>Введенные пароли не совпадают. Проверьте ввод.</value>
-  </data>
   <data name="Favorite_White" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Favorite_White.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -169,110 +163,11 @@
   <data name="Share" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Share.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="UI_AuthPage_AuthorizationHeader" xml:space="preserve">
-    <value>Авторизация</value>
-  </data>
-  <data name="UI_AuthPage_Enter" xml:space="preserve">
-    <value>Войти</value>
-  </data>
-  <data name="UI_AuthPage_LoginField" xml:space="preserve">
-    <value>Логин:</value>
-  </data>
-  <data name="UI_AuthPage_PasswordField" xml:space="preserve">
-    <value>Пароль:</value>
-  </data>
-  <data name="UI_CategoriesSubPage_AllProducts" xml:space="preserve">
-    <value>Все товары</value>
-  </data>
-  <data name="UI_ErrorDlg_Caption" xml:space="preserve">
-    <value>Ошибка</value>
-  </data>
-  <data name="UI_FirstLoginPage_Continue_Button" xml:space="preserve">
-    <value>Продолжить</value>
-  </data>
-  <data name="UI_FirstLoginPage_Info1" xml:space="preserve">
-    <value>Вы выполнили первый вход в систему B2B Market или ваш пароль был сброшен администратором.</value>
-  </data>
-  <data name="UI_FirstLoginPage_Info2" xml:space="preserve">
-    <value>Введите новый личный пароль для входа в систему:</value>
-  </data>
-  <data name="UI_FirstLoginPage_Password1_Field" xml:space="preserve">
-    <value>Новый пароль:</value>
-  </data>
-  <data name="UI_FirstLoginPage_Password2_Field" xml:space="preserve">
-    <value>Введите еще раз:</value>
-  </data>
-  <data name="UI_FirstLoginPage_Welcome" xml:space="preserve">
-    <value>Добро пожаловать в В2В Market!</value>
-  </data>
   <data name="UI_Image_Favorite_Off" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Favorite_Off.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UI_Image_Favorite_On" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Favorite_On.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="UI_MainPage_ArchivedRequestsButton" xml:space="preserve">
-    <value>История заказов</value>
-  </data>
-  <data name="UI_MainPage_CurrentRequestButton" xml:space="preserve">
-    <value>Текущая заявка</value>
-  </data>
-  <data name="UI_MainPage_FavoritesButton" xml:space="preserve">
-    <value>Избранное</value>
-  </data>
-  <data name="UI_MainPage_MainButton" xml:space="preserve">
-    <value>Главная</value>
-  </data>
-  <data name="UI_MainPage_SearchButton" xml:space="preserve">
-    <value>Поиск</value>
-  </data>
-  <data name="UI_MainSubPage_AllContractedSuppliers" xml:space="preserve">
-    <value>Договора с нами</value>
-  </data>
-  <data name="UI_MainSubPage_Categories" xml:space="preserve">
-    <value>КАТЕГОРИИ</value>
-  </data>
-  <data name="UI_MainSubPage_Suppliers" xml:space="preserve">
-    <value>ПОСТАВЩИКИ</value>
-  </data>
-  <data name="UI_MainSubPage_Welcome" xml:space="preserve">
-    <value>Добро пожаловать в B2B Market, </value>
-  </data>
-  <data name="UI_MainWindow_Title" xml:space="preserve">
-    <value>B2B Market</value>
-  </data>
-  <data name="UI_ProductSubPage_Description" xml:space="preserve">
-    <value>ОПИСАНИЕ</value>
-  </data>
-  <data name="UI_ProductSubPage_HasChangesDlgCaption" xml:space="preserve">
-    <value>Внимание!</value>
-  </data>
-  <data name="UI_ProductSubPage_HasChangesDlgText" xml:space="preserve">
-    <value>Внимание! Изменения, которые вы сделали, не сохранены и будут сброшены при переходе с этой страницы</value>
-  </data>
-  <data name="UI_ProductSubPage_Offers" xml:space="preserve">
-    <value>ПРЕДЛОЖЕНИЯ</value>
-  </data>
-  <data name="UI_ProductSubPage_UpdateCurrentRequest" xml:space="preserve">
-    <value>ВНЕСТИ ИЗМЕНЕНИЯ В ЗАЯВКУ</value>
-  </data>
-  <data name="UI_RequestConfirmSubPage_Header" xml:space="preserve">
-    <value>Подтвердить заявки</value>
-  </data>
-  <data name="UI_RequestSubPage_GroupingByCategories" xml:space="preserve">
-    <value>по категориям</value>
-  </data>
-  <data name="UI_RequestSubPage_GroupingBySuppliers" xml:space="preserve">
-    <value>по поставщикам</value>
-  </data>
-  <data name="UI_RequestSubPage_ProceedRequestButton" xml:space="preserve">
-    <value>Подтвердить</value>
-  </data>
-  <data name="UI_SearchSubPage_SearchResults" xml:space="preserve">
-    <value>Результаты поиска</value>
-  </data>
-  <data name="UI_SubPages_SearchHint" xml:space="preserve">
-    <value>Поиск товара</value>
   </data>
   <data name="UserSettings" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>UserSettings.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

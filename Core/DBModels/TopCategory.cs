@@ -39,32 +39,12 @@ namespace Core.DBModels
             }
         }
 
-        private async void LoadPictureAsync()
-        {
-            Picture = await HTTPManager.GetTopCategoryPictureAsync(Id);
-        }
-
-        private byte[] _picture;
         [NotMapped]
-        public byte[] Picture
+        public Uri PictureUri
         {
             get
             {
-                if (_picture == null)
-                {
-                    LoadPictureAsync();
-                    return null;
-                }
-
-                if (_picture.SequenceEqual(Encoding.ASCII.GetBytes("NoPicture")))
-                    return null;
-
-                return _picture;
-            }
-            set
-            {
-                _picture = value;
-                OnPropertyChanged("Picture");
+                return HTTPManager.GetTopCategoryPictureUri(Id);
             }
         }
     }

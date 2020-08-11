@@ -81,25 +81,32 @@ namespace ClientApp.ViewModels
             int UnProcessedRequestsCount = 0;
             using (MarketDbContext db = new MarketDbContext())
             {
-                var AvailableArchivedSuppliersIds = db.ArchivedSuppliers.Select(s => s.Id);
+                var AvailableArchivedSuppliersIds = db.ArchivedSuppliers.AsNoTracking().Select(s => s.Id);
                 var Suppliers = db.Suppliers.AsNoTracking().Where(s => Requests.Select(r => r.ArchivedSupplierId).Contains(s.Id));
 
                 foreach (ArchivedRequest request in Requests)
                 {
-                    if (FTPManager.UploadRequestToSupplierFTP(Suppliers.Where(s => s.Id == request.ArchivedSupplierId).FirstOrDefault().FTPAccess, request))
+                    Supplier sup = Suppliers.Where(s => s.Id == request.ArchivedSupplierId).FirstOrDefault();
+                    if (FTPManager.UploadRequestToSupplierFTP(sup.FTPUser, sup.FTPPassword, request))
                     {
-                        if (AvailableArchivedSuppliersIds.Contains(request.ArchivedSupplierId))
-                            db.Entry(request.ArchivedSupplier).State = EntityState.Unchanged;
+                        if (!AvailableArchivedSuppliersIds.Contains(request.ArchivedSupplierId))
+                        {
+                            await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
+                        }
+
+                        await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
 
                         foreach (ArchivedOrder order in request.Orders)
                         {
-                            order.ArchivedRequestId = request.Id;
-                            order.Product = null;
+                            await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
                         }
-                        request.Client = null;
 
-                        await db.ArchivedRequests.AddAsync(request);
-                        db.CurrentOrders.RemoveRange(User.Client.CurrentOrders.Where(o => o.ClientId == User.ClientId && request.Orders.Select(oo => oo.OfferId).Contains(o.OfferId)));
+                        foreach(ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                        {
+                            await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
+                        }
+
+                        db.CurrentOrders.RemoveRange(User.Client.CurrentOrders.Where(o => o.ClientId == User.ClientId && request.Orders.Select(oo => oo.OfferId).Contains(o.OfferId)).Select( co => CurrentOrder.CloneForDB(co)));
                     }
                     else
                     {
@@ -125,7 +132,7 @@ namespace ClientApp.ViewModels
                     DialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже.");
             }
 
-            PageService.ShowCurrentRequestSubPage(User);
+            PageService.ShowMainSubPage(User);
         }
 
         public CommandType NavigationBackCommand { get; }
@@ -142,8 +149,6 @@ namespace ClientApp.ViewModels
             NavigationBackCommand.Create(_ => PageService.SubPageNavigationBack());
             ProceedRequestCommand = new CommandType();
             ProceedRequestCommand.Create(_ => ProceedRequest());
-
-
         }
 
     }

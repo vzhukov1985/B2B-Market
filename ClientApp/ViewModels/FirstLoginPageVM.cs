@@ -41,7 +41,7 @@ namespace ClientApp.ViewModels
 		{
 			if (newDoublePassword.Password1 != newDoublePassword.Password2)
 			{
-				DialogService.ShowErrorDlg(ClientAppResourceManager.GetString("Error_PasswordsAreNotTheSame"));
+				DialogService.ShowErrorDlg("Введенные пароли не совпадают.Проверьте ввод.");
 				return;
 			}
 
