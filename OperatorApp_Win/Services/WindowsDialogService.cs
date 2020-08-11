@@ -68,8 +68,7 @@ namespace OperatorApp_Win.Services
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
-                Filter = "PNG images (*.png) | *.png",
-                DefaultExt = ".png",
+                Filter = "Images (*.bmp, *.gif, *.exif, *.jpg, *.png, *.tiff) | *.bmp;*.gif;*.exif;*.jpg;*.png;*.tiff"
             };
             
             if (openFileDialog.ShowDialog() == true)

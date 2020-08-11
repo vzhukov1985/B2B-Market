@@ -42,103 +42,103 @@ namespace Core.Services
     public class XMLProcessor
     {
         //Obsolete func
- /*       public static void ExtractAllProductsToXML(string fileName, Guid supplierId)
-        {
-            List<Offer> offers;
-            Supplier supplier;
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                offers = db.Offers
-                    .Where(of => of.SupplierId == supplierId)
-                    .Include(of => of.Product)
-                    .ThenInclude(p => p.Category)
-                    .Include(of => of.Product)
-                    .ThenInclude(p => p.ExtraProperties)
-                    .ThenInclude(pr => pr.PropertyType)
-                    .Include(of => of.Product)
-                    .ThenInclude(p => p.VolumeType)
-                    .Include(of => of.Product)
-                    .ThenInclude(p => p.VolumeUnit)
-                    .Include(of => of.QuantityUnit)
-                    .ToList();
+        /*       public static void ExtractAllProductsToXML(string fileName, Guid supplierId)
+               {
+                   List<Offer> offers;
+                   Supplier supplier;
+                   using (MarketDbContext db = new MarketDbContext())
+                   {
+                       offers = db.Offers
+                           .Where(of => of.SupplierId == supplierId)
+                           .Include(of => of.Product)
+                           .ThenInclude(p => p.Category)
+                           .Include(of => of.Product)
+                           .ThenInclude(p => p.ExtraProperties)
+                           .ThenInclude(pr => pr.PropertyType)
+                           .Include(of => of.Product)
+                           .ThenInclude(p => p.VolumeType)
+                           .Include(of => of.Product)
+                           .ThenInclude(p => p.VolumeUnit)
+                           .Include(of => of.QuantityUnit)
+                           .ToList();
 
-                supplier = db.Suppliers
-                    .Where(s => s.Id == supplierId)
-                    .FirstOrDefault();
-            }
+                       supplier = db.Suppliers
+                           .Where(s => s.Id == supplierId)
+                           .FirstOrDefault();
+                   }
 
 
-            XDocument xDoc = new XDocument();
+                   XDocument xDoc = new XDocument();
 
-            XElement xExtraction = new XElement("OffersExtraction");
-            xExtraction.Add(new XAttribute("Version", "1.0"));
+                   XElement xExtraction = new XElement("OffersExtraction");
+                   xExtraction.Add(new XAttribute("Version", "1.0"));
 
-            XElement xSupplierInfo = new XElement("SupplierInfo");
-            xSupplierInfo.Add(new XAttribute("Id", supplier.Id.ToString()));
-            xSupplierInfo.Add(new XElement("ShortName", supplier.ShortName));
-            xSupplierInfo.Add(new XElement("FullName", supplier.FullName));
-            xSupplierInfo.Add(new XElement("BIN", supplier.BIN));
-            xSupplierInfo.Add(new XElement("Country", supplier.Country));
-            xSupplierInfo.Add(new XElement("City", supplier.City));
-            xSupplierInfo.Add(new XElement("Address", supplier.Address));
-            xSupplierInfo.Add(new XElement("Phone", supplier.Phone));
-            xSupplierInfo.Add(new XElement("EMail", supplier.Email));
-            xSupplierInfo.Add(new XElement("ContactPersonName", supplier.ContactPersonName));
-            xSupplierInfo.Add(new XElement("ContactPersonPhone", supplier.ContactPersonPhone));
+                   XElement xSupplierInfo = new XElement("SupplierInfo");
+                   xSupplierInfo.Add(new XAttribute("Id", supplier.Id.ToString()));
+                   xSupplierInfo.Add(new XElement("ShortName", supplier.ShortName));
+                   xSupplierInfo.Add(new XElement("FullName", supplier.FullName));
+                   xSupplierInfo.Add(new XElement("BIN", supplier.BIN));
+                   xSupplierInfo.Add(new XElement("Country", supplier.Country));
+                   xSupplierInfo.Add(new XElement("City", supplier.City));
+                   xSupplierInfo.Add(new XElement("Address", supplier.Address));
+                   xSupplierInfo.Add(new XElement("Phone", supplier.Phone));
+                   xSupplierInfo.Add(new XElement("EMail", supplier.Email));
+                   xSupplierInfo.Add(new XElement("ContactPersonName", supplier.ContactPersonName));
+                   xSupplierInfo.Add(new XElement("ContactPersonPhone", supplier.ContactPersonPhone));
 
-            XElement xOffers = new XElement("Offers");
-            foreach (Offer offer in offers)
-            {
-                XElement xOffer = new XElement("Offer");
-                XAttribute xSupplierProductCode = new XAttribute("SupplierProductCode", offer.SupplierProductCode);
+                   XElement xOffers = new XElement("Offers");
+                   foreach (Offer offer in offers)
+                   {
+                       XElement xOffer = new XElement("Offer");
+                       XAttribute xSupplierProductCode = new XAttribute("SupplierProductCode", offer.SupplierProductCode);
 
-                XElement xProduct = new XElement("Product");
-                xProduct.Add(new XElement("Name", offer.Product.Name));
-                xProduct.Add(new XElement("Category", offer.Product.Category.Name));
-                xProduct.Add(new XElement("VolumeType", offer.Product.VolumeType.Name));
+                       XElement xProduct = new XElement("Product");
+                       xProduct.Add(new XElement("Name", offer.Product.Name));
+                       xProduct.Add(new XElement("Category", offer.Product.Category.Name));
+                       xProduct.Add(new XElement("VolumeType", offer.Product.VolumeType.Name));
 
-                XElement xVolumeUnit = new XElement("VolumeUnit");
-                xVolumeUnit.Add(new XAttribute("ShortName", offer.Product.VolumeUnit.ShortName));
-                xVolumeUnit.Add(new XAttribute("FullName", offer.Product.VolumeUnit.FullName));
-                xProduct.Add(xVolumeUnit);
-                xProduct.Add(new XElement("Volume", offer.Product.Volume));
+                       XElement xVolumeUnit = new XElement("VolumeUnit");
+                       xVolumeUnit.Add(new XAttribute("ShortName", offer.Product.VolumeUnit.ShortName));
+                       xVolumeUnit.Add(new XAttribute("FullName", offer.Product.VolumeUnit.FullName));
+                       xProduct.Add(xVolumeUnit);
+                       xProduct.Add(new XElement("Volume", offer.Product.Volume));
 
-                XElement xProductExtraProperties = new XElement("ExtraProperties");
-                foreach (ProductExtraProperty productExtraProperty in offer.Product.ExtraProperties)
-                {
-                    XElement xProductExtraProperty = new XElement("ExtraProperty");
+                       XElement xProductExtraProperties = new XElement("ExtraProperties");
+                       foreach (ProductExtraProperty productExtraProperty in offer.Product.ExtraProperties)
+                       {
+                           XElement xProductExtraProperty = new XElement("ExtraProperty");
 
-                    xProductExtraProperty.Add(new XAttribute("Type", productExtraProperty.PropertyType));
-                    xProductExtraProperty.Add(new XAttribute("Value", productExtraProperty.Value));
-                    xProductExtraProperties.Add(xProductExtraProperty);
-                }
-                xProduct.Add(xProductExtraProperties);
+                           xProductExtraProperty.Add(new XAttribute("Type", productExtraProperty.PropertyType));
+                           xProductExtraProperty.Add(new XAttribute("Value", productExtraProperty.Value));
+                           xProductExtraProperties.Add(xProductExtraProperty);
+                       }
+                       xProduct.Add(xProductExtraProperties);
 
-                XElement xQuantityUnit = new XElement("QuantityUnit");
-                xQuantityUnit.Add(new XAttribute("ShortName", offer.QuantityUnit.ShortName));
-                xQuantityUnit.Add(new XAttribute("FullName", offer.QuantityUnit.FullName));
+                       XElement xQuantityUnit = new XElement("QuantityUnit");
+                       xQuantityUnit.Add(new XAttribute("ShortName", offer.QuantityUnit.ShortName));
+                       xQuantityUnit.Add(new XAttribute("FullName", offer.QuantityUnit.FullName));
 
-                XElement xRemains = new XElement("Remains", offer.Remains);
+                       XElement xRemains = new XElement("Remains", offer.Remains);
 
-                XElement xRetailPrice = new XElement("RetailPrice", offer.RetailPrice);
+                       XElement xRetailPrice = new XElement("RetailPrice", offer.RetailPrice);
 
-                XElement xDiscountPrice = new XElement("DiscountPrice", offer.DiscountPrice);
+                       XElement xDiscountPrice = new XElement("DiscountPrice", offer.DiscountPrice);
 
-                xOffer.Add(xSupplierProductCode);
+                       xOffer.Add(xSupplierProductCode);
 
-                xOffer.Add(xProduct);
-                xOffer.Add(xQuantityUnit);
-                xOffer.Add(xRemains);
-                xOffer.Add(xRetailPrice);
-                xOffer.Add(xDiscountPrice);
+                       xOffer.Add(xProduct);
+                       xOffer.Add(xQuantityUnit);
+                       xOffer.Add(xRemains);
+                       xOffer.Add(xRetailPrice);
+                       xOffer.Add(xDiscountPrice);
 
-                xOffers.Add(xOffer);
-            }
-            xExtraction.Add(xSupplierInfo);
-            xExtraction.Add(xOffers);
-            xDoc.Add(xExtraction);
-            xDoc.Save(fileName);
-        }*/
+                       xOffers.Add(xOffer);
+                   }
+                   xExtraction.Add(xSupplierInfo);
+                   xExtraction.Add(xOffers);
+                   xDoc.Add(xExtraction);
+                   xDoc.Save(fileName);
+               }*/
 
         public static void ProcessOffersXMLFromFile(string xmlFile, StreamWriter logFileStream)
         {
@@ -465,6 +465,7 @@ namespace Core.Services
             int newUnmatchedPicsAdded = 0;
             int newMatchedPicsAdded = 0;
             int newConflictedPicsAdded = 0;
+            int problemPics = 0;
 
             foreach (XElement xPicture in xPictures)
             {
@@ -474,67 +475,78 @@ namespace Core.Services
                 string supplierPicFullFilePath = xmlFileDirectory + @"\" + supplierShortFilePath;
                 if (File.Exists(supplierPicFullFilePath))
                 {
-                    if (Path.GetExtension(supplierPicFullFilePath).ToUpper() == B2BPaths.PictureExtension.ToUpper())
+                    MatchOffer matchOffer;
+                    using (MarketDbContext db = new MarketDbContext())
                     {
-                        MatchOffer matchOffer;
-                        using (MarketDbContext db = new MarketDbContext())
+                        matchOffer = db.MatchOffers.Where(mo => mo.SupplierId == supplierId && mo.SupplierProductCode == supplierProductCode).FirstOrDefault();
+                    }
+                    if (matchOffer != null)
+                    {
+                        if (matchOffer.OfferId == null)
                         {
-                            matchOffer = db.MatchOffers.Where(mo => mo.SupplierId == supplierId && mo.SupplierProductCode == supplierProductCode).FirstOrDefault();
-                        }
-                        if (matchOffer != null)
-                        {
-                            if (matchOffer.OfferId == null)
+                            //Adding new Unmatched Picture
+                            Guid newUnmatchedPicGuid = Guid.NewGuid();
+                            using (MarketDbContext db = new MarketDbContext())
                             {
-                                Guid newUnmatchedPicGuid = Guid.NewGuid();
-                                using (MarketDbContext db = new MarketDbContext())
+                                if (db.UnmatchedPics.Where(up => up.SupplierId == supplierId && up.SupplierProductCode == supplierProductCode).FirstOrDefault() == null)
                                 {
-                                    if (db.UnmatchedPics.Where(up => up.SupplierId == supplierId && up.SupplierProductCode == supplierProductCode).FirstOrDefault() == null)
+                                    string destFileName = CoreSettings.b2bDataLocalDir + CoreSettings.UnmatchedProductsPicturesPath + "/" + newUnmatchedPicGuid.ToString() + CoreSettings.PictureExtension;
+                                    if (ImageProcessor.ResizeAndConvertImageToJpeg(new Uri(supplierPicFullFilePath), new Uri(destFileName)))
                                     {
-                                        string destFileName = B2BPaths.b2bDataLocalDir + B2BPaths.UnmatchedProductsPicturesPath + "/" + newUnmatchedPicGuid.ToString() + B2BPaths.PictureExtension;
-                                        File.Copy(supplierPicFullFilePath, destFileName);
                                         db.UnmatchedPics.Add(new UnmatchedPic { Id = newUnmatchedPicGuid, SupplierId = supplierId, SupplierProductCode = supplierProductCode });
                                         newUnmatchedPicsAdded++;
                                     }
-                                    db.SaveChanges();
+                                    else
+                                    {
+                                        problemPics++;
+                                    }
                                 }
+                                db.SaveChanges();
                             }
-                            else
+                        }
+                        else
+                        {
+                            Guid productId;
+                            using (MarketDbContext db = new MarketDbContext())
                             {
-                                Guid productId;
+                                productId = db.Offers.Find(matchOffer.OfferId).ProductId;
+                            }
+                            string destFileName = CoreSettings.b2bDataLocalDir + CoreSettings.MatchedProductsPicturesPath + "/" + productId.ToString() + CoreSettings.PictureExtension;
+
+                            if (File.Exists(destFileName))
+                            {
+                                //Adding New Conflicted
+                                Guid newConflictedPicGuid = Guid.NewGuid();
+
                                 using (MarketDbContext db = new MarketDbContext())
                                 {
-                                    productId = db.Offers.Find(matchOffer.OfferId).ProductId;
-                                }
-                                string destFileName = B2BPaths.b2bDataLocalDir + B2BPaths.MatchedProductsPicturesPath + "/" + productId.ToString() + B2BPaths.PictureExtension;
-
-                                if (File.Exists(destFileName))
-                                {
-                                    if (new FileInfo(supplierPicFullFilePath).Length != new FileInfo(destFileName).Length)
+                                    if (db.ConflictedPics.Where(up => up.SupplierId == supplierId && up.ProductId == productId).FirstOrDefault() == null)
                                     {
-                                        Guid newConflictedPicGuid = Guid.NewGuid();
-
-                                        using (MarketDbContext db = new MarketDbContext())
+                                        destFileName = CoreSettings.b2bDataLocalDir + CoreSettings.ConflictedProductsPicturesPath + "/" + newConflictedPicGuid.ToString() + CoreSettings.PictureExtension;
+                                        if (ImageProcessor.ResizeAndConvertImageToJpeg(new Uri(supplierPicFullFilePath), new Uri(destFileName)))
                                         {
-                                            if (db.ConflictedPics.Where(up => up.SupplierId == supplierId && up.ProductId == productId).FirstOrDefault() == null)
-                                            {
-                                                destFileName = B2BPaths.b2bDataLocalDir + B2BPaths.ConflictedProductsPicturesPath + "/" + newConflictedPicGuid.ToString() + B2BPaths.PictureExtension;
-                                                File.Copy(supplierPicFullFilePath, destFileName);
-                                                db.ConflictedPics.Add(new ConflictedPic { Id = newConflictedPicGuid, SupplierId = supplierId, ProductId = productId });
-                                                db.SaveChanges();
-                                                newConflictedPicsAdded++;
-                                            }
+                                            db.ConflictedPics.Add(new ConflictedPic { Id = newConflictedPicGuid, SupplierId = supplierId, ProductId = productId });
+                                            db.SaveChanges();
+                                            newConflictedPicsAdded++;
+                                        }
+                                        else
+                                        {
+                                            problemPics++;
                                         }
                                     }
                                 }
-                                else
+
+                            }
+                            else
+                            {
+                                //Adding new Matched Picture
+                                if (ImageProcessor.ResizeAndConvertImageToJpeg(new Uri(supplierPicFullFilePath), new Uri(destFileName)))
                                 {
-                                    File.Copy(supplierPicFullFilePath, destFileName);
                                     newMatchedPicsAdded++;
                                 }
                             }
                         }
                     }
-                    File.Delete(supplierPicFullFilePath);
                 }
             }
             File.Delete(xmlFile);

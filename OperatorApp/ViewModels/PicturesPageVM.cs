@@ -234,20 +234,10 @@ namespace OperatorApp.ViewModels
         {
             if (DialogService.ShowOpenPictureDialog())
             {
-                if (Path.GetExtension(DialogService.FilePath).ToUpper() == ".PNG")
+                CustomPicture = ImageProcessor.GetResizedConvertedImageData(new Uri(DialogService.FilePath));
+                if (CustomPicture == null)
                 {
-                    byte[] data = File.ReadAllBytes(DialogService.FilePath);
-                    if (data[0] == 137 &&
-                        data[1] == 80 &&
-                        data[2] == 78 &&
-                        data[3] == 71 &&
-                        data[4] == 13 &&
-                        data[5] == 10 &&
-                        data[6] == 26 &&
-                        data[7] == 10)
-                    {
-                        CustomPicture = data;
-                    }
+                    DialogService.ShowMessageDialog("Неподдерживаемый формат файла", "Ошибка");
                 }
             }
         }

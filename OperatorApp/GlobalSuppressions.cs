@@ -5,12 +5,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.QuantityUnitsPageVM`1.QueryDb")]
-[assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.VolumeTypesPageVM`1.QueryDb")]
-[assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.VolumeUnitsPageVM`1.QueryDb")]
 [assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.DescriptionsPageVM`1.QueryDb")]
 [assembly: SuppressMessage("Style", "IDE0031:Use null propagation", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.DescriptionsPageVM`1.QueryDb")]
 [assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.OffersPageVM`1.QueryDb(System.Boolean,System.Boolean)~System.Threading.Tasks.Task")]
 [assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.PicturesPageVM`1.QueryDb")]
 [assembly: SuppressMessage("Style", "IDE0031:Use null propagation", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.PicturesPageVM`1.QueryDb")]
 [assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.ProductCategoriesPageVM`1.QueryDb(System.Boolean,System.Boolean)~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:OperatorApp.ViewModels.TopCategoriesPageVM`1.QueryDb(System.Boolean,System.Boolean)~System.Threading.Tasks.Task")]

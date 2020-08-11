@@ -11,17 +11,17 @@ namespace Core.Services
     {
         public static Uri GetMatchedProductPictureUri(Guid guid)
         {
-            return new Uri(B2BPaths.HTTPServerUrl + B2BPaths.MatchedProductsPicturesPath + "/"+ guid.ToString() + B2BPaths.PictureExtension);
+            return new Uri(CoreSettings.HTTPServerUrl + CoreSettings.MatchedProductsPicturesPath + "/"+ guid.ToString() + CoreSettings.PictureExtension);
         }
 
         public static Uri GetTopCategoryPictureUri(Guid guid)
         {
-            return new Uri(B2BPaths.HTTPServerUrl + B2BPaths.TopCategoriesPicturePath + "/" + guid.ToString() + B2BPaths.PictureExtension);
+            return new Uri(CoreSettings.HTTPServerUrl + CoreSettings.TopCategoriesPicturePath + "/" + guid.ToString() + CoreSettings.PictureExtension);
         }
 
         public static Uri GetSupplierPictureUri(Guid guid)
         {
-            return new Uri(B2BPaths.HTTPServerUrl + B2BPaths.SuppliersPicturePath + "/" + guid.ToString() + B2BPaths.PictureExtension);
+            return new Uri(CoreSettings.HTTPServerUrl + CoreSettings.SuppliersPicturePath + "/" + guid.ToString() + CoreSettings.PictureExtension);
         }
     }
 }

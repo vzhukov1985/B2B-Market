@@ -15,6 +15,11 @@ namespace Core.Services
 {
     public static class FTPManager
     {
+        public static string GetFTPAccessString(string user, string password)
+        {
+            return "ftp://" + user + ":" + password + "@" + CoreSettings.ServerIP;
+        }
+
         private static bool FileExists(string AccessStringPath, string fileName)
         {
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(AccessStringPath);
@@ -33,10 +38,24 @@ namespace Core.Services
             return false;
         }
 
+        public static void DeleteFile(Uri uri)
+        {
+            FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uri);
+            reqFTP.Method = WebRequestMethods.Ftp.DeleteFile;
+            try
+            {
+                reqFTP.GetResponse();
+            }
+            catch
+            {
+                return;
+            }
+        }
+
         public static List<Guid> GetProductsMatchedPicturesGuids()
         {
             List<Guid> result = new List<Guid>();
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(B2BPaths.FTPAdminAccessString+B2BPaths.MatchedProductsPicturesPath+"/");
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(CoreSettings.FTPAdminAccessString+CoreSettings.MatchedProductsPicturesPath+"/");
             request.Method = WebRequestMethods.Ftp.ListDirectory;
 
             FtpWebResponse response = (FtpWebResponse)request.GetResponse();
@@ -56,14 +75,14 @@ namespace Core.Services
         public static bool? MoveUnmatchedProductPicToMatched(Guid unmatchedPicId, Guid matchedProductId)
         {
 
-            Uri uriSource = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.UnmatchedProductsPicturesPath + "/"+ unmatchedPicId.ToString()+B2BPaths.PictureExtension);
+            Uri uriSource = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.UnmatchedProductsPicturesPath + "/"+ unmatchedPicId.ToString()+CoreSettings.PictureExtension);
 
-            if (FileExists(B2BPaths.FTPAdminAccessString + B2BPaths.MatchedProductsPicturesPath+"/", matchedProductId.ToString() + B2BPaths.PictureExtension))
+            if (FileExists(CoreSettings.FTPAdminAccessString + CoreSettings.MatchedProductsPicturesPath+"/", matchedProductId.ToString() + CoreSettings.PictureExtension))
                 return false;
 
             FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uriSource);
             reqFTP.Method = WebRequestMethods.Ftp.Rename;
-            reqFTP.RenameTo = ".." + B2BPaths.MatchedProductsPicturesDir + "/" + matchedProductId.ToString() + B2BPaths.PictureExtension;
+            reqFTP.RenameTo = ".." + CoreSettings.MatchedProductsPicturesDir + "/" + matchedProductId.ToString() + CoreSettings.PictureExtension;
 
             try
             {
@@ -79,8 +98,8 @@ namespace Core.Services
 
         public static bool AreUmatchedAndMatchedPicsTheSame(Guid unmatchedPicId, Guid productId)
         {
-            Uri uriUnmatched = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.UnmatchedProductsPicturesPath + "/" + unmatchedPicId.ToString() + B2BPaths.PictureExtension);
-            Uri uriMatched = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.MatchedProductsPicturesPath + "/" + productId.ToString() + B2BPaths.PictureExtension);
+            Uri uriUnmatched = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.UnmatchedProductsPicturesPath + "/" + unmatchedPicId.ToString() + CoreSettings.PictureExtension);
+            Uri uriMatched = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.MatchedProductsPicturesPath + "/" + productId.ToString() + CoreSettings.PictureExtension);
             byte[] unmatchedPicData;
             byte[] matchedPicData;
             using (WebClient wc = new WebClient())
@@ -100,62 +119,33 @@ namespace Core.Services
 
         public static void RemoveUnmatchedPic(Guid unmatchedPicId)
         {
-            Uri uriSource = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.UnmatchedProductsPicturesPath + "/" + unmatchedPicId.ToString() + B2BPaths.PictureExtension);
-            FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uriSource);
-            reqFTP.Method = WebRequestMethods.Ftp.DeleteFile;
-            try
-            {
-                reqFTP.GetResponse();
-            }
-            catch
-            {
-                return;
-            }
-            return;
+            Uri uriSource = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.UnmatchedProductsPicturesPath + "/" + unmatchedPicId.ToString() + CoreSettings.PictureExtension);
+            DeleteFile(uriSource);
         }
 
         public static void RemoveMatchedPic(Guid productId)
         {
-            Uri uriSource = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.MatchedProductsPicturesPath + "/" + productId.ToString() + B2BPaths.PictureExtension);
-            FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uriSource);
-            reqFTP.Method = WebRequestMethods.Ftp.DeleteFile;
-            try
-            {
-                reqFTP.GetResponse();
-            }
-            catch
-            {
-                return;
-            }
+            Uri uriSource = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.MatchedProductsPicturesPath + "/" + productId.ToString() + CoreSettings.PictureExtension);
+            DeleteFile(uriSource);
         }
 
         public static void RemoveConflictedPic(Guid conflictedPicId)
         {
-            Uri uriSource = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.ConflictedProductsPicturesPath + "/" + conflictedPicId.ToString() + B2BPaths.PictureExtension);
-            FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uriSource);
-            reqFTP.Method = WebRequestMethods.Ftp.DeleteFile;
-            try
-            {
-                reqFTP.GetResponse();
-            }
-            catch
-            {
-                return;
-            }
-            return;
+            Uri uriSource = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.ConflictedProductsPicturesPath + "/" + conflictedPicId.ToString() + CoreSettings.PictureExtension);
+            DeleteFile(uriSource);
         }
 
         public static bool? MoveUnmatchedProductPicToConflicted(Guid unmatchedPicId, Guid conflictedPicId)
         {
 
-            Uri uriSource = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.UnmatchedProductsPicturesPath + "/" + unmatchedPicId.ToString() + B2BPaths.PictureExtension);
+            Uri uriSource = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.UnmatchedProductsPicturesPath + "/" + unmatchedPicId.ToString() + CoreSettings.PictureExtension);
 
-            if (FileExists(B2BPaths.FTPAdminAccessString + B2BPaths.ConflictedProductsPicturesPath + "/", conflictedPicId.ToString() + B2BPaths.PictureExtension))
+            if (FileExists(CoreSettings.FTPAdminAccessString + CoreSettings.ConflictedProductsPicturesPath + "/", conflictedPicId.ToString() + CoreSettings.PictureExtension))
                 return null;
 
             FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uriSource);
             reqFTP.Method = WebRequestMethods.Ftp.Rename;
-            reqFTP.RenameTo = ".." + B2BPaths.ConflictedProductsPictureDir+"/" + conflictedPicId.ToString() + B2BPaths.PictureExtension;
+            reqFTP.RenameTo = ".." + CoreSettings.ConflictedProductsPictureDir+"/" + conflictedPicId.ToString() + CoreSettings.PictureExtension;
 
             try
             {
@@ -175,7 +165,7 @@ namespace Core.Services
             {
                 using (WebClient wc = new WebClient())
                 {
-                    return wc.DownloadData(B2BPaths.FTPAdminAccessString + B2BPaths.ConflictedProductsPicturesPath + "/" + guid.ToString()+ B2BPaths.PictureExtension);
+                    return wc.DownloadData(CoreSettings.FTPAdminAccessString + CoreSettings.ConflictedProductsPicturesPath + "/" + guid.ToString()+ CoreSettings.PictureExtension);
                 }
             }
             catch(WebException)
@@ -188,10 +178,10 @@ namespace Core.Services
         {
             RemoveMatchedPic(productId);
 
-            Uri uriSource = new Uri(B2BPaths.FTPAdminAccessString + B2BPaths.ConflictedProductsPicturesPath + "/" + conflictedPicId.ToString() + B2BPaths.PictureExtension);
+            Uri uriSource = new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.ConflictedProductsPicturesPath + "/" + conflictedPicId.ToString() + CoreSettings.PictureExtension);
             FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uriSource);
             reqFTP.Method = WebRequestMethods.Ftp.Rename;
-            reqFTP.RenameTo = ".." + B2BPaths.MatchedProductsPicturesDir + "/" + productId.ToString() + B2BPaths.PictureExtension;
+            reqFTP.RenameTo = ".." + CoreSettings.MatchedProductsPicturesDir + "/" + productId.ToString() + CoreSettings.PictureExtension;
 
             try
             {
@@ -211,7 +201,7 @@ namespace Core.Services
             {
                 try
                 {
-                    wc.UploadData(B2BPaths.FTPAdminAccessString + B2BPaths.MatchedProductsPicturesPath + "/" + productId.ToString() + B2BPaths.PictureExtension, picData);
+                    wc.UploadData(CoreSettings.FTPAdminAccessString + CoreSettings.MatchedProductsPicturesPath + "/" + productId.ToString() + CoreSettings.PictureExtension, picData);
                 }
                 catch
                 {
@@ -236,7 +226,7 @@ namespace Core.Services
 
         public static bool UpdateReqProdPicsFile(MemoryStream stream, string FTPUser, string FTPPassword)
         {
-            string FTPFileUri = B2BPaths.GetFTPAccessString(FTPUser, FTPPassword)+B2BPaths.SupplierDescriptionsPath+"/"+B2BPaths.ProductPicturesRequestFileName;
+            string FTPFileUri = GetFTPAccessString(FTPUser, FTPPassword)+CoreSettings.SupplierDescriptionsPath+"/"+CoreSettings.ProductPicturesRequestFileName;
             DeleteFile(FTPFileUri);
             using (WebClient wc = new WebClient())
             {
@@ -254,7 +244,7 @@ namespace Core.Services
         }
         public static bool UpdateReqProdDescFile(MemoryStream stream, string FTPUser, string FTPPassword)
         {
-            string FTPFileUri = B2BPaths.GetFTPAccessString(FTPUser, FTPPassword) + B2BPaths.SupplierDescriptionsPath + "/" + B2BPaths.ProductDescriptionsRequestFileName;
+            string FTPFileUri = GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierDescriptionsPath + "/" + CoreSettings.ProductDescriptionsRequestFileName;
             DeleteFile(FTPFileUri);
             using (WebClient wc = new WebClient())
             {
@@ -277,7 +267,7 @@ namespace Core.Services
             {
                 try
                 {
-                    return wc.OpenRead(B2BPaths.GetFTPAccessString(FTPUser, FTPPassword) + B2BPaths.SupplierDescriptionsPath + "/" + B2BPaths.ProductPicturesRequestFileName);
+                    return wc.OpenRead(GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierDescriptionsPath + "/" + CoreSettings.ProductPicturesRequestFileName);
                 }
                 catch
                 {
@@ -292,7 +282,7 @@ namespace Core.Services
             {
                 try
                 {
-                    return wc.OpenRead(B2BPaths.GetFTPAccessString(FTPUser, FTPPassword) + B2BPaths.SupplierDescriptionsPath + "/" + B2BPaths.ProductDescriptionsRequestFileName);
+                    return wc.OpenRead(GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierDescriptionsPath + "/" + CoreSettings.ProductDescriptionsRequestFileName);
                 }
                 catch
                 {
@@ -307,7 +297,7 @@ namespace Core.Services
             FtpWebRequest ftpRequest;
             try
             {
-                ftpRequest = (FtpWebRequest)WebRequest.Create(B2BPaths.GetFTPAccessString(FTPUser, FTPPassword) + B2BPaths.SupplierOrdersPath + "/Order" + request.Code.ToString() + ".xml");
+                ftpRequest = (FtpWebRequest)WebRequest.Create(GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierOrdersPath + "/Order" + request.Code.ToString() + ".xml");
             }
             catch
             {

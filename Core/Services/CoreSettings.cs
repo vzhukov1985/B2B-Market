@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Core.Services
 {
-    public static class B2BPaths
+    public static class CoreSettings
     {
         //server=localhost;UserId=root;Password=MySQLPassword;database=b2bmarket;
         public static readonly string EncryptedDbConnectionString = "VE/QWGXEbJjApGZjklT5CPf0mWrBHRTTqCc3qFm0kDh1vEhEAH9xVcF+TD/CI+QIxTiKRT5CuZouniH1L+1+GCPsepH7CVAn7A/gYYJR32BvUEj2TVWMwKa9ZtwJdnLSCU4Srm7i5Y8p4rCo/SPAKQ==";
@@ -19,11 +19,14 @@ namespace Core.Services
 
         public readonly static string FTPAdminUser = "B2BAdmin";
         public readonly static string FTPAdminPassword = "B2BAdminPassword";
-        public readonly static string FTPAdminAccessString = GetFTPAccessString(FTPAdminUser, FTPAdminPassword);
+        public readonly static string FTPAdminAccessString = FTPManager.GetFTPAccessString(FTPAdminUser, FTPAdminPassword);
 
         public readonly static string LogFileName = "AgentLog.txt";
 
-        public readonly static string PictureExtension = ".png";
+        public readonly static string PictureExtension = ".jpg";
+        public readonly static int ProductPictureHeight = 300;
+        public readonly static int ProductPictureWidth = 300;
+
         public readonly static string PicturesPath = "/Pictures";
         public readonly static string ProductsPicturesPath = PicturesPath + "/Products";
         public readonly static string MatchedProductsPicturesDir = "/Matched";
@@ -43,10 +46,5 @@ namespace Core.Services
         public readonly static string ProductPicturesExtractionFileName = "ProdPics.xml";
         public readonly static string ProductDescriptionsRequestFileName = "ReqProdDesc.xml";
         public readonly static string ProductDescriptionsExtractionFileName = "ProdDesc.xml";
-
-        public static string GetFTPAccessString(string user, string password)
-        {
-            return "ftp://" + user + ":" + password + "@" + ServerIP;
-        }
     }
 }

@@ -18,7 +18,7 @@ namespace Core.DBModels
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql(StringCipher.Decrypt(B2BPaths.EncryptedDbConnectionString, B2BPaths.DbConnectionSalt));
+                optionsBuilder.UseMySql(StringCipher.Decrypt(CoreSettings.EncryptedDbConnectionString, CoreSettings.DbConnectionSalt));
                 optionsBuilder.EnableSensitiveDataLogging(true); //TODO: Delete when deploy
             }
         }
