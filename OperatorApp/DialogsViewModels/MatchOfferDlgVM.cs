@@ -171,7 +171,7 @@ namespace OperatorApp.DialogsViewModels
                 {
                     if (pep.PropertyType == null) canProceed = false;
                 }
-                if (Offer.Product.Name == "" && Offer.Product.Category == null && Offer.Product.Volume == 0 && Offer.Product.VolumeType == null && Offer.Product.VolumeUnit == null && Offer.QuantityUnit == null)
+                if (Offer.Product.Name == "" || Offer.Product.Category == null || Offer.Product.Volume == 0 || Offer.Product.VolumeType == null || Offer.Product.VolumeUnit == null || Offer.QuantityUnit == null)
                     canProceed = false;
                 return canProceed;
                 });

@@ -140,7 +140,6 @@ namespace Core.Services
                     return false;
             }
 
-
             wc.Dispose();
             bmpSource.Dispose();
             bmpDest.Dispose();
@@ -195,8 +194,6 @@ namespace Core.Services
                 srcStream.Dispose();
                 return stream.ToArray();
             }
-
         }
-
     }
 }

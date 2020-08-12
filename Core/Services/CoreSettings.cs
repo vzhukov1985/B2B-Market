@@ -46,5 +46,12 @@ namespace Core.Services
         public readonly static string ProductPicturesExtractionFileName = "ProdPics.xml";
         public readonly static string ProductDescriptionsRequestFileName = "ReqProdDesc.xml";
         public readonly static string ProductDescriptionsExtractionFileName = "ProdDesc.xml";
+
+        public readonly static string SettingsPath = "/Settings";
+        public readonly static string AgentSettingsFileName = "Agent.xml";
+        
+        public readonly static string AdminTGBotSettingsFileName = "AdminTGBot.xml";
+        public readonly static string SuperAdminTGBotPasswordHash = "$2b$10$KAhKW4/LGrdzVzUvFTyorOW058ZwE4DxnSOmJNf3q7gRLFnWridmC"; //ap~G3te!d_2G
+        public readonly static string OperatorTGBotSettingsFileName = "OperatorTGBot.xml";
     }
 }

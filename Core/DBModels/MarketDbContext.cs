@@ -9,6 +9,8 @@ using System.Configuration;
 using System.Linq;
 using System.Collections.ObjectModel;
 using Core.Services;
+using Core.Models;
+using System.IO;
 
 namespace Core.DBModels
 {
@@ -335,6 +337,34 @@ namespace Core.DBModels
                 IEnumerable<Guid> allOffers = db.Offers.Select(o => o.ProductId).Distinct();
                 return db.Products.Where(p => !allOffers.Contains(p.Id)).ToList();
             }
+        }
+
+        public static DbDataStatus GetDbDataStatusLocal()
+        {
+            DbDataStatus status = new DbDataStatus();
+            List<Guid> matchedPicGuids = new DirectoryInfo(CoreSettings.b2bDataLocalDir + CoreSettings.MatchedProductsPicturesPath).GetFiles().Select(f => new Guid(Path.GetFileNameWithoutExtension(f.Name))).ToList();
+            try
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    status.IsConnected = true;
+                    status.UnMatchedProductCategories = db.MatchProductCategories.Where(mpc => mpc.ProductCategoryId == null).Count();
+                    status.UnMatchedVolumeTypes = db.MatchVolumeTypes.Where(mvt => mvt.VolumeTypeId == null).Count();
+                    status.UnMatchedVolumeUnits = db.MatchVolumeUnits.Where(mvu => mvu.VolumeUnitId == null).Count();
+                    status.UnMatchedQuantityUnits = db.MatchQuantityUnits.Where(mqu => mqu.QuantityUnitId == null).Count();
+                    status.UnMatchedExtraProperties = db.MatchProductExtraPropertyTypes.Where(mpept => mpept.ProductExtraPropertyTypeId == null).Count();
+                    status.UnMatchedOffers = db.MatchOffers.Where(mo => mo.OfferId == null).Count();
+                    status.ConflictedPics = db.ConflictedPics.Count();
+                    status.ProductsWithoutPics = db.Products.Select(p => p.Id).AsEnumerable().Except(matchedPicGuids).Count();
+                    status.ConflictedDescs = db.ConflictedDescriptions.Count();
+                    status.ProductsWithoutDescs = db.Products.Select(p => p.Id).AsEnumerable().Except(db.ProductDescriptions.Select(pd => pd.ProductId)).Count();
+                }
+            }
+            catch
+            {
+                return status;
+            }
+            return status;
         }
     }
 }
