@@ -52,10 +52,10 @@ namespace UpdateDb_Service
         {
              while (!stoppingToken.IsCancellationRequested)
              {
-                UpdateDbProcessor.UpdateDb();
-                DateTime scheduleTime = DateTime.Today.AddDays(1).AddHours(updateHour).AddMinutes(updateMinutes);
-                TimeSpan interval = scheduleTime.Subtract(DateTime.Now);
-                await Task.Delay(interval, stoppingToken);
+                 UpdateDbProcessor.UpdateDb();
+                 DateTime scheduleTime = DateTime.Today.AddDays(1).AddHours(updateHour).AddMinutes(updateMinutes);
+                 TimeSpan interval = scheduleTime.Subtract(DateTime.Now);
+                 await Task.Delay(interval, stoppingToken);
              }
         }
     }
