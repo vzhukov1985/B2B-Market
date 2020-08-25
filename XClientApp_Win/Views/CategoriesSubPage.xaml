@@ -1,0 +1,68 @@
+﻿<Page x:Class="XClientApp_Win.Views.CategoriesSubPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:XClientApp_Win.Views"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:resx="clr-namespace:XClientApp.Resources;assembly=XClientApp"
+      xmlns:scm ="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="CategoriesSubPage" x:Name="pgCategoriesSubPage">
+
+   
+    <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                            <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+            <TextBlock Grid.Row="0" Text="{Binding UpperCategory.Name}" FontSize="19" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <Border Grid.Row="1" Background="LightGray" BorderBrush="White" BorderThickness="0,0,0,1"/>
+            <TextBox Grid.Row="1" Text="Поиск товара" Foreground="DarkGray" FontSize="17" Height="28" Margin="20,10,20,10" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            
+            <ItemsControl Grid.Row="2" ItemsSource="{Binding SubCategories}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="LightGray">
+                            <Grid Grid.Row="1" Height="50">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="{Binding Path=Name}" FontSize="18" VerticalAlignment="Center" Margin="10"/>
+                                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:Images.Navigation_Forward_Gray}}" Height="30" HorizontalAlignment="Right" RenderOptions.BitmapScalingMode="Fant"/>
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding Path=DataContext.CategorySelectedCommand, ElementName=pgCategoriesSubPage}" CommandParameter="{Binding Path=.}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Grid>
+                        </Border>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </Grid>
+    </ScrollViewer>
+</Page>

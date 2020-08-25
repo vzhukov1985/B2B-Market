@@ -16,7 +16,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -83,5 +82,17 @@ namespace Core.DBModels
                 OnPropertyChanged("QuantityUnitId");
             }
         }
+
+        private QuantityUnit _quantityUnit;
+        public QuantityUnit QuantityUnit
+        {
+            get { return _quantityUnit; }
+            set
+            {
+                _quantityUnit = value;
+                OnPropertyChanged("QuantityUnit");
+            }
+        }
+
     }
 }

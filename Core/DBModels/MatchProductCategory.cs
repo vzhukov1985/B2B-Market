@@ -16,7 +16,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -70,6 +69,17 @@ namespace Core.DBModels
             {
                 _productCategoryId = value;
                 OnPropertyChanged("ProductCategoryId");
+            }
+        }
+
+        private ProductCategory _productCategory;
+        public ProductCategory ProductCategory
+        {
+            get { return _productCategory; }
+            set
+            {
+                _productCategory = value;
+                OnPropertyChanged("ProductCategory");
             }
         }
 

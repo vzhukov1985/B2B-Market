@@ -17,155 +17,158 @@
     </Shell.TitleView>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="1"/>
-            <RowDefinition Height="140"/>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="1"/>
+                <RowDefinition Height="140"/>
+            </Grid.RowDefinitions>
 
-        <ListView Grid.Row="0"
-                  Style="{StaticResource BaseListView}"
-                  ItemsSource="{Binding OrdersGroup}"
-                  GroupDisplayBinding="{Binding CategoryName}"
-                  IsGroupingEnabled="True"
-                  HasUnevenRows="True">
-            
-            <ListView.GroupHeaderTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Label Style="{StaticResource GroupLabel}"
+            <ListView Grid.Row="0"
+                      Style="{StaticResource BaseListView}"
+                      ItemsSource="{Binding OrdersGroup}"
+                      GroupDisplayBinding="{Binding CategoryName}"
+                      IsGroupingEnabled="True"
+                      HasUnevenRows="True">
+
+                <ListView.GroupHeaderTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Label Style="{StaticResource GroupLabel}"
                            Margin="0"
                            Text="{Binding CategoryName}"/>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.GroupHeaderTemplate>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.GroupHeaderTemplate>
 
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Grid Padding="10,5,10,5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Padding="10,5,10,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
 
-                            <Label Grid.Row="0"
-                                   Style="{StaticResource ProductNameLabel}"
-                                   Text="{Binding ProductName}"/>
+                                <Label Grid.Row="0"
+                                       Style="{StaticResource ProductNameLabel}"
+                                       Text="{Binding ProductName}"/>
 
-                            <Label Grid.Row="1"
-                                   FontSize="14"
-                                   Margin="10,5,0,0">
-                                <Label.Text>
-                                    <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
-                                        <Binding Path="ProductVolumeType"/>
-                                        <Binding Path="ProductVolume"/>
-                                        <Binding Path="ProductVolumeUnit"/>
-                                    </MultiBinding>
-                                </Label.Text>
-                            </Label>
-                            
-                            <Label Grid.Row="1"
-                                   HorizontalOptions="End"
-                                   VerticalOptions="End"
-                                   Margin="0,5,0,0"
-                                   FontSize="20"
-                                   FontAttributes="Bold">
-                                <Label.Text>
-                                    <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
-                                        <Binding Path="Quantity"/>
-                                        <Binding Path="QuantityUnit"/>
-                                        <Binding Path="Price"/>
-                                    </MultiBinding>
-                                </Label.Text>
-                            </Label>
-                        </Grid>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                <Label Grid.Row="1"
+                                       FontSize="14"
+                                       Margin="10,5,0,0">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
+                                            <Binding Path="ProductVolumeType"/>
+                                            <Binding Path="ProductVolume"/>
+                                            <Binding Path="ProductVolumeUnit"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
 
-        <Frame Grid.Row="1" 
-               BackgroundColor="{StaticResource B2B_DarkGray_Color}"/>
+                                <Label Grid.Row="1"
+                                       HorizontalOptions="End"
+                                       VerticalOptions="End"
+                                       Margin="0,5,0,0"
+                                       FontSize="20"
+                                       FontAttributes="Bold">
+                                    <Label.Text>
+                                        <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
+                                            <Binding Path="Quantity"/>
+                                            <Binding Path="QuantityUnit"/>
+                                            <Binding Path="Price"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="90"/>
-            </Grid.ColumnDefinitions>
-            
-            <StackLayout Grid.Column="0" Margin="10,5,0,5" VerticalOptions="Center">
-                <Frame Style="{StaticResource RequestStatusFrame}"
-                       BackgroundColor="{StaticResource Request_Sent_Color}">
-                    <Label Style="{StaticResource RequestStatusLabel}"
-                           Text="Создан"/>
-                </Frame>
-                <CollectionView ItemsSource="{Binding Request.ArchivedRequestsStatuses}" HeightRequest="106" VerticalOptions="Center">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <StackLayout>
-                                <Label HorizontalOptions="Center"
-                                       FontSize="8"
-                                       Margin="0,0,0,2"
-                                       Text="¦"/>
-                                <Frame Style="{StaticResource RequestStatusFrame}"
-                                       HeightRequest="37"
-                                       WidthRequest="100"
-                                       BackgroundColor="{Binding ArchivedRequestStatusType.Name, Converter={StaticResource RequestStatusToColorConverter}}">
-                                    <Label Style="{StaticResource RequestStatusLabel}"
-                                           Text="{Binding ., Converter={StaticResource RequestStatusTextConverter}}"/>
-                                </Frame>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
+            <Frame Grid.Row="1" 
+                   BackgroundColor="{StaticResource B2B_DarkGray_Color}"/>
 
-            <StackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Margin="7,5,5,5" >
-                <Label HorizontalTextAlignment="Center"
-                       FontSize="12">
-                    <Label.Text>
-                        <MultiBinding StringFormat="{}{0} товаров:&#x0a;{1} наименований">
-                            <Binding Path="Request.ItemsQuantity"/>
-                            <Binding Path="Request.ProductsQuantity"/>
-                        </MultiBinding>
-                    </Label.Text>
-                </Label>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="90"/>
+                </Grid.ColumnDefinitions>
 
-                <Label FontSize="12"
+                <StackLayout Grid.Column="0" Margin="10,5,0,5" VerticalOptions="Center">
+                    <Frame Style="{StaticResource RequestStatusFrame}"
+                           BackgroundColor="{StaticResource Request_Sent_Color}">
+                        <Label Style="{StaticResource RequestStatusLabel}"
+                               Text="Создан"/>
+                    </Frame>
+                    <CollectionView ItemsSource="{Binding Request.ArchivedRequestsStatuses}" HeightRequest="106" VerticalOptions="Center">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout>
+                                    <Label HorizontalOptions="Center"
+                                           FontSize="8"
+                                           Margin="0,0,0,2"
+                                           Text="¦"/>
+                                    <Frame Style="{StaticResource RequestStatusFrame}"
+                                           HeightRequest="37"
+                                           WidthRequest="100"
+                                           BackgroundColor="{Binding ArchivedRequestStatusType.Name, Converter={StaticResource RequestStatusToColorConverter}}">
+                                        <Label Style="{StaticResource RequestStatusLabel}"
+                                               Text="{Binding ., Converter={StaticResource RequestStatusTextConverter}}"/>
+                                    </Frame>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Margin="7,5,5,5" >
+                    <Label HorizontalTextAlignment="Center"
+                           FontSize="12">
+                        <Label.Text>
+                            <MultiBinding StringFormat="{}{0} товаров:&#x0a;{1} наименований">
+                                <Binding Path="Request.ItemsQuantity"/>
+                                <Binding Path="Request.ProductsQuantity"/>
+                            </MultiBinding>
+                        </Label.Text>
+                    </Label>
+
+                    <Label FontSize="12"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding Request.DeliveryDateTime, StringFormat='Доставка: {0:dd.MM.yyyy - HH:mm}'}"/>
+
+                    <Label HorizontalTextAlignment="Center"
+                           FontSize="12"
+                           Margin="0,5,0,0"
+                           Text="Комментарии:"/>
+                    <Frame BackgroundColor="White"
+                           BorderColor="{StaticResource B2B_Gray_Color}"
+                           CornerRadius="6"
+                           Padding="5"
+                           HasShadow="False"
+                           HeightRequest="45"
+                           WidthRequest="300">
+                        <ScrollView>
+                            <Label HorizontalOptions="CenterAndExpand"
+                                   FontSize="12"
+                                   Text="{Binding Request.Comments}"/>
+                        </ScrollView>
+                    </Frame>
+                </StackLayout>
+
+                <Label Grid.Column="2"
                        HorizontalTextAlignment="Center"
-                       Text="{Binding Request.DeliveryDateTime, StringFormat='Доставка: {0:dd.MM.yyyy - HH:mm}'}"/>
+                       VerticalTextAlignment="Center"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       Margin="0,0,10,0"
+                       Text="{Binding Request.TotalPrice, StringFormat='Итого:&#x0a;{0:G20} тг'}"/>
+            </Grid>
 
-                <Label HorizontalTextAlignment="Center"
-                       FontSize="12"
-                       Margin="0,5,0,0"
-                       Text="Комментарии:"/>
-                <Frame BackgroundColor="White"
-                       BorderColor="{StaticResource B2B_Gray_Color}"
-                       CornerRadius="6"
-                       Padding="5"
-                       HasShadow="False"
-                       HeightRequest="45"
-                       WidthRequest="300">
-                    <ScrollView>
-                        <Label HorizontalOptions="CenterAndExpand"
-                               FontSize="12"
-                               Text="{Binding Request.Comments}"/>
-                    </ScrollView>
-                </Frame>
-            </StackLayout>
-
-            <Label Grid.Column="2"
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,0,10,0"
-                   Text="{Binding Request.TotalPrice, StringFormat='Итого:&#x0a;{0:G20} тг'}"/>
         </Grid>
-
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
     </Grid>
 
-    
 </ContentPage>

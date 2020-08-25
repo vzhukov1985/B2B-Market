@@ -24,7 +24,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -60,7 +59,6 @@ namespace Core.DBModels
         }
 
         private int _code;
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Code
         {
             get { return _code; }
@@ -261,5 +259,11 @@ namespace Core.DBModels
             };
         }
 
+        public Product()
+        {
+            Offers = new ObservableCollection<Offer>();
+            Favorites = new ObservableCollection<Favorite>();
+            ExtraProperties = new ObservableCollection<ProductExtraProperty>();
+        }
     }
 }

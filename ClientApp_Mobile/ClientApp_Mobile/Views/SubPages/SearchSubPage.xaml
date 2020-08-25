@@ -1,12 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ClientApp_Mobile.Views.SubPages.SearchSubPage">
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="SearchSubPage!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
-    </ContentPage.Content>
+             xmlns:cr="clr-namespace:ClientApp_Mobile.Renderers"
+             xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
+             x:Class="ClientApp_Mobile.Views.SubPages.SearchSubPage" Appearing="ContentPage_Appearing">
+
+    <Shell.TitleView>
+        <Grid>
+            <cr:NoLineSearchBar
+                x:Name="SearchField"
+                Placeholder="Поиск товара"
+                BackgroundColor="White"
+                Margin="0,5,20,5"
+                HeightRequest="40"
+                CancelButtonColor="{StaticResource B2B_Blue_Color}"
+                Text="{Binding SearchText}"
+                SearchCommand="{Binding SearchCommand}">
+            </cr:NoLineSearchBar>
+        </Grid>
+    </Shell.TitleView>
+    
 </ContentPage>

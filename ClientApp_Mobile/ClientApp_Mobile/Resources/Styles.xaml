@@ -4,11 +4,17 @@
 
     <Color x:Key="LabelsColor">Black</Color>
     <Color x:Key="B2B_Blue_Color">#248ef4</Color>
+    <Color x:Key="B2B_DarkBlue_Color">#2284e3</Color>
     <Color x:Key="B2B_Gray_Color">LightGray</Color>
+    <Color x:Key="B2B_DarkGray_Color">#303030</Color>
     <Color x:Key="Contracted_Color">#008000</Color>
     <Color x:Key="NotContracted_Color">#800000</Color>
+    <Color x:Key="Request_Sent_Color">#67b51c</Color>
+    <Color x:Key="Request_Pending_Color">#0b00c9</Color>
+    <Color x:Key="Request_Rejected_Color">#be0000</Color>
+    <Color x:Key="Request_Accepted_Color">#67b51c</Color>
 
-    
+
 
     <Style x:Key="BaseStyle" TargetType="Element">
         <Setter Property="Shell.BackgroundColor" Value="{StaticResource B2B_Blue_Color}" />
@@ -25,8 +31,8 @@
     <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
 
 
-    
-    
+
+
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{StaticResource LabelsColor}"/>
     </Style>
@@ -36,19 +42,47 @@
         <Setter Property="ColumnSpacing" Value="0"/>
     </Style>
 
-    <Style TargetType="ActivityIndicator">
-        <Setter Property="Color" Value="{StaticResource B2B_Blue_Color}"/>
+    <Style TargetType="StackLayout">
+        <Setter Property="Spacing" Value="0"/>
     </Style>
-    
-    
-    
-    
-    
+
+    <Style TargetType="ActivityIndicator">
+        <Setter Property="IsRunning" Value="True"/>
+        <Setter Property="Color">
+            <Setter.Value>
+                <OnPlatform x:TypeArguments="Color">
+                    <OnPlatform.iOS>White</OnPlatform.iOS>
+                    <OnPlatform.Android>
+                        <StaticResource Key="B2B_Blue_Color"/>
+                    </OnPlatform.Android>
+                </OnPlatform>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Scale">
+            <Setter.Value>
+                <OnPlatform x:TypeArguments="x:Double">
+                    <OnPlatform.iOS>2</OnPlatform.iOS>
+                    <OnPlatform.Android>0.18</OnPlatform.Android>
+                </OnPlatform>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="BlockBoxView" TargetType="BoxView">
+        <Setter Property="BackgroundColor" Value="Black"/>
+        <Setter Property="Opacity" Value="0.35"/>
+    </Style>
+
+    <Style x:Key="BaseListView" TargetType="ListView">
+        <Setter Property="SeparatorColor" Value="{StaticResource B2B_DarkGray_Color}"/>
+    </Style>
+
 
     <Style x:Key="TitleBarLabel" TargetType="Label">
         <Setter Property="TextColor" Value="White"/>
         <Setter Property="VerticalOptions" Value="Center"/>
         <Setter Property="FontSize" Value="18"/>
+        <Setter Property="HorizontalTextAlignment" Value="Start"/>
     </Style>
 
     <Style x:Key="GroupLabel" TargetType="Label">
@@ -67,9 +101,144 @@
     </Style>
 
     <Style x:Key="SubCategoriesLabel" TargetType="Label">
-        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="TextColor" Value="#404040"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="Margin" Value="15,0,0,0"/>
     </Style>
-    
+    <Style x:Key="SubCategoriesNavArrow" TargetType="Image">
+        <Setter Property="Source" Value="Navigation_Forward_Gray.png"/>
+        <Setter Property="HeightRequest" Value="20"/>
+        <Setter Property="Margin" Value="0,0,10,0"/>
+    </Style>
+
+    <Style x:Key="ProductImage" TargetType="Image">
+        <Setter Property="Margin" Value="8,3,8,3"/>
+    </Style>
+    <Style x:Key="ContractedIconImage" TargetType="Image">
+        <Setter Property="HeightRequest" Value="28"/>
+        <Setter Property="HorizontalOptions" Value="End"/>
+        <Setter Property="VerticalOptions" Value="Start"/>
+        <Setter Property="Margin" Value="5,5"/>
+    </Style>
+    <Style x:Key="ProductNameLabel" TargetType="Label">
+        <Setter Property="HorizontalOptions" Value="StartAndExpand"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    <Style x:Key="ProductInfoLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="TextColor" Value="{StaticResource B2B_DarkGray_Color}"/>
+    </Style>
+    <Style x:Key="ProductPriceLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+    </Style>
+    <Style x:Key="ProductSupplierLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="11"/>
+    </Style>
+    <Style x:Key="ProductFavoriteIconImage" TargetType="Image">
+        <Setter Property="WidthRequest" Value="28"/>
+        <Setter Property="HorizontalOptions" Value="Start"/>
+        <Setter Property="VerticalOptions" Value="Start"/>
+        <Setter Property="Margin" Value="5,5"/>
+    </Style>
+
+    <Style x:Key="ProductSPInfos" TargetType="Label">
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <Style x:Key="ProductSPOffers" TargetType="Label">
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+    </Style>
+
+    <Style x:Key="RequestStatusFrame" TargetType="Frame">
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="CornerRadius" Value="7"/>
+        <Setter Property="HasShadow" Value="False"/>
+        <Setter Property="Padding" Value="5,1,5,2"/>
+    </Style>
+    <Style x:Key="RequestStatusLabel" TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+    </Style>
+
+    <Style x:Key="MinusButton" TargetType="ImageButton">
+        <Setter Property="Source" Value="Minus_Enabled.png"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.8" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Enabled">
+                        <VisualState.Setters>
+                            <Setter Property="Source" Value="Minus_Enabled.png"/>
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Source" Value="Minus_Disabled.png"/>
+                        </VisualState.Setters>
+                    </VisualState>
+
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PlusButton" TargetType="ImageButton">
+        <Setter Property="Source" Value="Plus_Enabled.png"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.8" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Enabled">
+                        <VisualState.Setters>
+                            <Setter Property="Source" Value="Plus_Enabled.png"/>
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Source" Value="Plus_Disabled.png"/>
+                        </VisualState.Setters>
+                    </VisualState>
+
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+
     <Style x:Key="FieldName" TargetType="Label">
         <Setter Property="FontSize" Value="18"/>
     </Style>
@@ -83,5 +252,9 @@
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
+    <Style x:Key="WhiteButton" TargetType="Button" BasedOn="{StaticResource BlueButton}">
+        <Setter Property="BackgroundColor" Value="White"/>
+        <Setter Property="TextColor" Value="{StaticResource B2B_Blue_Color}"/>
+    </Style>
     
 </ResourceDictionary>

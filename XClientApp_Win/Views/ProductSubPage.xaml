@@ -1,0 +1,189 @@
+﻿<Page x:Class="XClientApp_Win.Views.ProductSubPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:resx="clr-namespace:XClientApp.Resources;assembly=XClientApp"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:conv="clr-namespace:XClientApp_Win.Converters"
+      xmlns:local="clr-namespace:XClientApp_Win.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      x:Name="pgProductSubPage"
+      Title="ProductSubPage">
+
+    <Page.Resources>
+        <Style x:Key="MinusButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BorderlessButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="PART_Image" Source="{Binding Source={x:Static resx:Images.Minus_Enabled}}" Height="28" RenderOptions.BitmapScalingMode="Fant"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Source" Value="{Binding Source={x:Static resx:Images.Minus_Disabled}}" TargetName="PART_Image"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PlusButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BorderlessButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="PART_Image" Source="{Binding Source={x:Static resx:Images.Plus_Enabled}}" Height="28" RenderOptions.BitmapScalingMode="Fant"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Source" Value="{Binding Source={x:Static resx:Images.Plus_Disabled}}" TargetName="PART_Image"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+
+        <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
+        <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
+    </Page.Resources>
+
+    <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Hidden">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="LightGray"/>
+            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Navigation_Back}}" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding NavigationBackCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+            <Image Grid.Row="0" Source="{Binding Source={x:Static resx:Images.Search}}" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0" RenderOptions.BitmapScalingMode="Fant">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding ShowSearchSubPageCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!--Product Picture-->
+                <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
+                    <Image Grid.Row="0" Height="250" Width="250" Source="{Binding Product.PictureUri, Converter={StaticResource ImageConverter}, IsAsync=True}" ImageFailed="Image_ImageFailed" RenderOptions.BitmapScalingMode="Fant"/>
+                </Border>
+
+                <!-- Product Name & Favorite Button-->
+                <TextBlock Grid.Row="1" Text="{Binding Product.Name}" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" Margin="15,10" Width="450" TextWrapping="Wrap"/>
+                <Image Grid.Row="1" Source="{Binding Product.IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}" Height="38" VerticalAlignment="Top" Margin="0,10,10,0" HorizontalAlignment="Right" MouseLeftButtonDown="Favourite_MouseDown" RenderOptions.BitmapScalingMode="Fant">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown" >
+                            <i:InvokeCommandAction Command="{Binding AddRemoveProductToFavouritesCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+
+                <!-- Product properties-->
+                <Border Grid.Row="2" BorderThickness="0,0,0,1" BorderBrush="LightGray" >
+                    <StackPanel Margin="15,0,0,15">
+                        <TextBlock Text="{Binding Product.Category.Name}" FontSize="15" FontWeight="DemiBold"/>
+                        <TextBlock FontSize="15">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="- {0}: {1:G20} {2}">
+                                    <Binding Path="Product.VolumeType"/>
+                                    <Binding Path="Product.Volume"/>
+                                    <Binding Path="Product.VolumeUnit"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding Product.ExtraProperties}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontSize="15">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="- {0}: {1}">
+                                                <Binding Path="PropertyType"/>
+                                                <Binding Path="Value"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="3" Background="LightGray">
+                    <TextBlock Text="ПРЕДЛОЖЕНИЯ" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- Offers-->
+                <ItemsControl Grid.Row="4" ItemsSource="{Binding OffersWithOrders}" Margin="15,10,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" FontSize="18" FontWeight="DemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                            <Binding Path="PriceForClient"/>
+                                            <Binding Path="QuantityUnit"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="1" Text="{Binding Path=Supplier.ShortName}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" FontWeight="DemiBold" Foreground="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"/>
+
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                                    <Button Style="{StaticResource MinusButton}" Command="{Binding DataContext.DecrementOrderCommand, ElementName=pgProductSubPage}" CommandParameter="{Binding Path=.}" />
+                                    <TextBox x:Name="OrderQuantity" Text="{Binding OrderQuantity, UpdateSourceTrigger=PropertyChanged}" Width="35" Height="25" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Margin="10,0,10,0" PreviewTextInput="OrderQuantity_PreviewTextInput">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="TextChanged">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.ChangesInOrderAreMadeCommand, ElementName=pgProductSubPage}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+                                    <Button Style="{StaticResource PlusButton}" Command="{Binding DataContext.IncrementOrderCommand, ElementName=pgProductSubPage}" CommandParameter="{Binding Path=.}"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Grid.Row="5" Style="{StaticResource BlueButton}" Content="ВНЕСТИ ИЗМЕНЕНИЯ В ЗАЯВКУ" FontWeight="DemiBold" FontSize="18" Width="320" Height="55" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,29,0" Command="{Binding UpdateCurrentRequestCommand}"/>
+                <TextBlock Grid.Row="5" Text="{Binding TotalSum, StringFormat='Итого: {0:G20} тг'}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" FontWeight="DemiBold" Foreground="Black" Margin="40,25"/>
+
+                <Grid Grid.Row="6" Background="LightGray">
+                    <TextBlock Text="ОПИСАНИЕ" FontSize="15" FontWeight="DemiBold" Margin="10,10,0,10" VerticalAlignment="Center"/>
+                </Grid>
+
+                <TextBlock Grid.Row="7" Text="{Binding Product.Description.Text}" FontSize="15" TextWrapping="Wrap" Margin="10"/>
+
+            </Grid>
+
+        </Grid>
+    </ScrollViewer>
+</Page>

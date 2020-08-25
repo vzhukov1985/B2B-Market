@@ -58,7 +58,5 @@ namespace Core.DBModels
                 OnPropertyChanged("Supplier");
             }
         }
-
-
     }
 }

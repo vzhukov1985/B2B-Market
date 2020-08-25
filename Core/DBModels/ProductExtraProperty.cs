@@ -18,7 +18,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }

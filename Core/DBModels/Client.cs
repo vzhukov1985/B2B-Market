@@ -19,7 +19,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -177,6 +176,8 @@ namespace Core.DBModels
         public Client()
         {
             Contracts = new ObservableCollection<Contract>();
+            Users = new ObservableCollection<ClientUser>();
+            CurrentOrders = new ObservableCollection<CurrentOrder>();
         }
     }
 }

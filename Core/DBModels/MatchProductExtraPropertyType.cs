@@ -16,7 +16,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -72,5 +71,17 @@ namespace Core.DBModels
                 OnPropertyChanged("ProductExtraPropertyTypeId");
             }
         }
+
+        private ProductExtraPropertyType _productExtraPropertyType;
+        public ProductExtraPropertyType ProductExtraPropertyType
+        {
+            get { return _productExtraPropertyType; }
+            set
+            {
+                _productExtraPropertyType = value;
+                OnPropertyChanged("ProductExtraPropertyType");
+            }
+        }
+
     }
 }

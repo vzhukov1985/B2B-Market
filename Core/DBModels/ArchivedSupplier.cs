@@ -17,7 +17,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -51,13 +50,13 @@ namespace Core.DBModels
         }
 
         private string _bin;
-        public string BIN
+        public string Bin
         {
             get { return _bin; }
             set
             {
                 _bin = value;
-                OnPropertyChanged("BIN");
+                OnPropertyChanged("Bin");
             }
         }
 
@@ -99,7 +98,7 @@ namespace Core.DBModels
             return new ArchivedSupplier
             {
                 Address = archivedSupplier.Address,
-                BIN = archivedSupplier.BIN,
+                Bin = archivedSupplier.Bin,
                 Email = archivedSupplier.Email,
                 FullName = archivedSupplier.FullName,
                 Id = archivedSupplier.Id,

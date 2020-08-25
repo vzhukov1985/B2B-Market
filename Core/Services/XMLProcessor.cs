@@ -212,7 +212,7 @@ namespace Core.Services
             xClientInfo.Add(new XElement("ContactPersonPhone", request.Client.ContactPersonPhone));
 
             XElement xDeliveryInfo = new XElement("DeliveryInformation");
-            xDeliveryInfo.Add(new XElement("DeliveryTime", request.DeliveryTime));
+            xDeliveryInfo.Add(new XElement("DeliveryTime", request.DeliveryDateTime));
             xDeliveryInfo.Add(new XElement("Comments", request.Comments));
 
             XElement xOrders = new XElement("Orders");
@@ -220,7 +220,7 @@ namespace Core.Services
             xOrders.Add(new XAttribute("ProductsQuantity", request.ProductsQuantity));
             xOrders.Add(new XAttribute("TotalPrice", request.TotalPrice));
 
-            foreach (ArchivedOrder order in request.Orders)
+            foreach (ArchivedOrder order in request.ArchivedOrders)
             {
                 XElement xOrder = new XElement("Order");
 

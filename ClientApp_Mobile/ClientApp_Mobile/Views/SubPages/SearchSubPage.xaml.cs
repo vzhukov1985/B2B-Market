@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClientApp_Mobile.ViewModels.SubPages;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +17,14 @@ namespace ClientApp_Mobile.Views.SubPages
         public SearchSubPage()
         {
             InitializeComponent();
+            BindingContext = new SearchSubPageVM();
+        }
+
+        private async void ContentPage_Appearing(object sender, EventArgs e)
+        {
+            //base.OnAppearing();
+            await Task.Delay(500);
+            SearchField.Focus();
         }
     }
 }

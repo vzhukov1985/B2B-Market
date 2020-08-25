@@ -270,5 +270,9 @@ namespace Core.DBModels
             };
         }
 
+        public MatchOffer()
+        {
+            MatchProductExtraProperties = new ObservableCollection<MatchProductExtraProperty>();
+        }
     }
 }

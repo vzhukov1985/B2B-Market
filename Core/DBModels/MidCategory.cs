@@ -57,8 +57,5 @@ namespace Core.DBModels
                 OnPropertyChanged("TopCategory");
             }
         }
-
-
-
     }
 }

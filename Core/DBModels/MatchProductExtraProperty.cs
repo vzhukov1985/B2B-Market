@@ -16,7 +16,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -37,6 +36,18 @@ namespace Core.DBModels
                 OnPropertyChanged("MatchOfferId");
             }
         }
+
+        private MatchOffer _matchOffer;
+        public MatchOffer MatchOffer
+        {
+            get { return _matchOffer; }
+            set
+            {
+                _matchOffer = value;
+                OnPropertyChanged("MatchOffer");
+            }
+        }
+
 
         private Guid _matchProductExtraPropertyTypeId;
         public Guid MatchProductExtraPropertyTypeId
@@ -71,9 +82,5 @@ namespace Core.DBModels
                 OnPropertyChanged("Value");
             }
         }
-
-
-
-
     }
 }

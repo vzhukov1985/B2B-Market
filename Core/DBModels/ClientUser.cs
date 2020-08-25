@@ -17,7 +17,6 @@ namespace Core.DBModels
         }
 
 		private Guid _id;
-		[Key]
 		public Guid Id
 		{
 			get { return _id; }
@@ -62,14 +61,14 @@ namespace Core.DBModels
 			}
 		}
 
-		private string _surName;
-		public string SurName
+		private string _surname;
+		public string Surname
 		{
-			get { return _surName; }
+			get { return _surname; }
 			set
 			{
-				_surName = value;
-				OnPropertyChanged("SurName");
+				_surname = value;
+				OnPropertyChanged("Surname");
 			}
 		}
 
@@ -126,6 +125,11 @@ namespace Core.DBModels
                 _favoriteProducts = value;
                 OnPropertyChanged("FavoriteProducts");
             }
+        }
+
+		public ClientUser()
+        {
+			FavoriteProducts = new ObservableCollection<Favorite>();
         }
     }
 }

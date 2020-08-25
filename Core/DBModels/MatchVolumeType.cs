@@ -16,7 +16,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -72,5 +71,17 @@ namespace Core.DBModels
                 OnPropertyChanged("VolumeTypeId");
             }
         }
+
+        private VolumeType _volumeType;
+        public VolumeType VolumeType
+        {
+            get { return _volumeType; }
+            set
+            {
+                _volumeType = value;
+                OnPropertyChanged("VolumeType");
+            }
+        }
+
     }
 }

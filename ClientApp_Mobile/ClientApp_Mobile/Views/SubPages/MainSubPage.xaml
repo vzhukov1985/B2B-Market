@@ -25,115 +25,116 @@
             </Label>
         </Grid>
     </Shell.TitleView>
-    
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <controls:ProductsSearchBar Grid.Row="0" />
+            <controls:ProductsSearchBar Grid.Row="0" />
 
-        <ScrollView Grid.Row="1">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <ScrollView Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" 
+                    <Label Grid.Row="0" 
                        Text="КАТЕГОРИИ"
                        Style="{StaticResource GroupLabel}"/>
-                
-                <!-- Categories List-->
-                <CollectionView Grid.Row="1" ItemsSource="{Binding TopCategories}" VerticalOptions="Start" HeightRequest="{Binding HeightCategories}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="65"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
 
-                                <Image Grid.Row="0" Grid.Column="0"
-                                       Style="{StaticResource TopCategorySuppliersImage}"
-                                       Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"/>
+                    <!-- Categories List-->
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding TopCategories}" VerticalOptions="Start" HeightRequest="{Binding HeightCategories}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="65"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                                <Label Grid.Row="0" Grid.Column="1"
-                                       Text="{Binding Name}"
-                                       Style="{StaticResource TopCategorySuppliersLabel}"/>
+                                    <Image Grid.Row="0" Grid.Column="0"
+                                           Style="{StaticResource TopCategorySuppliersImage}"
+                                           Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"/>
 
-                                <Frame Grid.Row="1" Grid.ColumnSpan="2" 
-                                       BorderColor="{StaticResource B2B_Gray_Color}"
-                                       Padding="0"
-                                       HeightRequest="1" />
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           Style="{StaticResource TopCategorySuppliersLabel}"/>
 
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        NumberOfTapsRequired="1"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MainSubPageVM}}, Path=ShowMidCategoriesCommand}"		
-                                        CommandParameter="{Binding .}">
-                                    </TapGestureRecognizer>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                    <BoxView Grid.Row="1" Grid.ColumnSpan="2" 
+                                           BackgroundColor="{StaticResource B2B_Gray_Color}"
+                                           HeightRequest="1"
+                                           WidthRequest="100"/>
 
-                <Label Grid.Row="2" 
-                       Text="ПОСТАВЩИКИ"
-                       Style="{StaticResource GroupLabel}"/>
-                
-                <!-- Suppliers-->
-                <CollectionView Grid.Row="4" ItemsSource="{Binding Suppliers}" VerticalOptions="Start" HeightRequest="{Binding HeightSuppliers}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="65"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MainSubPageVM}}, Path=ShowMidCategoriesCommand}"		
+                                                              CommandParameter="{Binding .}"/>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                                <Image Grid.Row="0" Grid.Column="0"
-                                       Style="{StaticResource TopCategorySuppliersImage}"
-                                       Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"/>
+                    <Label Grid.Row="2" 
+                           Text="ПОСТАВЩИКИ"
+                           Style="{StaticResource GroupLabel}"/>
 
-                                <Label Grid.Row="0" Grid.Column="1"
-                                       Text="{Binding FullName}"
-                                       TextColor="{Binding IsContractedWithClient, Converter={StaticResource BoolToContractedColorConverter}}"
-                                       Style="{StaticResource TopCategorySuppliersLabel}"/>
+                    <!-- Suppliers-->
+                    <CollectionView Grid.Row="4" ItemsSource="{Binding Suppliers}" VerticalOptions="Start" HeightRequest="{Binding HeightSuppliers}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="65"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                                <Frame Grid.Row="1" Grid.ColumnSpan="2" 
-                                       BorderColor="{StaticResource B2B_Gray_Color}"
-                                       Padding="0"
-                                       HeightRequest="1" />
+                                    <Image Grid.Row="0" Grid.Column="0"
+                                           Style="{StaticResource TopCategorySuppliersImage}"
+                                           Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"/>
 
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        NumberOfTapsRequired="1"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MainSubPageVM}}, Path=ShowSupplierProductsCommand}"		
-                                        CommandParameter="{Binding .}">
-                                    </TapGestureRecognizer>
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-                
-            </Grid>
-           
-        </ScrollView>
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding FullName}"
+                                           TextColor="{Binding IsContractedWithClient, Converter={StaticResource BoolToContractedColorConverter}}"
+                                           Style="{StaticResource TopCategorySuppliersLabel}"/>
 
+                                    <BoxView Grid.Row="1" Grid.ColumnSpan="2" 
+                                             BackgroundColor="{StaticResource B2B_Gray_Color}"
+                                             HeightRequest="1"
+                                             WidthRequest="100"/>
+
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MainSubPageVM}}, Path=ShowSupplierProductsCommand}"		
+                                                              CommandParameter="{Binding .}">
+                                        </TapGestureRecognizer>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </Grid>
+
+            </ScrollView>
+
+        </Grid>
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
     </Grid>
 </ContentPage>

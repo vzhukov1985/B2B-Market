@@ -1,0 +1,91 @@
+﻿<Page x:Class="XClientApp_Win.Views.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:XClientApp_Win.Views"
+      xmlns:resx="clr-namespace:XClientApp.Resources;assembly=XClientApp"
+      mc:Ignorable="d" 
+      d:DesignHeight="510" d:DesignWidth="560"
+      Title="MainPage">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderThickness="0,0,0,3" BorderBrush="LightGray">
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Source="{Binding Source={x:Static resx:Images.UserSettings}}" Height="25" HorizontalAlignment="Left" Margin="14,4,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant"/>
+                
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontWeight="DemiBold">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="B2B Market - {0} ({1})">
+                            <Binding Path="User.Client.FullName"/>
+                            <Binding Path="User.Name"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
+        </Border>
+
+        <Frame Grid.Row="1" x:Name="frmSubFrame"/>
+
+        <Grid Grid.Row="2" Height="80">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>                
+            </Grid.ColumnDefinitions>
+            <Button Style="{StaticResource BlueButton}" Grid.Column="0" Command="{Binding ShowMainSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:Images.Home}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Главная" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="1" Style="{StaticResource BlueButton}" Command="{Binding ShowSearchSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:Images.Search_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Поиск" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="2" Style="{StaticResource BlueButton}" Command="{Binding ShowFavoritesSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:Images.Favorite_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Избранное" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="3" Style="{StaticResource BlueButton}" Command="{Binding ShowCurrentRequestSubPageCommand}" Margin="0,0,1,0">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:Images.Order_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="Текущая заявка" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="4" Style="{StaticResource BlueButton}" Command="{Binding ShowArchivedRequestsSubPageCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="{Binding Source={x:Static resx:Images.OrdersHistory_White}}" Height="50" RenderOptions.BitmapScalingMode="Fant"/>
+                        <TextBlock Text="История заказов" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+    </Grid>
+</Page>

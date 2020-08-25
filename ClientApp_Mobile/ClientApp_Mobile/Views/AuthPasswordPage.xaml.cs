@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClientApp_Mobile.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,14 @@ namespace ClientApp_Mobile.Views
         public AuthPasswordPage()
         {
             InitializeComponent();
+            BindingContext = new AuthPasswordPageVM();
         }
 
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            AuthPasswordPageVM bc = (AuthPasswordPageVM)BindingContext;
+            bc.IsBusy = true;
+            Task.Run(() => bc.Authorize());
+        }
     }
 }

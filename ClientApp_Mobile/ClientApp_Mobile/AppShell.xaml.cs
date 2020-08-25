@@ -5,6 +5,7 @@ using Core.DBModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,29 +23,16 @@ namespace ClientApp_Mobile
 
         public AppShell()
         {
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                CurrentUser = db.ClientsUsers
-                    .Where(u => u.Login == "qwe")
-                    .Include(u => u.FavoriteProducts)
-                    .ThenInclude(f => f.Product)
-                    .Include(u => u.Client)
-                    .ThenInclude(c => c.Contracts)
-                    .ThenInclude(ct => ct.Supplier)
-                    .Include(u => u.Client)
-                    .ThenInclude(c => c.CurrentOrders)
-                    .ThenInclude(o => o.Offer)
-                    .ThenInclude(of => of.QuantityUnit)
-                    .Include(u => u.Client)
-                    .ThenInclude(c => c.CurrentOrders)
-                    .ThenInclude(o => o.Offer)
-                    .ThenInclude(of => of.Supplier)
-                    .FirstOrDefault();
-            }
-
             InitializeComponent();
 
-            Routing.RegisterRoute("Categories", typeof(CategoriesSubPage));
+            Routing.RegisterRoute("MidCategories", typeof(MidCategoriesSubPage));
+            Routing.RegisterRoute("ProductCategories", typeof(ProductCategoriesSubPage));
+            Routing.RegisterRoute("Offers", typeof(OffersSubPage));
+            Routing.RegisterRoute("Search", typeof(SearchSubPage));
+            Routing.RegisterRoute("Product", typeof(ProductSubPage));
+            Routing.RegisterRoute("ProductPicture", typeof(ProductPictureSubPage));
+            Routing.RegisterRoute("CurrentRequestConfirm", typeof(CurrentRequestConfirmSubPage));
+            Routing.RegisterRoute("ArchivedRequest", typeof(ArchivedRequestSubPage));
         }
     }
 }

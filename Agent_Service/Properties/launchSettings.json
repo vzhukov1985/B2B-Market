@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Agent_Service": {
+      "commandName": "Project"
+    }
+  }
+}

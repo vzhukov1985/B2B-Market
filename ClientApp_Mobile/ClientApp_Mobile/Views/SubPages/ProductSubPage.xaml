@@ -4,7 +4,7 @@
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
              xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
-             x:Class="ClientApp_Mobile.Views.SubPages.ProductSubPage" Appearing="ContentPage_Appearing">
+             x:Class="ClientApp_Mobile.Views.SubPages.ProductSubPage">
 
     <ContentPage.Resources>
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
@@ -25,37 +25,62 @@
         </Grid>
     </Shell.TitleView>
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding GoBackCommand}"/>
+    </Shell.BackButtonBehavior>
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
-        <controls:ProductsSearchBar Grid.Row="0" />
-
-        <ScrollView Grid.Row="1">
+        <ScrollView>
             <StackLayout Orientation="Vertical" HorizontalOptions="CenterAndExpand">
 
-                <Label Text="{Binding Product.Name}"
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="55"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="1" Text="{Binding Product.Name}"
                        FontSize="20" FontAttributes="Bold"
                        HorizontalTextAlignment="Center"
                        Margin="10"/>
 
-                <!--Product Picture-->
+                    <Image Grid.Column="0"
+                       Style="{StaticResource ProductFavoriteIconImage}"
+                       VerticalOptions="Center"
+                       WidthRequest="35"
+                       Margin="10"
+                       Source="{Binding Product.IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                              Command="{Binding AddRemoveProductToFavouritesCommand}"/>
+                        </Image.GestureRecognizers>
+                    </Image>
+                </Grid>
+
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="150"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    
-                    <Image Grid.Column="0"
-                           HeightRequest="170"
-                           Source="{Binding Product.PictureUri, Converter={StaticResource ImageConverter}}"/>
 
-                    <StackLayout Grid.Column="1" HorizontalOptions="CenterAndExpand">
-                        <Label Text="{Binding Product.Category.Name}" FontSize="17" FontAttributes="Bold"/>
-                        
-                        <Label FontSize="15">
+                    <!--Product Picture-->
+                    <Image Grid.Column="0"
+                           HeightRequest="150"
+                           Margin="3"
+                           Source="{Binding Product.PictureUri, Converter={StaticResource ImageConverter}}">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                              Command="{Binding ShowProductPictureCommand}"/>
+                        </Image.GestureRecognizers>
+                    </Image>
+
+                    <!-- Category, Properties & ExtraProperties-->
+                    <StackLayout Grid.Column="1" HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+                        <Label FontSize="17" FontAttributes="Bold"
+                               Margin="0,0,0,10"
+                               Text="{Binding Product.Category.Name}"/>
+
+                        <Label Style="{StaticResource ProductSPInfos}">
                             <Label.Text>
                                 <MultiBinding StringFormat="- {0}: {1:G20} {2}">
                                     <Binding Path="Product.VolumeType"/>
@@ -64,10 +89,10 @@
                                 </MultiBinding>
                             </Label.Text>
                         </Label>
-                        <CollectionView ItemsSource="{Binding Product.ExtraProperties}">
+                        <CollectionView ItemsSource="{Binding Product.ExtraProperties}" HeightRequest="{Binding ExtraPropsCVHeight}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Label FontSize="15">
+                                    <Label Style="{StaticResource ProductSPInfos}">
                                         <Label.Text>
                                             <MultiBinding StringFormat="- {0}: {1}">
                                                 <Binding Path="PropertyType"/>
@@ -78,17 +103,105 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                        
+
                     </StackLayout>
-                   
+
                 </Grid>
 
-                <BoxView VerticalOptions="Center" HorizontalOptions="CenterAndExpand"
-                         HeightRequest="1" WidthRequest="400"
-                         Color="{StaticResource B2B_Gray_Color}"/>
+                <Label Text="ПРЕДЛОЖЕНИЯ"
+                       Style="{StaticResource GroupLabel}"/>
+
+                <!-- Offers-->
+                <CollectionView ItemsSource="{Binding OffersWithOrders}" HeightRequest="{Binding OffersCVHeight}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout HeightRequest="60">
+                                <Grid Margin="0,7,0,7">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackLayout Grid.Column="0" VerticalOptions="Center">
+                                        <Label Style="{StaticResource ProductSPOffers}"
+                                           FontSize="18" FontAttributes="Bold"
+                                           TextColor="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                                    <Binding Path="PriceForClient"/>
+                                                    <Binding Path="QuantityUnit"/>
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+
+                                        <Label Style="{StaticResource ProductSPOffers}"
+                                           FontSize="12"
+                                           TextColor="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
+                                           Text="{Binding Supplier.ShortName}"/>
+                                    </StackLayout>
+
+                                    <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="CenterAndExpand">
+
+                                        <ImageButton Style="{StaticResource MinusButton}"
+                                                 WidthRequest="45" HeightRequest="45"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=DecrementOrderCommand}"
+                                                 CommandParameter="{Binding .}"/>
+
+                                        <Entry WidthRequest="50"
+                                           HorizontalTextAlignment="Center"
+                                           Margin="7,0,7,0"
+                                           Keyboard="Numeric"
+                                           Text="{Binding OrderQuantity,Mode=TwoWay}"
+                                           ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=ChangesInOrderAreMadeCommand}"/>
+
+                                        <ImageButton Style="{StaticResource PlusButton}" 
+                                                 WidthRequest="45" HeightRequest="45"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=IncrementOrderCommand}"
+                                                 CommandParameter="{Binding .}"/>
+                                    </StackLayout>
+
+                                </Grid>
+
+                                <BoxView BackgroundColor="{StaticResource B2B_Gray_Color}"
+                                     HeightRequest="1"
+                                     WidthRequest="1"/>
+                            </StackLayout>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Grid HeightRequest="50" Margin="0,10,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.92*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       Text="{Binding TotalSum, StringFormat='Итого: {0:G20} тг'}"/>
+
+                    <Button Grid.Column="1"
+                        Style="{StaticResource BlueButton}"
+                        FontSize="15"
+                        Margin="0,0,20,0"
+                        Text="ОБНОВИТЬ ЗАЯВКУ"
+                        Command="{Binding UpdateCurrentRequestCommand}"/>
+                </Grid>
+
+                <Label Text="ОПИСАНИЕ"
+                       Style="{StaticResource GroupLabel}"/>
+
+                <Label Margin="10,5,10,10"
+                   Text="{Binding Product.Description.Text}"/>
 
             </StackLayout>
         </ScrollView>
-
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
     </Grid>
+
 </ContentPage>

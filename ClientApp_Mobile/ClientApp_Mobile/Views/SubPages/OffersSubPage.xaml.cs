@@ -77,13 +77,16 @@ namespace ClientApp_Mobile.Views.SubPages
 
         private void ContentPage_Appearing(object sender, EventArgs e)
         {
-            List<Guid> parsedCategoryFilter = string.IsNullOrEmpty(CategoryFilterParam) ? null : Uri.UnescapeDataString(CategoryFilterParam).Split(',').Select(s => new Guid(s)).ToList();
-            List<Guid> parsedSupplierFilter = string.IsNullOrEmpty(SuppliersFilterParam) ? null : Uri.UnescapeDataString(SuppliersFilterParam).Split(',').Select(s => new Guid(s)).ToList();
+            if (ShowFavoritesOnly)
+            {
+                List<Guid> parsedCategoryFilter = string.IsNullOrEmpty(CategoryFilterParam) ? null : CategoryFilterParam.Split(',').Select(s => new Guid(s)).ToList();
+                List<Guid> parsedSupplierFilter = string.IsNullOrEmpty(SuppliersFilterParam) ? null : SuppliersFilterParam.Split(',').Select(s => new Guid(s)).ToList();
 
-            OffersSubPageVM bc = (OffersSubPageVM)BindingContext;
+                OffersSubPageVM bc = (OffersSubPageVM)BindingContext;
 
-            bc.Title = TitleParam;
-            bc.QueryDb(ShowFavoritesOnly, parsedCategoryFilter, parsedSupplierFilter, string.IsNullOrEmpty(SearchTextParam) ? null : Uri.UnescapeDataString(SearchTextParam));
+                bc.Title = TitleParam;
+                bc.QueryDb(ShowFavoritesOnly, parsedCategoryFilter, parsedSupplierFilter, SearchTextParam);
+            }
         }
     }
 }

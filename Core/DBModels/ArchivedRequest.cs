@@ -20,7 +20,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -78,14 +77,14 @@ namespace Core.DBModels
             }
         }
 
-        private string _senderSurName;
-        public string SenderSurName
+        private string _senderSurname;
+        public string SenderSurname
         {
-            get { return _senderSurName; }
+            get { return _senderSurname; }
             set
             {
-                _senderSurName = value;
-                OnPropertyChanged("SenderSurName");
+                _senderSurname = value;
+                OnPropertyChanged("SenderSurname");
             }
         }
 
@@ -157,13 +156,34 @@ namespace Core.DBModels
             }
         }
 
-        private DateTime _deliveryTime;
-        public DateTime DeliveryTime
+        private DateTime _deliveryDateTime;
+        public DateTime DeliveryDateTime
         {
-            get { return _deliveryTime; }
+            get { return _deliveryDateTime; }
             set
             {
-                _deliveryTime = value;
+                _deliveryDateTime = value;
+                OnPropertyChanged("DeliveryDateTime");
+            }
+        }
+        [NotMapped]
+        public DateTime DeliveryDate
+        {
+            get { return DeliveryDateTime.Date; }
+            set
+            {
+                DeliveryDateTime = new DateTime(value.Year, value.Month, value.Day, DeliveryDateTime.Hour, DeliveryDateTime.Minute, DeliveryDateTime.Second);
+                OnPropertyChanged("DeliveryDate");
+            }
+        }
+
+        [NotMapped]
+        public TimeSpan DeliveryTime
+        {
+            get { return DeliveryDateTime.TimeOfDay; }
+            set
+            {
+                DeliveryDateTime = new DateTime(DeliveryDateTime.Year, DeliveryDateTime.Month, DeliveryDateTime.Day, value.Hours, value.Minutes, value.Seconds);
                 OnPropertyChanged("DeliveryTime");
             }
         }
@@ -179,14 +199,14 @@ namespace Core.DBModels
             }
         }
 
-        private ObservableCollection<ArchivedOrder> _orders;
-        public ObservableCollection<ArchivedOrder> Orders
+        private ObservableCollection<ArchivedOrder> _archivedOrders;
+        public ObservableCollection<ArchivedOrder> ArchivedOrders
         {
-            get { return _orders; }
+            get { return _archivedOrders; }
             set
             {
-                _orders = value;
-                OnPropertyChanged("Orders");
+                _archivedOrders = value;
+                OnPropertyChanged("ArchivedOrders");
             }
         }
 
@@ -242,6 +262,12 @@ namespace Core.DBModels
             }
         }
 
+        public ArchivedRequest()
+        {
+            ArchivedOrders = new ObservableCollection<ArchivedOrder>();
+            ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>();
+        }
+
         public static ArchivedRequest CloneForDb(ArchivedRequest request)
         {
             return new ArchivedRequest
@@ -250,13 +276,13 @@ namespace Core.DBModels
                 Code = request.Code,
                 ClientId = request.ClientId,
                 SenderName = request.SenderName,
-                SenderSurName = request.SenderSurName,
+                SenderSurname = request.SenderSurname,
                 ItemsQuantity = request.ItemsQuantity,
                 ProductsQuantity = request.ProductsQuantity,
                 ArchivedSupplierId = request.ArchivedSupplierId,
                 TotalPrice = request.TotalPrice,
                 DateTimeSent = request.DateTimeSent,
-                DeliveryTime = request.DeliveryTime,
+                DeliveryDateTime = request.DeliveryDateTime,
                 Comments = request.Comments
             };
         }

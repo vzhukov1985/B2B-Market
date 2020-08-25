@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -62,8 +63,8 @@ namespace Core.DBModels
             }
         }
 
-        private DateTime? _dateTime;
-        public DateTime? DateTime
+        private DateTime _dateTime;
+        public DateTime DateTime
         {
             get { return _dateTime; }
             set

@@ -6,8 +6,8 @@ namespace Core.Services
 {
     public static class CoreSettings
     {
-        //server=localhost;UserId=root;Password=MySQLPassword;database=b2bmarket;
-        public static readonly string EncryptedDbConnectionString = "VE/QWGXEbJjApGZjklT5CPf0mWrBHRTTqCc3qFm0kDh1vEhEAH9xVcF+TD/CI+QIxTiKRT5CuZouniH1L+1+GCPsepH7CVAn7A/gYYJR32BvUEj2TVWMwKa9ZtwJdnLSCU4Srm7i5Y8p4rCo/SPAKQ==";
+        //server=192.168.1.3;UserId=Admin;Password=MySQLPassword;database=b2bmarket;
+        public static readonly string EncryptedDbConnectionString = "9ucmH/N6jVy9M9+laUnDs3x62+eernAe6yqDs/Fa/NlwXJuKNovM/GgAkVzrRii6rvCVKFIJd0dnwn3OVNAUYsI7U3MCSJCqVJf8MJOEAU78GEHA3LSSYwTgiFYXHa2NQZhQ/28SMCryMXMlI38PcA==";
         public static readonly string DbConnectionSalt = "gy!34q2.gteas_";
 
         public static readonly string ClientUserPwdSalt = "q98`Рsd~вя$";

@@ -94,7 +94,7 @@ namespace Administration_Tools.ViewModels
 				Id = Guid.NewGuid(),
 				ClientId = Client.Id,
 				Name = "New",
-				SurName = "User",
+				Surname = "User",
 				IsAdmin = false,
 				Login = Authentication.GenerateUniqueLogin(),
 				InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength)

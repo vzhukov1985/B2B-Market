@@ -20,7 +20,6 @@ namespace Core.DBModels
         }
 
         private Guid _id;
-        [Key]
         public Guid Id
         {
             get { return _id; }
@@ -223,6 +222,7 @@ namespace Core.DBModels
         public Supplier()
         {
             Contracts = new ObservableCollection<Contract>();
+            Offers = new ObservableCollection<Offer>();
         }
 
     }

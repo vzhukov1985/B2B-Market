@@ -11,47 +11,51 @@
                    Text="{Binding CategoryName}"/>
         </Grid>
     </Shell.TitleView>
-    
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <controls:ProductsSearchBar Grid.Row="0"/>
+            <controls:ProductsSearchBar Grid.Row="0"/>
 
-        <ListView Grid.Row="1"
+            <ListView Grid.Row="1"
                   Style="{StaticResource BaseListView}"
                   RowHeight="60" 
                   ItemsSource="{Binding SubCategories}">
-            
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
 
-                            <Label Grid.Column="0" 
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Column="0" 
                                    Text="{Binding Name}"
                                    Style="{StaticResource SubCategoriesLabel}"/>
 
-                            <Image Grid.Column="1"
+                                <Image Grid.Column="1"
                                    Style="{StaticResource SubCategoriesNavArrow}"/>
 
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
                                     NumberOfTapsRequired="1"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MidCategoriesSubPageVM}}, Path=CategorySelectedCommand}"		
                                     CommandParameter="{Binding .}"/>
-                            </Grid.GestureRecognizers>
-                        </Grid>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
+        </Grid>
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
     </Grid>
 </ContentPage>
