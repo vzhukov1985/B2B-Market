@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:cr="clr-namespace:ClientApp_Mobile.Renderers"
+             x:Class="ClientApp_Mobile.Controls.ProductsSearchBar">
+
+    <Frame Grid.Row="0" BackgroundColor="{StaticResource B2B_Gray_Color}" Padding="7">
+        <cr:NoLineSearchBar
+                Placeholder="Поиск товара"
+                BackgroundColor="White"
+                Margin="0"
+                HeightRequest="40"
+                CancelButtonColor="{StaticResource B2B_Blue_Color}"            
+                Focused="NoLineSearchBar_Focused">
+        </cr:NoLineSearchBar>
+    </Frame>
+</ContentView>

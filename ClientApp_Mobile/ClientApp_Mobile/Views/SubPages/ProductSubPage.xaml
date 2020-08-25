@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
+             xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
+             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
+             x:Class="ClientApp_Mobile.Views.SubPages.ProductSubPage" Appearing="ContentPage_Appearing">
+
+    <ContentPage.Resources>
+        <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
+        <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
+    </ContentPage.Resources>
+
+    <Shell.TitleView>
+        <Grid>
+            <Label Style="{StaticResource TitleBarLabel}">
+                <Label.Text>
+                    <MultiBinding StringFormat="{}{0} ({1})">
+                        <Binding Path="User.Client.FullName"/>
+                        <Binding Path="User.Name"/>
+                    </MultiBinding>
+                </Label.Text>
+            </Label>
+        </Grid>
+    </Shell.TitleView>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <controls:ProductsSearchBar Grid.Row="0" />
+
+        <ScrollView Grid.Row="1">
+            <StackLayout Orientation="Vertical" HorizontalOptions="CenterAndExpand">
+
+                <Label Text="{Binding Product.Name}"
+                       FontSize="20" FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       Margin="10"/>
+
+                <!--Product Picture-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Image Grid.Column="0"
+                           HeightRequest="170"
+                           Source="{Binding Product.PictureUri, Converter={StaticResource ImageConverter}}"/>
+
+                    <StackLayout Grid.Column="1" HorizontalOptions="CenterAndExpand">
+                        <Label Text="{Binding Product.Category.Name}" FontSize="17" FontAttributes="Bold"/>
+                        
+                        <Label FontSize="15">
+                            <Label.Text>
+                                <MultiBinding StringFormat="- {0}: {1:G20} {2}">
+                                    <Binding Path="Product.VolumeType"/>
+                                    <Binding Path="Product.Volume"/>
+                                    <Binding Path="Product.VolumeUnit"/>
+                                </MultiBinding>
+                            </Label.Text>
+                        </Label>
+                        <CollectionView ItemsSource="{Binding Product.ExtraProperties}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Label FontSize="15">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="- {0}: {1}">
+                                                <Binding Path="PropertyType"/>
+                                                <Binding Path="Value"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        
+                    </StackLayout>
+                   
+                </Grid>
+
+                <BoxView VerticalOptions="Center" HorizontalOptions="CenterAndExpand"
+                         HeightRequest="1" WidthRequest="400"
+                         Color="{StaticResource B2B_Gray_Color}"/>
+
+            </StackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
+             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
+             x:Class="ClientApp_Mobile.Views.SubPages.MidCategoriesSubPage">
+    
+    <Shell.TitleView>
+        <Grid>
+            <Label Style="{StaticResource TitleBarLabel}"
+                   Text="{Binding CategoryName}"/>
+        </Grid>
+    </Shell.TitleView>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <controls:ProductsSearchBar Grid.Row="0"/>
+
+        <ListView Grid.Row="1"
+                  Style="{StaticResource BaseListView}"
+                  RowHeight="60" 
+                  ItemsSource="{Binding SubCategories}">
+            
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" 
+                                   Text="{Binding Name}"
+                                   Style="{StaticResource SubCategoriesLabel}"/>
+
+                            <Image Grid.Column="1"
+                                   Style="{StaticResource SubCategoriesNavArrow}"/>
+
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    NumberOfTapsRequired="1"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MidCategoriesSubPageVM}}, Path=CategorySelectedCommand}"		
+                                    CommandParameter="{Binding .}"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </Grid>
+</ContentPage>

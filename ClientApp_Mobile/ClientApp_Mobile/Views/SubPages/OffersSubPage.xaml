@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
+             xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
+             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
+             x:Class="ClientApp_Mobile.Views.SubPages.OffersSubPage" Appearing="ContentPage_Appearing">
+
+    <ContentPage.Resources>
+        <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
+        <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
+        <conv:ImageConverter x:Key="ImageConverter"/>
+    </ContentPage.Resources>
+
+    <Shell.TitleView>
+        <Grid>
+            <Label Style="{StaticResource TitleBarLabel}"
+                   Text="{Binding Title}"/>
+        </Grid>
+    </Shell.TitleView>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <controls:ProductsSearchBar Grid.Row="0" />
+
+        <ListView Grid.Row="1" 
+                  Style="{StaticResource BaseListView}"
+                  RowHeight="130"
+                  ItemsSource="{Binding Products}">
+            
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Grid.Column="0"
+                                   Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"
+                                   Style="{StaticResource ProductImage}"/>
+
+                            <Image Grid.Column="0"
+                                   Source="Contracted.png"
+                                   Style="{StaticResource ContractedIconImage}"
+                                   IsVisible="{Binding IsOfContractedSupplier}"/>
+
+                            <Image Grid.Column="0"
+                                   Style="{StaticResource ProductFavoriteIconImage}"
+                                   Source="{Binding IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        NumberOfTapsRequired="1"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:OffersSubPageVM}}, Path=AddRemoveProductToFavouritesCommand}"		
+                                        CommandParameter="{Binding .}">
+                                    </TapGestureRecognizer>
+                                </Image.GestureRecognizers>
+                            </Image>
+
+                            <Grid Grid.Column="1" Margin="5,5,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0"
+                                       Style="{StaticResource ProductNameLabel}"
+                                       Text="{Binding Name}"/>
+
+                                <Grid Grid.Row="1" 
+                                             Margin="0,5,0,0"
+                                             VerticalOptions="CenterAndExpand">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Label Grid.Column="0"
+                                           Style="{StaticResource ProductInfoLabel}" 
+                                           Text="{Binding Category.Name}"/>
+                                    
+                                    <Label Grid.Column="1"
+                                           Style="{StaticResource ProductInfoLabel}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
+                                                <Binding Path="VolumeType"/>
+                                                <Binding Path="Volume"/>
+                                                <Binding Path="VolumeUnit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </Grid>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                       Style="{StaticResource ProductPriceLabel}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                                <Binding Path="BestRetailPriceOffer.RetailPrice"/>
+                                                <Binding Path="BestRetailPriceOffer.QuantityUnit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <Label Grid.Row="1" Grid.Column="0"
+                                           Style="{StaticResource ProductSupplierLabel}"
+                                           TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
+                                           Text="{Binding BestRetailPriceOffer.Supplier.ShortName}"/>
+
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Style="{StaticResource ProductPriceLabel}"
+                                           TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                                <Binding Path="BestDiscountPriceOffer.DiscountPrice"/>
+                                                <Binding Path="BestDiscountPriceOffer.QuantityUnit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <Label Grid.Row="1" Grid.Column="1"
+                                           Style="{StaticResource ProductSupplierLabel}"
+                                           TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
+                                           Text="{Binding BestDiscountPriceOffer.Supplier.ShortName}"/>
+                                </Grid>
+                                
+                            </Grid>
+
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    NumberOfTapsRequired="1"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:OffersSubPageVM}}, Path=ShowProductCommand}"		
+                                    CommandParameter="{Binding .}">
+                                </TapGestureRecognizer>
+                            </Grid.GestureRecognizers>
+                            
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </Grid>
+    
+</ContentPage>

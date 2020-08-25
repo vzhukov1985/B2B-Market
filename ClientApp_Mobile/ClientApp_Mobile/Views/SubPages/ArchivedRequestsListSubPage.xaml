@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
+             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
+             x:Class="ClientApp_Mobile.Views.SubPages.ArchivedRequestsListSubPage"
+             Appearing="ContentPage_Appearing">
+
+    <ContentPage.Resources>
+        <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"/>
+        <conv:RequestStatusToColorConverter x:Key="RequestStatusToColorConverter"/>
+    </ContentPage.Resources>
+    
+    <Shell.TitleView>
+        <Grid>
+            <Label Style="{StaticResource TitleBarLabel}"
+                   Text="История заказов"/>
+        </Grid>
+    </Shell.TitleView>
+
+    <ListView Style="{StaticResource BaseListView}"
+              ItemsSource="{Binding ArchivedRequestsByMonth}"
+              GroupDisplayBinding="{Binding Name}"
+              IsGroupingEnabled="True"
+              HasUnevenRows="True">
+
+        <ListView.GroupHeaderTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <Label Style="{StaticResource GroupLabel}"
+                           Margin="0"
+                           Text="{Binding Month}"/>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.GroupHeaderTemplate>
+
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell Height="110">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <StackLayout Grid.RowSpan="3" Grid.Column="0" VerticalOptions="CenterAndExpand" Margin="10,0,0,0">
+                            <Label HorizontalTextAlignment="Center"
+                                   FontSize="12"
+                                   TextColor="{Binding StatusName, Converter={StaticResource RequestStatusToColorConverter}}"
+                                   Text="{Binding Code, StringFormat='№ {0:0000000}'}"/>
+                            <Image HorizontalOptions="Center"
+                                   WidthRequest="70"
+                                   Source="{Binding StatusPicture, Converter={StaticResource ByteArrayToImageConverter}}"/>
+                            <Label HorizontalTextAlignment="Center"
+                                   FontSize="12"
+                                   TextColor="{Binding StatusName, Converter={StaticResource RequestStatusToColorConverter}}"
+                                   Text="{Binding StatusDescription}"/>
+                        </StackLayout>
+
+                        <Label Grid.Row="0" Grid.Column="1"
+                               Margin="10,5,10,0"
+                               Style="{StaticResource ProductNameLabel}">
+                            <Label.Text>
+                                <MultiBinding StringFormat="{}{0:d} - {1}">
+                                    <Binding Path="DateTimeSent"/>
+                                    <Binding Path="ArchivedSupplier.FullName"/>
+                                </MultiBinding>
+                            </Label.Text>
+                        </Label>
+
+                        <Label Grid.Row="1" Grid.Column="1"
+                               Margin="10,0,10,0"
+                               FontSize="12">
+                            <Label.Text>
+                                <MultiBinding StringFormat="Отправил(-а) {0} {1} в {2:t}">
+                                    <Binding Path="SenderSurName"/>
+                                    <Binding Path="SenderName"/>
+                                    <Binding Path="DateTimeSent"/>
+                                </MultiBinding>
+                            </Label.Text>
+                        </Label>
+
+                        <StackLayout Grid.Row="2" Grid.Column="1" Margin="30,10,0,0">
+                            <Label FontSize="14"
+                                   Text="{Binding ItemsQuantity, StringFormat='- {0} товаров'}"/>
+                            <Label FontSize="14"
+                                   Text="{Binding ProductsQuantity, StringFormat='- {0} наименований'}"/>
+                        </StackLayout>
+
+                        <Label Grid.RowSpan="3" Grid.Column="1"
+                               VerticalOptions="End"
+                               HorizontalOptions="End"
+                               Margin="0,0,10,5"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{Binding StatusName, Converter={StaticResource RequestStatusToColorConverter}}"
+                               Text="{Binding TotalPrice, StringFormat='{}{0:G20} тг'}"/>
+
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding ShowArchivedRequestSubPageCommand, Source={x:RelativeSource AncestorType={x:Type vmsp:ArchivedRequestsListSubPageVM}}}"
+                                                  CommandParameter="{Binding .}"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+    
+</ContentPage>

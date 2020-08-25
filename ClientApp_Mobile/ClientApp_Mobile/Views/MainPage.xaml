@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ClientApp_Mobile.Views.SubPages"
+             x:Class="ClientApp_Mobile.Views.MainPage">
+
+    <TabBar>
+        <ShellContent Title="Главная" ContentTemplate="{DataTemplate local:MainSubPage}"/>
+        <ShellContent Title="Поиск" ContentTemplate="{DataTemplate local:SearchSubPage}"/>
+    </TabBar>
+
+</Shell>

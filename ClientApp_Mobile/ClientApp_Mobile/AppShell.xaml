@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localsp="clr-namespace:ClientApp_Mobile.Views.SubPages"
+             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
+             x:Class="ClientApp_Mobile.AppShell">
+
+    <FlyoutItem>
+        <ShellContent Title="Главная" Icon="Tab_Home.png" Route="Main" ContentTemplate="{DataTemplate localsp:MainSubPage}">
+            <ShellContent.BindingContext>
+                <vmsp:MainSubPageVM/>
+            </ShellContent.BindingContext>
+        </ShellContent>
+        <ShellContent Title="Поиск" Icon="Tab_Search.png" Route="Search" ContentTemplate="{DataTemplate localsp:SearchSubPage}"/>
+    </FlyoutItem>
+    
+</Shell>

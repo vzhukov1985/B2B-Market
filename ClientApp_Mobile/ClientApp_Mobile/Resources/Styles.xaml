@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary  xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="LabelsColor">Black</Color>
+    <Color x:Key="B2B_Blue_Color">#248ef4</Color>
+    <Color x:Key="B2B_Gray_Color">LightGray</Color>
+    <Color x:Key="Contracted_Color">#008000</Color>
+    <Color x:Key="NotContracted_Color">#800000</Color>
+
+    
+
+    <Style x:Key="BaseStyle" TargetType="Element">
+        <Setter Property="Shell.BackgroundColor" Value="{StaticResource B2B_Blue_Color}" />
+        <Setter Property="Shell.ForegroundColor" Value="White" />
+        <Setter Property="Shell.TitleColor" Value="White" />
+        <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+        <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource B2B_Blue_Color}" />
+        <Setter Property="Shell.TabBarForegroundColor" Value="White"/>
+        <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
+        <Setter Property="Shell.TabBarTitleColor" Value="White"/>
+    </Style>
+    <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
+    <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
+
+
+    
+    
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource LabelsColor}"/>
+    </Style>
+
+    <Style TargetType="Grid">
+        <Setter Property="RowSpacing" Value="0"/>
+        <Setter Property="ColumnSpacing" Value="0"/>
+    </Style>
+
+    <Style TargetType="ActivityIndicator">
+        <Setter Property="Color" Value="{StaticResource B2B_Blue_Color}"/>
+    </Style>
+    
+    
+    
+    
+    
+
+    <Style x:Key="TitleBarLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+
+    <Style x:Key="GroupLabel" TargetType="Label">
+        <Setter Property="BackgroundColor" Value="{StaticResource B2B_Gray_Color}"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+
+    <Style x:Key="TopCategorySuppliersImage" TargetType="Image">
+        <Setter Property="Margin" Value="8,8,8,8"/>
+    </Style>
+    <Style x:Key="TopCategorySuppliersLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="VerticalOptions" Value="CenterAndExpand"/>
+    </Style>
+
+    <Style x:Key="SubCategoriesLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+    
+    <Style x:Key="FieldName" TargetType="Label">
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+    <Style x:Key="FieldEntry" TargetType="Entry">
+        <Setter Property="Margin" Value="10,0,10,0"/>
+    </Style>
+    <Style x:Key="BlueButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource B2B_Blue_Color}"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+
+    
+</ResourceDictionary>
