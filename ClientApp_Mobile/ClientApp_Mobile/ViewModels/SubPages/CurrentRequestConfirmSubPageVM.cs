@@ -8,14 +8,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
     public class CurrentRequestConfirmSubPageVM : BaseVM
     {
-        private ObservableCollection<ArchivedRequest> _requests;
-        public ObservableCollection<ArchivedRequest> Requests
+        private List<ArchivedRequest> _requests;
+        public List<ArchivedRequest> Requests
         {
             get { return _requests; }
             set
@@ -94,6 +95,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                             foreach (ArchivedOrder order in request.ArchivedOrders)
                             {
                                 await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
+
+                                Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
+                                db.Offers.Attach(ofRemainsToUpdate);
+                                db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
                             }
 
                             foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
@@ -102,6 +107,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                             }
 
                             db.CurrentOrders.RemoveRange(User.Client.CurrentOrders.Where(o => o.ClientId == User.ClientId && request.ArchivedOrders.Select(oo => oo.OfferId).Contains(o.OfferId)).Select(co => CurrentOrder.CloneForDB(co)));
+                            UserService.CurrentUser.Client.ArchivedRequests?.Add(request);
+                           
                         }
                         else
                         {
@@ -111,7 +118,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                     await db.SaveChangesAsync();
 
-                    User.Client.CurrentOrders = new ObservableCollection<CurrentOrder>(db.CurrentOrders
+                    User.Client.CurrentOrders = new List<CurrentOrder>(db.CurrentOrders
                         .Where(o => o.ClientId == User.ClientId)
                         .Include(o => o.Offer)
                         .ThenInclude(o => o.QuantityUnit)
@@ -122,21 +129,21 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 if (UnProcessedRequestsCount > 0)
                 {
                     if (UnProcessedRequestsCount == Requests.Count)
-                        ShellDialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже.");
+                        Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
                     else
-                        ShellDialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже.");
+                        Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
                 }
                 else
                 {
-                    ShellDialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены");
+                    Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
                 }
 
-                ShellPageService.GotoCurrentRequestPage();
+                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
                 IsBusy = false;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -144,7 +151,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public async void ChangeComments(ArchivedRequest request)
         {
-            String res = await ShellDialogService.ShowInputDialog("Введите комментарии к заказу:", "Комментарии", Keyboard.Text, request.Comments, "", 300);
+            string res = await ShellDialogService.ShowInputDialog("Введите комментарии к заказу:", "Комментарии", Keyboard.Text, request.Comments, "", 300);
             if (res != null)
                 request.Comments = res;
         }
@@ -168,9 +175,9 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public CurrentRequestConfirmSubPageVM(List<ArchivedRequest> requests)
         {
             User = UserService.CurrentUser;
-            Requests = new ObservableCollection<ArchivedRequest>(requests);
+            Requests = requests;
 
-            ProceedRequestCommand = new Command(_ => ProceedRequest());
+            ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()));
             ChangeCommentsCommand = new Command<ArchivedRequest>(ar => ChangeComments(ar));
             CommentsAvailableChangeCommand = new Command<ArchivedRequest>(ar => CommentsAvailableChange(ar));
         }

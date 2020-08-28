@@ -10,37 +10,39 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
     public class MidCategoriesSubPageVM : BaseVM
     {
-
-        private Guid _categoryId;
-        public Guid CategoryId
+        private string _title;
+        public string Title
         {
-            get { return _categoryId; }
+            get { return _title; }
             set
             {
-                _categoryId = value;
-                OnPropertyChanged("CategoryId");
+                _title = value;
+                OnPropertyChanged("Title");
             }
         }
 
-        private string _categoryName;
-        public string CategoryName
+
+        private TopCategory _selectedTopCategory;
+        public TopCategory SelectedTopCategory
         {
-            get { return _categoryName; }
+            get { return _selectedTopCategory; }
             set
             {
-                _categoryName = value;
-                OnPropertyChanged("CategoryName");
+                _selectedTopCategory = value;
+                OnPropertyChanged("SelectedTopCategory");
             }
         }
 
-        private ObservableCollection<MidCategory> _subCategories;
-        public ObservableCollection<MidCategory> SubCategories
+
+        private List<MidCategory> _subCategories;
+        public List<MidCategory> SubCategories
         {
             get { return _subCategories; }
             set
@@ -59,39 +61,70 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 var AllMidCategoriesGuids = SubCategories.Select(sc => sc.Id);
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    filterGuids = await db.ProductCategories.AsNoTracking().Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync();
+                    try
+                    {
+                        filterGuids = await db.ProductCategories.AsNoTracking().Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync(CTS.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        IsBusy = false;
+                        return;
+                    }
                 }
-                ShellPageService.GotoOffersPage(CategoryName, string.Join(",", filterGuids.Select(g => g.ToString()).ToArray()));
+                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(SelectedTopCategory.Name, filterGuids));
                 IsBusy = false;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
         }
 
-        private async void CategorySelected(MidCategory selectedCategory)
+        private async void MidCategorySelected(MidCategory selectedMidCategory)
         {
-            if (selectedCategory.Name == "Все товары")
+            IsBusy = true;
+            if (selectedMidCategory.Name == "Все товары")
             {
                 ShowAllOffers();
             }
             else
             {
+                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    var productCategories = await db.ProductCategories.Where(c => c.MidCategoryId == selectedCategory.Id).ToListAsync();
-                    if ( productCategories.Count > 1)
+                    if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+                    List<ProductCategory> productCategories;
+                    try
                     {
-                        ShellPageService.GotoProductCategoriesPage(selectedCategory.Id.ToString(), selectedCategory.Name);
+                        productCategories = await db.ProductCategories.Where(c => c.MidCategoryId == selectedMidCategory.Id).ToListAsync(CTS.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        IsBusy = false;
+                        return;
+                    }
+                    catch
+                    {
+                        IsBusy = false;
+                        Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                        return;
+                    }
+
+                    if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+
+                    IsBusy = false;
+
+                    if (productCategories.Count > 1)
+                    {
+                        Device.BeginInvokeOnMainThread(() => ShellPageService.GotoProductCategoriesPage(selectedMidCategory, productCategories));
                     }
                     else
                     {
                         if (productCategories != null)
                         {
-                            ShellPageService.GotoOffersPage(productCategories[0].Name, productCategories[0].Id.ToString());
+                            Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(productCategories[0].Name, new List<Guid>() { productCategories[0].Id }));
                         }
                         else
                         {
@@ -99,24 +132,33 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                         }
                     }
                 }
-                
             }
         }
 
         private async void QueryDb()
         {
             IsBusy = true;
+            if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
             try
             {
                 using (MarketDbContext db = new MarketDbContext())
-                    SubCategories = new ObservableCollection<MidCategory>(await db.MidCategories.AsNoTracking().Where(c => c.TopCategoryId == CategoryId).OrderBy(c => c.Name).ToListAsync());
-
+                {
+                    if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
+                    SubCategories = await db.MidCategories.AsNoTracking().Where(c => c.TopCategoryId == SelectedTopCategory.Id).OrderBy(c => c.Name).ToListAsync(CTS.Token);
+                }
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                 SubCategories.Insert(0, new MidCategory { Name = "Все товары" });
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                 IsBusy = false;
+            }
+            catch (OperationCanceledException)
+            {
+                IsBusy = false;
+                return;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -124,14 +166,13 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public Command CategorySelectedCommand { get; }
 
-        public MidCategoriesSubPageVM(string topCategoryId, string topCategoryName)
+        public MidCategoriesSubPageVM(TopCategory selectedTopCategory)
         {
-            CategoryName = Uri.UnescapeDataString(topCategoryName ?? string.Empty);
-            CategoryId = new Guid(topCategoryId);
+            SelectedTopCategory = selectedTopCategory;
+            Title = selectedTopCategory.Name;
+            CategorySelectedCommand = new Command(c => Task.Run(() => MidCategorySelected((MidCategory)c)));
 
-            CategorySelectedCommand = new Command(c => CategorySelected((MidCategory)c));
-
-            QueryDb();
+            Task.Run(() => QueryDb());
         }
 
         public MidCategoriesSubPageVM()

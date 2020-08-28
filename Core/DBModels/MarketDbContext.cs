@@ -11,11 +11,16 @@ using System.Collections.ObjectModel;
 using Core.Services;
 using Core.Models;
 using System.IO;
+using System.Threading;
 
 namespace Core.DBModels
 {
     public class MarketDbContext : DbContext
     {
+        public MarketDbContext()
+        {
+            //Database.EnsureCreated();
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -139,7 +144,7 @@ namespace Core.DBModels
                     .HasConstraintName("FK_ArchivedRequests_To_ArchivedSuppliers");
 
                 entity.HasOne(d => d.Client)
-                    .WithMany()
+                    .WithMany(p => p.ArchivedRequests)
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ArchivedRequests_To_Clients");
@@ -516,7 +521,7 @@ namespace Core.DBModels
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.HasOne(d => d.ClientUser)
-                    .WithMany(p => p.FavoriteProducts)
+                    .WithMany(p => p.Favorites)
                     .HasForeignKey(d => d.ClientUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Favorites_To_ClientsUsers");
@@ -1386,36 +1391,39 @@ namespace Core.DBModels
         public virtual DbSet<ConflictedPic> ConflictedPics { get; set; }
         public virtual DbSet<UnmatchedDescription> UnmatchedDescriptions { get; set; }
         public virtual DbSet<ConflictedDescription> ConflictedDescriptions { get; set; }
+        
 
-
+        private static object locker = new object();
         public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)
         {
-            using (MarketDbContext db = new MarketDbContext())
+            lock (locker)
             {
-                if (selectedProduct.IsFavoriteForUser)
+                using (MarketDbContext db = new MarketDbContext())
                 {
-                    selectedProduct.IsFavoriteForUser = false;
-                    Favorite favoriteToRemove = db.Favorites.Where(f => (f.ClientUserId == User.Id) && (f.ProductId == selectedProduct.Id)).FirstOrDefault();
-                    db.Favorites.Remove(favoriteToRemove);
-                    User.FavoriteProducts.Remove(User.FavoriteProducts.Where(fp => fp.ClientUserId == User.Id && fp.ProductId == selectedProduct.Id).FirstOrDefault());
-                }
-                else
-                {
-                    selectedProduct.IsFavoriteForUser = true;
-                    db.Favorites.Add(new Favorite
+                    if (selectedProduct.IsFavoriteForUser)
                     {
-                        ClientUserId = User.Id,
-                        ProductId = selectedProduct.Id
-                    });
-                    User.FavoriteProducts.Add(new Favorite
+                        selectedProduct.IsFavoriteForUser = false;
+                        db.Favorites.Remove(new Favorite() { ClientUserId = User.Id, ProductId = selectedProduct.Id });
+                        User.Favorites.Remove(User.Favorites.Where(fp => fp.ClientUserId == User.Id && fp.ProductId == selectedProduct.Id).FirstOrDefault());
+                    }
+                    else
                     {
-                        ClientUserId = User.Id,
-                        ProductId = selectedProduct.Id,
-                        ClientUser = User,
-                        Product = selectedProduct
-                    });
+                        selectedProduct.IsFavoriteForUser = true;
+                        db.Favorites.Add(new Favorite
+                        {
+                            ClientUserId = User.Id,
+                            ProductId = selectedProduct.Id
+                        });
+                        User.Favorites.Add(new Favorite
+                        {
+                            ClientUserId = User.Id,
+                            ProductId = selectedProduct.Id,
+                            ClientUser = User,
+                            Product = selectedProduct
+                        });
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
             }
         }
 

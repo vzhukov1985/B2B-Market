@@ -242,7 +242,7 @@ namespace XClientApp.ViewModels
         private async void ReloadRequestData(bool requeryProductsDB)
         {
             List<Guid> ContractedSuppliersIds = User.Client.Contracts.Select(p => p.Supplier.Id).ToList();
-            List<Guid> FavoriteProductsIds = User.FavoriteProducts.Select(f => f.Product.Id).ToList();
+            List<Guid> FavoriteProductsIds = User.Favorites.Select(f => f.Product.Id).ToList();
 
             Orders = User.Client.CurrentOrders.Select(o => new OfferWithOrder
             {

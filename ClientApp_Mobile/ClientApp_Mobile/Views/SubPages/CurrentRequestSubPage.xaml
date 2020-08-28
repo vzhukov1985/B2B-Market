@@ -4,7 +4,8 @@
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
              x:Class="ClientApp_Mobile.Views.SubPages.CurrentRequestSubPage"
-             Appearing="ContentPage_Appearing">
+             Appearing="ContentPage_Appearing"
+             Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
@@ -99,13 +100,13 @@
                                 <Label Grid.Column="1"
                                        VerticalOptions="Center"
                                        FontAttributes="Bold"
-                                   FontSize="16"
+                                   FontSize="15"
                                    TextColor="{Binding IsContractedCategory, Converter={StaticResource NullableBoolToContractedColorConverter}}"
                                    Text="{Binding Name}"/>
 
                                 <Label Grid.Column="2"
                                    VerticalOptions="Center"
-                                   FontSize="16"
+                                   FontSize="15"
                                    Text="{Binding Subtotal, StringFormat='Сумма: {0:G20} тг'}" />
 
                                 <Image Grid.Column="3"

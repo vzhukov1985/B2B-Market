@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
@@ -27,8 +28,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<TopCategory> _topCategories;
-        public ObservableCollection<TopCategory> TopCategories
+        private List<TopCategory> _topCategories;
+        public List<TopCategory> TopCategories
         {
             get { return _topCategories; }
             set
@@ -39,8 +40,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<Supplier> _suppliers;
-        public ObservableCollection<Supplier> Suppliers
+        private List<Supplier> _suppliers;
+        public List<Supplier> Suppliers
         {
             get { return _suppliers; }
             set
@@ -80,11 +81,11 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             if (selectedSupplier.FullName == "Наши поставщики")
             {
-                ShellPageService.GotoOffersPage("Наши поставщики","", string.Join(",", ContractedSuppliersIds.Select(g => g.ToString()).ToArray()), "");
+                ShellPageService.GotoOffersPage("Наши поставщики", null, ContractedSuppliersIds);
             }
             else
             {
-                ShellPageService.GotoOffersPage(selectedSupplier.FullName, "", selectedSupplier.Id.ToString(), "");
+                ShellPageService.GotoOffersPage(selectedSupplier.FullName, null, new List<Guid>() { selectedSupplier.Id });
             }
         }
 
@@ -97,7 +98,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 List<Supplier> unsortedSuppliersList;
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    TopCategories = new ObservableCollection<TopCategory>(await db.TopCategories.AsNoTracking().ToListAsync());
+                    TopCategories = await db.TopCategories.AsNoTracking().ToListAsync();
 
                     unsortedSuppliersList = await db.Suppliers
                         .AsNoTracking()
@@ -106,13 +107,13 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 }
                 foreach (Supplier supplier in unsortedSuppliersList)
                     supplier.IsContractedWithClient = ContractedSuppliersIds.Contains(supplier.Id);
-                Suppliers = new ObservableCollection<Supplier>(unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.ShortName));
+                Suppliers = unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.FullName).ToList(); ;
                 Suppliers.Insert(0, new Supplier { IsContractedWithClient = true, FullName = "Наши поставщики", Id = Guid.Empty });
                 IsBusy = false;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -127,10 +128,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             User = UserService.CurrentUser;
 
-            ShowMidCategoriesCommand = new Command<TopCategory>(c => ShellPageService.GotoMidCategoriesPage(c.Id.ToString(), c.Name));
+            ShowMidCategoriesCommand = new Command<TopCategory>(c => ShellPageService.GotoMidCategoriesPage(c));
             ShowSupplierProductsCommand = new Command(s => ShowSupplierProducts((Supplier)s));
 
-            QueryDb();
+            Task.Run(() => QueryDb());
         }
 
     }

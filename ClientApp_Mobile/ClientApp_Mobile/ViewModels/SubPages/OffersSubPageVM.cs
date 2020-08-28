@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -30,8 +31,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<Guid> _contractedSuppliersIds;
-        public ObservableCollection<Guid> ContractedSuppliersIds
+        private List<Guid> _contractedSuppliersIds;
+        public List<Guid> ContractedSuppliersIds
         {
             get { return _contractedSuppliersIds; }
             set
@@ -41,8 +42,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<Guid> _favoriteProductsIds;
-        public ObservableCollection<Guid> FavoriteProductsIds
+        private List<Guid> _favoriteProductsIds;
+        public List<Guid> FavoriteProductsIds
         {
             get { return _favoriteProductsIds; }
             set
@@ -63,72 +64,134 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        public async void QueryDb(bool ShowFavoritesOnly = false, List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>")]
+        public async void QueryDb(List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")
         {
             IsBusy = true;
             try
             {
-                ContractedSuppliersIds = new ObservableCollection<Guid>(UserService.CurrentUser.Client.Contracts.Select(p => p.Supplier.Id).ToList());
-                FavoriteProductsIds = new ObservableCollection<Guid>(UserService.CurrentUser.FavoriteProducts.Select(f => f.Product.Id).ToList());
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
+                ContractedSuppliersIds = UserService.CurrentUser.Client.Contracts.Select(p => p.Supplier.Id).ToList();
+
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
+                FavoriteProductsIds = UserService.CurrentUser.Favorites.Select(f => f.Product.Id).ToList();
 
                 List<Product> unsortedProductsList;
+
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
+
                     unsortedProductsList = await db.Products
-                         .Include(p => p.Offers)
-                         .ThenInclude(o => o.QuantityUnit)
-                         .Include(p => p.Offers)
-                         .ThenInclude(o => o.Supplier)
-                         .Include(p => p.VolumeUnit)
-                         .Include(p => p.VolumeType)
-                         .Include(p => p.Category)
-                         .Where(p => p.Offers.Any(of => of.Supplier.IsActive == true && of.Remains > 0 && of.IsActive == true))
-                         .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
-                         .Where(p => supplierFilter == null ? true : p.Offers.Select(of => of.SupplierId).Any(id => supplierFilter.Contains(id)))
-                         .Where(p => ShowFavoritesOnly ? FavoriteProductsIds.Contains(p.Id) : true)
-                         .Where(p => string.IsNullOrEmpty(searchText) ? true : EF.Functions.Like(p.Name, $"%{searchText}%") || EF.Functions.Like(p.Category.Name, $"%{searchText}%"))
-                         .ToListAsync();
+                                                   .Include(p => p.Offers)
+                                                   .ThenInclude(o => o.QuantityUnit)
+                                                   .Include(p => p.Offers)
+                                                   .ThenInclude(o => o.Supplier)
+                                                   .Include(p => p.VolumeUnit)
+                                                   .Include(p => p.VolumeType)
+                                                   .Include(p => p.Category)
+                                                   .Where(p => p.Offers.Any(of => of.Supplier.IsActive == true && of.Remains > 0 && of.IsActive == true))
+                                                   .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
+                                                   .Where(p => supplierFilter == null ? true : p.Offers.Select(of => new { of.SupplierId, of.Remains }).Any( of => supplierFilter.Contains(of.SupplierId) && of.Remains > 0))
+                                                   .Where(p => string.IsNullOrEmpty(searchText) ? true : EF.Functions.Like(p.Name, $"%{searchText}%") || EF.Functions.Like(p.Category.Name, $"%{searchText}%"))
+                                                   .ToListAsync(CTS.Token);
                 }
 
                 foreach (Product product in unsortedProductsList)
                 {
+                    if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                     product.IsOfContractedSupplier = product.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id));
                     product.IsFavoriteForUser = FavoriteProductsIds.Contains(product.Id);
                     product.BestRetailPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.RetailPrice).FirstOrDefault();
                     product.BestDiscountPriceOffer = product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.DiscountPrice).FirstOrDefault();
                 }
 
-                Products = new ObservableCollection<Product>(unsortedProductsList.OrderBy(p => p.Category.Name).ThenBy(p => p.Name));
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
+                var sortedList = unsortedProductsList.OrderBy(p => p.Category.Name).ThenBy(p => p.Name).ToList();
+                Device.BeginInvokeOnMainThread(() => Products = new ObservableCollection<Product>(sortedList));
                 IsBusy = false;
+            }
+            catch (OperationCanceledException)
+            {
+                IsBusy = false;
+                return;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
         }
-        private void AddRemoveProductToFavourites(Product product)
+
+        public async Task<bool> QueryFavoritesOnly(bool queryFavoritesFromDb)
         {
             IsBusy = true;
-            try
+            if (CTS.Token.IsCancellationRequested) { IsBusy = false; return false; }
+            ContractedSuppliersIds = UserService.CurrentUser.Client.Contracts.Select(p => p.Supplier.Id).ToList();
+
+            List<Favorite> unsortedFavoritesList;
+            if (queryFavoritesFromDb)
             {
-                MarketDbContext.AddRemoveProductToFavourites((Product)product, UserService.CurrentUser);
-                IsBusy = false;
+                Title = "Избранное";
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return false; }
+                try
+                {
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
+                        if (CTS.Token.IsCancellationRequested) { IsBusy = false; return false; }
+                        UserService.CurrentUser.Favorites = await db.Favorites.Where(f => f.ClientUserId == UserService.CurrentUser.Id)
+                                                                     .Include(f => f.Product)
+                                                                     .ThenInclude(p => p.Offers)
+                                                                     .ThenInclude(o => o.QuantityUnit)
+                                                                     .Include(f => f.Product)
+                                                                     .ThenInclude(p => p.Offers)
+                                                                     .ThenInclude(o => o.Supplier)
+                                                                     .Include(f => f.Product)
+                                                                     .ThenInclude(p => p.VolumeUnit)
+                                                                     .Include(f => f.Product)
+                                                                     .ThenInclude(p => p.VolumeType)
+                                                                     .Include(f => f.Product)
+                                                                     .ThenInclude(p => p.Category)
+                                                                     .ToListAsync(CTS.Token);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    IsBusy = false;
+                    return false;
+                }
+                catch
+                {
+                    Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                    IsBusy = false;
+                    return false;
+                }
             }
-            catch
+            unsortedFavoritesList = UserService.CurrentUser.Favorites;
+
+            foreach (Favorite favorite in unsortedFavoritesList)
             {
-                ShellDialogService.ShowConnectionErrorDlg();
-                IsBusy = false;
-                return;
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return false; }
+                favorite.Product.IsOfContractedSupplier = favorite.Product.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id));
+                favorite.Product.IsFavoriteForUser = true;
+                favorite.Product.BestRetailPriceOffer = favorite.Product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.RetailPrice).FirstOrDefault();
+                favorite.Product.BestDiscountPriceOffer = favorite.Product.Offers.OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id)).ThenBy(o => o.DiscountPrice).FirstOrDefault();
             }
+
+            if (CTS.Token.IsCancellationRequested) { IsBusy = false; return false; }
+            var sortedFavoritesList = unsortedFavoritesList.Select(f => f.Product).OrderBy(p => p.Category.Name).ThenBy(p => p.Name).ToList();
+            Device.BeginInvokeOnMainThread(() => Products = new ObservableCollection<Product>(sortedFavoritesList));
+            IsBusy = false;
+            return true;
         }
+
         public Command AddRemoveProductToFavouritesCommand { get; }
         public Command ShowProductCommand { get; }
 
         public OffersSubPageVM()
         {
-            AddRemoveProductToFavouritesCommand = new Command(p => AddRemoveProductToFavourites((Product)p));
+            AddRemoveProductToFavouritesCommand = new Command(p => Task.Run(() =>MarketDbContext.AddRemoveProductToFavourites((Product)p, UserService.CurrentUser)));
             ShowProductCommand = new Command<Product>(p => ShellPageService.GotoProductPage(p));
         }
     }

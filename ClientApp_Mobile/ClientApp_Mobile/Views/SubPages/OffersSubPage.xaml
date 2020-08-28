@@ -4,7 +4,7 @@
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
              xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
-             x:Class="ClientApp_Mobile.Views.SubPages.OffersSubPage" Appearing="ContentPage_Appearing">
+             x:Class="ClientApp_Mobile.Views.SubPages.OffersSubPage" Appearing="ContentPage_Appearing" Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
@@ -30,7 +30,7 @@
 
             <ListView Grid.Row="1" 
                   Style="{StaticResource BaseListView}"
-                  RowHeight="130"
+                  RowHeight="130" 
                   ItemsSource="{Binding Products}">
 
                 <ListView.ItemTemplate>

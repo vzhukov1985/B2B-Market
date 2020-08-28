@@ -39,7 +39,7 @@ namespace XClientApp.ViewModels
             {
                 User = db.ClientsUsers
                     .Where(u => u.Login == user.Login)
-                    .Include(u => u.FavoriteProducts)
+                    .Include(u => u.Favorites)
                     .ThenInclude(f => f.Product)
                     .Include(u => u.Client)
                     .ThenInclude(c => c.Contracts)

@@ -23,7 +23,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public SearchSubPageVM()
         {
-            SearchCommand = new Command(_ => ShellPageService.GotoOffersPage($"Результаты поиска '{SearchText}'", "", "", SearchText));
+            SearchCommand = new Command(_ => ShellPageService.GotoOffersPage($"Результаты поиска '{SearchText}'", null, null, SearchText));
         }
 
     }

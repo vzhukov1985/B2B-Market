@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -19,14 +20,12 @@ namespace ClientApp_Mobile
     public partial class AppShell : Shell
     {
 
-        public static ClientUser CurrentUser;
-
         public AppShell()
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("MidCategories", typeof(MidCategoriesSubPage));
-            Routing.RegisterRoute("ProductCategories", typeof(ProductCategoriesSubPage));
+            Routing.RegisterRoute("MidCategories", typeof(CategoriesSubPage));
+            Routing.RegisterRoute("ProductCategories", typeof(CategoriesSubPage));
             Routing.RegisterRoute("Offers", typeof(OffersSubPage));
             Routing.RegisterRoute("Search", typeof(SearchSubPage));
             Routing.RegisterRoute("Product", typeof(ProductSubPage));

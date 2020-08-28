@@ -33,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\SubPages\MidCategoriesSubPage.xaml.cs">
-      <DependentUpon>MidCategoriesSubPage.xaml</DependentUpon>
+    <Compile Update="Views\SubPages\CategoriesSubPage.xaml.cs">
+      <DependentUpon>CategoriesSubPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -46,9 +46,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\AuthPasswordPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\SubPages\ArchivedRequestsListSubPage.xaml">
@@ -63,16 +60,13 @@
     <EmbeddedResource Update="Views\SubPages\CurrentRequestSubPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\SubPages\MidCategoriesSubPage.xaml">
+    <EmbeddedResource Update="Views\SubPages\CategoriesSubPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\SubPages\MainSubPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\SubPages\OffersSubPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\SubPages\ProductCategoriesSubPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\SubPages\ProductPictureSubPage.xaml">

@@ -10,6 +10,8 @@ using System.Text;
 using System.Collections.ObjectModel;
 using ClientApp_Mobile.Services;
 using ClientApp_Mobile.Models;
+using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
@@ -37,8 +39,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<ArchivedOrdersByCategories> _ordersGroup;
-        public ObservableCollection<ArchivedOrdersByCategories> OrdersGroup
+        private List<ArchivedOrdersByCategories> _ordersGroup;
+        public List<ArchivedOrdersByCategories> OrdersGroup
         {
             get { return _ordersGroup; }
             set
@@ -66,15 +68,24 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    Request.ArchivedOrders = new ObservableCollection<ArchivedOrder>(await db.ArchivedOrders.AsNoTracking().Where(o => o.ArchivedRequestId == Request.Id).ToListAsync());
+                    Request.ArchivedOrders = await db.ArchivedOrders.AsNoTracking().Where(o => o.ArchivedRequestId == Request.Id).ToListAsync(CTS.Token);
                 }
-                OrdersGroup = new ObservableCollection<ArchivedOrdersByCategories>(Request.ArchivedOrders.GroupBy(o => o.ProductCategory).Select(g => new ArchivedOrdersByCategories(g.Key, new ObservableCollection<ArchivedOrder>(g))));
-                Request.ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>(Request.ArchivedRequestsStatuses.OrderBy(s => s.DateTime));
+
+                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+                OrdersGroup = Request.ArchivedOrders.GroupBy(o => o.ProductCategory).Select(g => new ArchivedOrdersByCategories(g.Key, new List<ArchivedOrder>(g))).ToList();
+
+                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+                Request.ArchivedRequestsStatuses = Request.ArchivedRequestsStatuses.OrderBy(s => s.DateTime).ToList();
                 IsBusy = false;
+            }
+            catch (OperationCanceledException)
+            {
+                IsBusy = false;
+                return;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -88,7 +99,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
             Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplier.FullName;
 
-            QueryDb();
+            Task.Run(() => QueryDb());
         }
     }
 }

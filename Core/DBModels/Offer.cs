@@ -26,43 +26,6 @@ namespace Core.DBModels
             }
         }
 
-
-        private Guid _productId;
-        public Guid ProductId
-        {
-            get { return _productId; }
-            set
-            {
-                _productId = value;
-                OnPropertyChanged("ProductId");
-            }
-        }
-
-        private string _supplierProductCode;
-        public string SupplierProductCode
-        {
-            get { return _supplierProductCode; }
-            set
-            {
-                _supplierProductCode = value;
-                OnPropertyChanged("SupplierProductCode");
-            }
-        }
-
-
-        private Product _product;
-        public Product Product
-        {
-            get { return _product; }
-            set
-            {
-                _product = value;
-                if (_product != null)
-                    ProductId = _product.Id;
-                OnPropertyChanged("Product");
-            }
-        }
-
         private Guid _supplierId;
         public Guid SupplierId
         {
@@ -84,6 +47,41 @@ namespace Core.DBModels
                 if (_supplier != null)
                     SupplierId = _supplier.Id;
                 OnPropertyChanged("Supplier");
+            }
+        }
+
+        private string _supplierProductCode;
+        public string SupplierProductCode
+        {
+            get { return _supplierProductCode; }
+            set
+            {
+                _supplierProductCode = value;
+                OnPropertyChanged("SupplierProductCode");
+            }
+        }
+
+        private Guid _productId;
+        public Guid ProductId
+        {
+            get { return _productId; }
+            set
+            {
+                _productId = value;
+                OnPropertyChanged("ProductId");
+            }
+        }
+
+        private Product _product;
+        public Product Product
+        {
+            get { return _product; }
+            set
+            {
+                _product = value;
+                if (_product != null)
+                    ProductId = _product.Id;
+                OnPropertyChanged("Product");
             }
         }
 

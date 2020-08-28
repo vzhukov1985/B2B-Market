@@ -3,12 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
              xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
-             x:Class="ClientApp_Mobile.Views.SubPages.MidCategoriesSubPage">
+             x:Class="ClientApp_Mobile.Views.SubPages.CategoriesSubPage"
+             Disappearing="ContentPage_Disappearing"
+             x:Name="CategoriesPage">
     
     <Shell.TitleView>
         <Grid>
             <Label Style="{StaticResource TitleBarLabel}"
-                   Text="{Binding CategoryName}"/>
+                   Text="{Binding Title}"/>
         </Grid>
     </Shell.TitleView>
 
@@ -45,7 +47,7 @@
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
                                     NumberOfTapsRequired="1"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:MidCategoriesSubPageVM}}, Path=CategorySelectedCommand}"		
+                                    Command="{Binding Source={x:Reference CategoriesPage}, Path=BindingContext.CategorySelectedCommand}"		
                                     CommandParameter="{Binding .}"/>
                                 </Grid.GestureRecognizers>
                             </Grid>

@@ -140,6 +140,17 @@ namespace Core.DBModels
             }
         }
 
+        private bool _isActive;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged("IsActive");
+            }
+        }
+
         private string _ftpUser;
         public string FTPUser
         {
@@ -161,18 +172,6 @@ namespace Core.DBModels
                 OnPropertyChanged("FTPPassword");
             }
         }
-
-        private bool _isActive;
-        public bool IsActive
-        {
-            get { return _isActive; }
-            set
-            {
-                _isActive = value;
-                OnPropertyChanged("IsActive");
-            }
-        }
-
 
 
         private ObservableCollection<Contract> _contracts;

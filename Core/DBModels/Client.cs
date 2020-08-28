@@ -139,16 +139,17 @@ namespace Core.DBModels
             }
         }
 
-        private ObservableCollection<Contract> _contracts;
-        public ObservableCollection<Contract> Contracts
+        private List<ArchivedRequest> _archivedRequests;
+        public List<ArchivedRequest> ArchivedRequests
         {
-            get { return _contracts; }
+            get { return _archivedRequests; }
             set
             {
-                _contracts = value;
-                OnPropertyChanged("Contracts");
+                _archivedRequests = value;
+                OnPropertyChanged("ArchivedRequests");
             }
         }
+
 
         private ObservableCollection<ClientUser> _users;
         public ObservableCollection<ClientUser> Users
@@ -161,8 +162,18 @@ namespace Core.DBModels
             }
         }
 
-        private ObservableCollection<CurrentOrder> _currentOrders;
-        public ObservableCollection<CurrentOrder> CurrentOrders
+        private ObservableCollection<Contract> _contracts;
+        public ObservableCollection<Contract> Contracts
+        {
+            get { return _contracts; }
+            set
+            {
+                _contracts = value;
+                OnPropertyChanged("Contracts");
+            }
+        }
+        private List<CurrentOrder> _currentOrders;
+        public List<CurrentOrder> CurrentOrders
         {
             get { return _currentOrders; }
             set
@@ -177,7 +188,7 @@ namespace Core.DBModels
         {
             Contracts = new ObservableCollection<Contract>();
             Users = new ObservableCollection<ClientUser>();
-            CurrentOrders = new ObservableCollection<CurrentOrder>();
+            CurrentOrders = new List<CurrentOrder>();
         }
     }
 }

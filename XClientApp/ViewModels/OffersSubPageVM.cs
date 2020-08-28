@@ -83,7 +83,7 @@ namespace XClientApp.ViewModels
         {
             ContractedSuppliersIds = new ObservableCollection<Guid>(User.Client.Contracts.Select(p => p.Supplier.Id).ToList());
 
-            FavoriteProductsIds = new ObservableCollection<Guid>(User.FavoriteProducts.Select(f => f.Product.Id).ToList());
+            FavoriteProductsIds = new ObservableCollection<Guid>(User.Favorites.Select(f => f.Product.Id).ToList());
 
             List<Product> unsortedProductsList;
             using (MarketDbContext db = new MarketDbContext())

@@ -200,6 +200,19 @@ namespace Core.DBModels
             }
         }
 
+        private int _remains;
+        [NotMapped]
+        public int Remains
+        {
+            get { return _remains; }
+            set
+            {
+                _remains = value;
+                OnPropertyChanged("Remains");
+            }
+        }
+
+
         public static ArchivedOrder CloneForDB(ArchivedOrder order)
         {
             return new ArchivedOrder

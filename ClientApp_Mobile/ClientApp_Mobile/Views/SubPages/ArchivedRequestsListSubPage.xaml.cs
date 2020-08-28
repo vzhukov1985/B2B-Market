@@ -24,7 +24,14 @@ namespace ClientApp_Mobile.Views.SubPages
         private void ContentPage_Appearing(object sender, EventArgs e)
         {
             typeof(Color).GetProperty("Accent", BindingFlags.Public | BindingFlags.Static).SetValue(null, Color.Transparent); //Remove Line under listview group header
-            ((ArchivedRequestsListSubPageVM)BindingContext).QueryDb();
+            Task.Run(() =>((ArchivedRequestsListSubPageVM)BindingContext).QueryDb());
+        }
+
+        private void ContentPage_Disappearing(object sender, EventArgs e)
+        {
+            ArchivedRequestsListSubPageVM bc = (ArchivedRequestsListSubPageVM)BindingContext;
+            if (bc.IsBusy) bc.CTS.Cancel();
+
         }
     }
 }

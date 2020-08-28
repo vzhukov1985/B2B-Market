@@ -18,8 +18,8 @@ namespace ClientApp_Mobile.Models
 
     public class ProductForRequestView : Product
     {
-        private ObservableCollection<OfferWithOrder> _orders;
-        public ObservableCollection<OfferWithOrder> Orders
+        private List<OfferWithOrder> _orders;
+        public List<OfferWithOrder> Orders
         {
             get { return _orders; }
             set

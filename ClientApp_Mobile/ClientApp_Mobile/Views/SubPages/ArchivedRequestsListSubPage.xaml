@@ -4,7 +4,8 @@
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
              x:Class="ClientApp_Mobile.Views.SubPages.ArchivedRequestsListSubPage"
-             Appearing="ContentPage_Appearing">
+             Appearing="ContentPage_Appearing"
+             Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
         <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"/>
@@ -80,7 +81,7 @@
                                FontSize="12">
                                 <Label.Text>
                                     <MultiBinding StringFormat="Отправил(-а) {0} {1} в {2:t}">
-                                        <Binding Path="SenderSurName"/>
+                                        <Binding Path="SenderSurname"/>
                                         <Binding Path="SenderName"/>
                                         <Binding Path="DateTimeSent"/>
                                     </MultiBinding>

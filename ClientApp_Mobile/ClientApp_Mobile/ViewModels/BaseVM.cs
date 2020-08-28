@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
@@ -16,6 +17,8 @@ namespace ClientApp_Mobile.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        public CancellationTokenSource CTS { get; set; }
+
         private bool _isBusy;
         public bool IsBusy
         {
@@ -23,6 +26,10 @@ namespace ClientApp_Mobile.ViewModels
             set
             {
                 _isBusy = value;
+                if (_isBusy)
+                    CTS = new CancellationTokenSource();
+                else
+                    CTS.Dispose();
                 OnPropertyChanged("IsBusy");
             }
         }
@@ -38,11 +45,8 @@ namespace ClientApp_Mobile.ViewModels
             return true;
         }
 
-        public Command ShowSearchSubPageCommand { get; }
-
         public BaseVM()
         {
-            ShowSearchSubPageCommand = new Command(_ => Shell.Current.GoToAsync("//Search"));
         }
 
     }

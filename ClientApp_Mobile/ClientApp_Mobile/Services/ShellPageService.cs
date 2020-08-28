@@ -1,4 +1,5 @@
-﻿using ClientApp_Mobile.ViewModels.SubPages;
+﻿using ClientApp_Mobile.ViewModels;
+using ClientApp_Mobile.ViewModels.SubPages;
 using ClientApp_Mobile.Views;
 using ClientApp_Mobile.Views.SubPages;
 using Core.DBModels;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -13,6 +15,8 @@ namespace ClientApp_Mobile.Services
 {
     public class ShellPageService
     {
+        private static object locker = new object();
+        private static bool isGoing = false;
         public static async void GoBack()
         {
             await Shell.Current.GoToAsync("..");
@@ -22,34 +26,79 @@ namespace ClientApp_Mobile.Services
             await Shell.Current.GoToAsync("Search");
         }
 
-        public static async void GotoMidCategoriesPage(string selectedTopCategoryId, string selectedTopCategoryName)
+        public static async void GotoMidCategoriesPage(TopCategory selectedTopCategory)
         {
-            await Shell.Current.GoToAsync($"MidCategories?categoryId={selectedTopCategoryId}&categoryName={selectedTopCategoryName}");
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
+            if (selectedTopCategory != null)
+            {
+                await Shell.Current.GoToAsync($"MidCategories");
+                CategoriesSubPage pg = (CategoriesSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+                MidCategoriesSubPageVM bc = new MidCategoriesSubPageVM(selectedTopCategory);
+                pg.BindingContext = bc;
+            }
+            isGoing = false;
         }
 
-        public static async void GotoProductCategoriesPage(string selectedMidCategoryId, string selectedMidCategoryName)
+        public static async void GotoProductCategoriesPage(MidCategory selectedMidCategory, List<ProductCategory> subCategories)
         {
-            await Shell.Current.GoToAsync($"ProductCategories?categoryId={selectedMidCategoryId}&categoryName={selectedMidCategoryName}");
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
+            if (selectedMidCategory != null)
+            {
+                await Shell.Current.GoToAsync($"ProductCategories");
+                CategoriesSubPage pg = (CategoriesSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+                ProductCategoriesSubPageVM bc = new ProductCategoriesSubPageVM(selectedMidCategory, subCategories);
+                pg.BindingContext = bc;
+            }
+            isGoing = false;
         }
 
-        public static async void GotoOffersPage(string title, string categoryFilter = "", string supplierFilter = "", string searchText = "")
+        public static async void GotoOffersPage(string title, List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "")
         {
-            await Shell.Current.GoToAsync($"Offers?title={title}&catFilter={categoryFilter}&supFilter={supplierFilter}&search={searchText}");
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
+            await Shell.Current.GoToAsync($"Offers");
             OffersSubPage pg = (OffersSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
             OffersSubPageVM bc = (OffersSubPageVM)pg.BindingContext;
-            List<Guid> parsedCategoryFilter = string.IsNullOrEmpty(pg.CategoryFilterParam) ? null : pg.CategoryFilterParam.Split(',').Select(s => new Guid(s)).ToList();
-            List<Guid> parsedSupplierFilter = string.IsNullOrEmpty(pg.SuppliersFilterParam) ? null : pg.SuppliersFilterParam.Split(',').Select(s => new Guid(s)).ToList();
-            bc.Title = pg.TitleParam;
-            bc.QueryDb(pg.ShowFavoritesOnly, parsedCategoryFilter, parsedSupplierFilter, pg.SearchTextParam);
+            bc.Title = title;
+            await Task.Run(() => bc.QueryDb(categoryFilter, supplierFilter, searchText));
+            isGoing = false;
         }
 
         public static async void GotoProductPage(Product product)
         {
-            await Shell.Current.GoToAsync($"Product");
-            ProductSubPage pg = (ProductSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
-            ProductSubPageVM bc = new ProductSubPageVM(product);
-            pg.BindingContext = bc;
-            bc.QueryDb();
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
+            if (product != null)
+            {
+                await Shell.Current.GoToAsync($"Product");
+                ProductSubPage pg = (ProductSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+                ProductSubPageVM bc = new ProductSubPageVM(product);
+                pg.BindingContext = bc;
+                await Task.Run(() => bc.QueryDb());
+            }
+            isGoing = false;
         }
 
         public static async void GotoProductPicturePage(string productId, string productName)
@@ -64,18 +113,40 @@ namespace ClientApp_Mobile.Services
 
         public static async void GotoCurrentRequestConfirmPage(List<ArchivedRequest> requestsToAdd)
         {
-            await Shell.Current.GoToAsync("CurrentRequestConfirm");
-            CurrentRequestConfirmSubPage pg = (CurrentRequestConfirmSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
-            CurrentRequestConfirmSubPageVM bc = new CurrentRequestConfirmSubPageVM(requestsToAdd);
-            pg.BindingContext = bc;
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
+            if (requestsToAdd != null)
+            {
+                await Shell.Current.GoToAsync("CurrentRequestConfirm");
+                CurrentRequestConfirmSubPage pg = (CurrentRequestConfirmSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+                CurrentRequestConfirmSubPageVM bc = new CurrentRequestConfirmSubPageVM(requestsToAdd);
+                pg.BindingContext = bc;
+            }
+            isGoing = false;
         }
 
         public static async void GotoArchivedRequestPage(ArchivedRequest request)
         {
-            await Shell.Current.GoToAsync("ArchivedRequest");
-            ArchivedRequestSubPage pg = (ArchivedRequestSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
-            ArchivedRequestSubPageVM bc = new ArchivedRequestSubPageVM(request);
-            pg.BindingContext = bc;
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
+            if (request != null)
+            {
+                await Shell.Current.GoToAsync("ArchivedRequest");
+                ArchivedRequestSubPage pg = (ArchivedRequestSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+                ArchivedRequestSubPageVM bc = new ArchivedRequestSubPageVM(request);
+                pg.BindingContext = bc;
+            }
+            isGoing = false;
         }
 
         public ShellPageService()

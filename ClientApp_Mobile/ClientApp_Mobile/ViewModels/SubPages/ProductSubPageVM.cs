@@ -65,8 +65,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<OfferWithOrder> _offersWithOrders;
-        public ObservableCollection<OfferWithOrder> OffersWithOrders
+        private List<OfferWithOrder> _offersWithOrders;
+        public List<OfferWithOrder> OffersWithOrders
         {
             get { return _offersWithOrders; }
             set
@@ -98,7 +98,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<CurrentOrder> CurrentRequestOrders;
+        private List<CurrentOrder> CurrentRequestOrders;
         private List<Offer> Offers;
 
 
@@ -163,7 +163,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                                     db.CurrentOrders.Update(CurrentOrder.CloneForDB(currentRequestOrder));
                                 }
                             }
-                            offer.OrderQuantityBeforeUserChanges = offer.OrderQuantity;
+                            Device.BeginInvokeOnMainThread(() => { offer.OrderQuantityBeforeUserChanges = offer.OrderQuantity; });
                         }
                     }
                     db.SaveChanges();
@@ -174,7 +174,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() =>ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -197,74 +197,75 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    Product.ExtraProperties = new ObservableCollection<ProductExtraProperty>(await db.ProductExtraProperties.AsNoTracking().Where(pep => pep.ProductId == Product.Id).Include(pep => pep.PropertyType).ToListAsync());
+                    Product.ExtraProperties = new ObservableCollection<ProductExtraProperty>(await db.ProductExtraProperties.AsNoTracking().Where(pep => pep.ProductId == Product.Id).Include(pep => pep.PropertyType).ToListAsync(CTS.Token));
                     Product.Description = await db.ProductDescriptions.FindAsync(Product.Id);
                 }
 
-                List<Guid> ContractedSuppliersIds = User.Client.Contracts.Select(p => p.Supplier.Id).ToList();
-
-                CurrentRequestOrders = User.Client.CurrentOrders;
-
-                Offers = Product.Offers
-                    .Where(o => ((o.Supplier.IsActive == true) && (o.IsActive == true) && (o.Remains > 0)) || (CurrentRequestOrders.Where(oo => oo.OfferId == o.Id).Select(oo => oo.Quantity).FirstOrDefault() > 0))
-                    .OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id))
-                    .ThenBy(o => o.Supplier.ShortName).ToList();
-
-                OffersWithOrders = new ObservableCollection<OfferWithOrder>(Offers.Select(of => new OfferWithOrder
-                {
-                    Id = of.Id,
-                    SupplierProductCode = of.SupplierProductCode,
-                    IsActive = of.IsActive,
-                    Product = of.Product,
-                    ProductId = of.ProductId,
-                    Supplier = of.Supplier,
-                    SupplierId = of.SupplierId,
-                    DiscountPrice = of.DiscountPrice,
-                    RetailPrice = of.RetailPrice,
-                    QuantityUnit = of.QuantityUnit,
-                    QuantityUnitId = of.QuantityUnitId,
-                    Remains = (of.IsActive) && (of.Supplier.IsActive) ? of.Remains : 0,
-
-                    IsOfContractedSupplier = ContractedSuppliersIds.Contains(of.Supplier.Id),
-                    PriceForClient = ContractedSuppliersIds.Contains(of.Supplier.Id) ? of.DiscountPrice : of.RetailPrice,
-                    OrderQuantityBeforeUserChanges = CurrentRequestOrders.Where(o => o.OfferId == of.Id).Select(o => o.Quantity).FirstOrDefault(),
-                    OrderQuantity = CurrentRequestOrders.Where(o => o.OfferId == of.Id).Select(o => o.Quantity).FirstOrDefault()
-                }));
-
-                foreach (var order in OffersWithOrders)
-                {
-                    order.PropertyChanged += (s, a) => { DecrementOrderCommand.ChangeCanExecute(); IncrementOrderCommand.ChangeCanExecute(); ProcessChanges(); };
-                }
-
-                ExtraPropsCVHeight = Product.ExtraProperties.Count * 18; //FontSize+5
-                OffersCVHeight = OffersWithOrders.Count * 60 + 1;
-
-                AreChangesWereMade = false;
-                ProcessChanges();
-                IsBusy = false;
             }
-            catch
+            catch (OperationCanceledException)
             {
-                ShellDialogService.ShowConnectionErrorDlg();
                 IsBusy = false;
                 return;
             }
-        }
-
-        private void AddRemoveProductToFavourites(Product product)
-        {
-            IsBusy = true;
-            try
-            {
-                MarketDbContext.AddRemoveProductToFavourites((Product)product, User);
-                IsBusy = false;
-            }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+
+            List<Guid> ContractedSuppliersIds = User.Client.Contracts.Select(p => p.Supplier.Id).ToList();
+
+            CurrentRequestOrders = User.Client.CurrentOrders;
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+
+            Offers = Product.Offers
+                .Where(o => ((o.Supplier.IsActive == true) && (o.IsActive == true) && (o.Remains > 0)) || (CurrentRequestOrders.Where(oo => oo.OfferId == o.Id).Select(oo => oo.Quantity).FirstOrDefault() > 0))
+                .OrderByDescending(o => ContractedSuppliersIds.Contains(o.Supplier.Id))
+                .ThenBy(o => o.Supplier.ShortName).ToList();
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+
+            OffersWithOrders = Offers.Select(of => new OfferWithOrder
+            {
+                Id = of.Id,
+                SupplierProductCode = of.SupplierProductCode,
+                IsActive = of.IsActive,
+                Product = of.Product,
+                ProductId = of.ProductId,
+                Supplier = of.Supplier,
+                SupplierId = of.SupplierId,
+                DiscountPrice = of.DiscountPrice,
+                RetailPrice = of.RetailPrice,
+                QuantityUnit = of.QuantityUnit,
+                QuantityUnitId = of.QuantityUnitId,
+                Remains = (of.IsActive) && (of.Supplier.IsActive) ? of.Remains : 0,
+
+                IsOfContractedSupplier = ContractedSuppliersIds.Contains(of.Supplier.Id),
+                PriceForClient = ContractedSuppliersIds.Contains(of.Supplier.Id) ? of.DiscountPrice : of.RetailPrice,
+                OrderQuantityBeforeUserChanges = CurrentRequestOrders.Where(o => o.OfferId == of.Id).Select(o => o.Quantity).FirstOrDefault(),
+                OrderQuantity = CurrentRequestOrders.Where(o => o.OfferId == of.Id).Select(o => o.Quantity).FirstOrDefault()
+            }).ToList();
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+
+            foreach (var order in OffersWithOrders)
+            {
+                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+                order.PropertyChanged += (s, a) => { DecrementOrderCommand.ChangeCanExecute(); IncrementOrderCommand.ChangeCanExecute(); ProcessChanges(); };
+            }
+
+            ExtraPropsCVHeight = Product.ExtraProperties.Count * 18; //FontSize+5
+            OffersCVHeight = OffersWithOrders.Count * 60 + 1;
+
+            AreChangesWereMade = false;
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            ProcessChanges();
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            IsBusy = false;
         }
 
         public Command AddRemoveProductToFavouritesCommand { get; }
@@ -281,12 +282,12 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             User = UserService.CurrentUser;
             Product = product;
 
-            AddRemoveProductToFavouritesCommand = new Command(p => AddRemoveProductToFavourites(product));
+            AddRemoveProductToFavouritesCommand = new Command(p => Task.Run (() =>MarketDbContext.AddRemoveProductToFavourites(product, User)));
             IncrementOrderCommand = new Command(o => ((OfferWithOrder)o).OrderQuantity++, o => o == null ? false : ((OfferWithOrder)o).OrderQuantity < ((OfferWithOrder)o).Remains);
             DecrementOrderCommand = new Command(o => ((OfferWithOrder)o).OrderQuantity--, o => o == null ? false : ((OfferWithOrder)o).OrderQuantity > 0);
             ChangesInOrderAreMadeCommand = new Command(_ => ProcessChanges());
             ShowProductPictureCommand = new Command(_ => ShellPageService.GotoProductPicturePage(Product.Id.ToString(), Product.Name));
-            UpdateCurrentRequestCommand = new Command(_ => UpdateCurrentRequest(), _ => AreChangesWereMade);
+            UpdateCurrentRequestCommand = new Command(_ => Task.Run(() => UpdateCurrentRequest()), _ => AreChangesWereMade);
             GoBackCommand = new Command(_ => GoBack());
         }
     }

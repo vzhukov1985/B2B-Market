@@ -55,7 +55,7 @@ namespace ClientApp_Mobile.ViewModels
                     {
                         UserService.CurrentUser = await db.ClientsUsers
                                                     .Where(u => u.Id == user.Id)
-                                                    .Include(u => u.FavoriteProducts)
+                                                    .Include(u => u.Favorites)
                                                     .ThenInclude(f => f.Product)
                                                     .Include(u => u.Client)
                                                     .ThenInclude(c => c.Contracts)

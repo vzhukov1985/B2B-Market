@@ -17,5 +17,18 @@ namespace ClientApp_Mobile.Views.SubPages
         {
             InitializeComponent();
         }
+
+        private void ContentPage_Disappearing(object sender, EventArgs e)
+        {
+            ProductSubPageVM bc = (ProductSubPageVM)BindingContext;
+            try
+            {
+                if (bc.IsBusy) bc.CTS.Cancel();
+            }
+            catch
+            {
+                return;
+            }
+        }
     }
 }

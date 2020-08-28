@@ -4,7 +4,8 @@
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
              xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
-             x:Class="ClientApp_Mobile.Views.SubPages.ProductSubPage">
+             x:Class="ClientApp_Mobile.Views.SubPages.ProductSubPage"
+             Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>

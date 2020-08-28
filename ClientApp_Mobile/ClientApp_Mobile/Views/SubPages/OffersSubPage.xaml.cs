@@ -1,9 +1,13 @@
-﻿using ClientApp_Mobile.ViewModels;
+﻿using ClientApp_Mobile.Services;
+using ClientApp_Mobile.ViewModels;
 using ClientApp_Mobile.ViewModels.SubPages;
+using Core.DBModels;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -11,52 +15,12 @@ using Xamarin.Forms.Xaml;
 
 namespace ClientApp_Mobile.Views.SubPages
 {
-    [QueryProperty("TitleParam", "title")]
-    [QueryProperty("CategoryFilterParam", "catFilter")]
-    [QueryProperty("SuppliersFilterParam", "supFilter")]
-    [QueryProperty("SearchTextParam", "search")]
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OffersSubPage : ContentPage
     {
-        private string _titleParam;
-        public string TitleParam
-        {
-            get { return _titleParam; }
-            set
-            {
-                _titleParam = string.IsNullOrEmpty(value) ? "" : Uri.UnescapeDataString(value);
-            }
-        }
-
-        private string _supplierFilterParam;
-        public string SuppliersFilterParam
-        {
-            get { return _supplierFilterParam; }
-            set
-            {
-                _supplierFilterParam = string.IsNullOrEmpty(value) ? "" : Uri.UnescapeDataString(value);
-            }
-        }
-
-        private string _categoryFilterParam;
-        public string CategoryFilterParam
-        {
-            get { return _categoryFilterParam; }
-            set
-            {
-                _categoryFilterParam = string.IsNullOrEmpty(value) ? "" : Uri.UnescapeDataString(value);
-            }
-        }
-
-        private string _searchTextParam;
-        public string SearchTextParam
-        {
-            get { return _searchTextParam; }
-            set
-            {
-                _searchTextParam = string.IsNullOrEmpty(value) ? "" : Uri.UnescapeDataString(value); ;
-            }
-        }
+        static bool FirstTimeLoad;
+        public static object locker = new object();
+        public static bool isGoing = false;
 
         public static readonly BindableProperty ShowFavoritesOnlyProp = BindableProperty.Create(nameof(ShowFavoritesOnly), typeof(bool), typeof(OffersSubPage), false);
         public bool ShowFavoritesOnly
@@ -64,7 +28,6 @@ namespace ClientApp_Mobile.Views.SubPages
             get { return (bool)GetValue(ShowFavoritesOnlyProp); }
             set
             {
-                TitleParam = "Избранное";
                 SetValue(ShowFavoritesOnlyProp, value);
             }
         }
@@ -73,20 +36,31 @@ namespace ClientApp_Mobile.Views.SubPages
         {
             InitializeComponent();
             BindingContext = new OffersSubPageVM();
+            FirstTimeLoad = true;
         }
 
-        private void ContentPage_Appearing(object sender, EventArgs e)
+        private async void ContentPage_Appearing(object sender, EventArgs e)
         {
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
             if (ShowFavoritesOnly)
             {
-                List<Guid> parsedCategoryFilter = string.IsNullOrEmpty(CategoryFilterParam) ? null : CategoryFilterParam.Split(',').Select(s => new Guid(s)).ToList();
-                List<Guid> parsedSupplierFilter = string.IsNullOrEmpty(SuppliersFilterParam) ? null : SuppliersFilterParam.Split(',').Select(s => new Guid(s)).ToList();
-
                 OffersSubPageVM bc = (OffersSubPageVM)BindingContext;
-
-                bc.Title = TitleParam;
-                bc.QueryDb(ShowFavoritesOnly, parsedCategoryFilter, parsedSupplierFilter, SearchTextParam);
+                FirstTimeLoad = !await Task.Run(() => bc.QueryFavoritesOnly(FirstTimeLoad));
             }
+            isGoing = false;
+        }
+
+        private void ContentPage_Disappearing(object sender, EventArgs e)
+        {
+            OffersSubPageVM bc = (OffersSubPageVM)BindingContext;
+            if (bc.IsBusy)
+                bc.CTS.Cancel();
         }
     }
 }

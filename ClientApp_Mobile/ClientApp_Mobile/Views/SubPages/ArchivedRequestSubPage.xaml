@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
-             x:Class="ClientApp_Mobile.Views.SubPages.ArchivedRequestSubPage">
+             x:Class="ClientApp_Mobile.Views.SubPages.ArchivedRequestSubPage"
+             Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
         <conv:RequestStatusToColorConverter x:Key="RequestStatusToColorConverter"/>
@@ -127,7 +128,7 @@
                     <Label HorizontalTextAlignment="Center"
                            FontSize="12">
                         <Label.Text>
-                            <MultiBinding StringFormat="{}{0} товаров:&#x0a;{1} наименований">
+                            <MultiBinding StringFormat="{}{0} товаров&#x0a;{1} наименований">
                                 <Binding Path="Request.ItemsQuantity"/>
                                 <Binding Path="Request.ProductsQuantity"/>
                             </MultiBinding>

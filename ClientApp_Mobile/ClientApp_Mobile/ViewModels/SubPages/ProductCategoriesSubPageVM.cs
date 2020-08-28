@@ -17,43 +17,30 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 {
     public class ProductCategoriesSubPageVM : BaseVM
     {
-        private Guid _categoryId;
-        public Guid CategoryId
+        private string _title;
+        public string Title
         {
-            get { return _categoryId; }
+            get { return _title; }
             set
             {
-                _categoryId = value;
-                OnPropertyChanged("CategoryId");
+                _title = value;
+                OnPropertyChanged("Title");
             }
         }
 
-        private string _categoryName;
-        public string CategoryName
+        private MidCategory _selectedMidCategory;
+        public MidCategory SelectedMidCategory
         {
-            get { return _categoryName; }
+            get { return _selectedMidCategory; }
             set
             {
-                _categoryName = value;
-                OnPropertyChanged("CategoryName");
+                _selectedMidCategory = value;
+                OnPropertyChanged("SelectedMidCategory");
             }
         }
 
-        private Product _selectedCategory;
-        public Product SelectedCategory
-        {
-            get { return _selectedCategory; }
-            set
-            {
-                _selectedCategory = value;
-                if (value != null)
-                    CategorySelectedCommand.Execute(value);
-                OnPropertyChanged("SelectedCategory");
-            }
-        }
-
-        private ObservableCollection<ProductCategory> _subCategories;
-        public ObservableCollection<ProductCategory> SubCategories
+        private List<ProductCategory> _subCategories;
+        public List<ProductCategory> SubCategories
         {
             get { return _subCategories; }
             set
@@ -63,51 +50,36 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private void CategorySelected(ProductCategory selectedCategory)
+        private void ProductCategorySelected(ProductCategory selectedProductCategory)
         {
             List<Guid> filterGuids;
             
-            if (selectedCategory.Name == "Все товары")
+            if (selectedProductCategory.Name == "Все товары")
             {
                 filterGuids = SubCategories.Select(sc => sc.Id).ToList();
-                ShellPageService.GotoOffersPage(CategoryName, string.Join(",", filterGuids.Select(g => g.ToString()).ToArray()));
+                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(SelectedMidCategory.Name, filterGuids));
             }
             else
             {
-                filterGuids = new List<Guid> { selectedCategory.Id };
-                ShellPageService.GotoOffersPage(selectedCategory.Name, string.Join(",", filterGuids.Select(g => g.ToString()).ToArray()));
-            }
-        }
-
-        private async void QueryDb()
-        {
-            IsBusy = true;
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                    SubCategories = new ObservableCollection<ProductCategory>(await db.ProductCategories.Where(c => c.MidCategoryId == CategoryId).OrderBy(c => c.Name).ToListAsync());
-
-                SubCategories.Insert(0, new ProductCategory { Name = "Все товары" });
-                IsBusy = false;
-            }
-            catch
-            {
-                ShellDialogService.ShowConnectionErrorDlg();
-                IsBusy = false;
-                return;
+                filterGuids = new List<Guid> { selectedProductCategory.Id };
+                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(selectedProductCategory.Name, filterGuids));
             }
         }
 
         public Command CategorySelectedCommand { get; }
 
-        public ProductCategoriesSubPageVM(string midCategoryId, string midCategoryName)
+        public ProductCategoriesSubPageVM(MidCategory selectedMidCategory, List<ProductCategory> subCategories)
         {
-            CategoryName = Uri.UnescapeDataString(midCategoryName ?? string.Empty);
-            CategoryId = new Guid(midCategoryId);
+            Task.Run(() =>
+            {
+                SelectedMidCategory = selectedMidCategory;
+                Title = selectedMidCategory.Name;
+                subCategories.Insert(0, new ProductCategory { Name = "Все товары" });
+                SubCategories = subCategories;
+            });
 
-            CategorySelectedCommand = new Command(c => CategorySelected((ProductCategory)c));
+            CategorySelectedCommand = new Command(c => Task.Run(() => ProductCategorySelected((ProductCategory)c)));
 
-            QueryDb();
         }
 
         public ProductCategoriesSubPageVM()

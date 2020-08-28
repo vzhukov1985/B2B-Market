@@ -27,19 +27,9 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ObservableCollection<ArchivedRequest> _archivedRequests;
-        public ObservableCollection<ArchivedRequest> ArchivedRequests
-        {
-            get { return _archivedRequests; }
-            set
-            {
-                _archivedRequests = value;
-                OnPropertyChanged("ArchivedRequests");
-            }
-        }
 
-        private ObservableCollection<ArchivedRequestsByMonth> _archivedRequestsByMonth;
-        public ObservableCollection<ArchivedRequestsByMonth> ArchivedRequestsByMonth
+        private List<ArchivedRequestsByMonth> _archivedRequestsByMonth;
+        public List<ArchivedRequestsByMonth> ArchivedRequestsByMonth
         {
             get { return _archivedRequestsByMonth; }
             set
@@ -54,25 +44,45 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             IsBusy = true;
             try
             {
-                using (MarketDbContext db = new MarketDbContext())
+                if (UserService.CurrentUser.Client.ArchivedRequests == null)
                 {
-                    ArchivedRequests = new ObservableCollection<ArchivedRequest>(await db.ArchivedRequests
-                        .AsNoTracking()
-                        .Where(r => r.ClientId == User.ClientId)
-                        .Include(r => r.ArchivedRequestsStatuses)
-                        .ThenInclude(rs => rs.ArchivedRequestStatusType)
-                        .Include(r => r.ArchivedSupplier)
-                        .OrderByDescending(r => r.DateTimeSent)
-                        .ToListAsync());
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
 
+                        UserService.CurrentUser.Client.ArchivedRequests = await db.ArchivedRequests
+                            .AsNoTracking()
+                            .Where(r => r.ClientId == User.ClientId)
+                            .Include(r => r.ArchivedRequestsStatuses)
+                            .ThenInclude(rs => rs.ArchivedRequestStatusType)
+                            .Include(r => r.ArchivedSupplier)
+                            .ToListAsync(CTS.Token);
+
+                    }
                 }
-                ArchivedRequestsByMonth = new ObservableCollection<ArchivedRequestsByMonth>(ArchivedRequests.GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy"))
-                                                                                                            .Select(g => new ArchivedRequestsByMonth(g.Key, ArchivedRequests.Where(ar => ar.DateTimeSent.ToString("MMMM yyyy") == g.Key))));
+                    var groupedlist = UserService.CurrentUser.Client.ArchivedRequests.GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy"))
+                                                                                                                 .Select(g =>
+                                                                                                                    new ArchivedRequestsByMonth(g.Key,
+                                                                                                                                                UserService.CurrentUser.Client.ArchivedRequests.Where(ar => ar.DateTimeSent.ToString("MMMM yyyy") == g.Key)
+                                                                                                                                                                              .OrderByDescending(ar => ar.DateTimeSent))).ToList();
+                    foreach (var month in groupedlist)
+                    {
+                        if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+                        month.Month = char.ToUpper(month.Month[0]) + month.Month.Substring(1);
+                    }
+
+                    Device.BeginInvokeOnMainThread(() => ArchivedRequestsByMonth = groupedlist);
+
+
                 IsBusy = false;
+            }
+            catch (OperationCanceledException)
+            {
+                IsBusy = false;
+                return;
             }
             catch
             {
-                ShellDialogService.ShowConnectionErrorDlg();
+                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }

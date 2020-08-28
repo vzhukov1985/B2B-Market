@@ -14,6 +14,8 @@ namespace ClientApp_Mobile.Views.SubPages
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CurrentRequestSubPage : ContentPage
     {
+        public static object locker = new object();
+        public static bool isGoing = false;
         public CurrentRequestSubPage()
         {
             InitializeComponent();
@@ -22,9 +24,23 @@ namespace ClientApp_Mobile.Views.SubPages
 
         private void ContentPage_Appearing(object sender, EventArgs e)
         {
+            lock (locker)
+            {
+                if (isGoing)
+                    return;
+                else
+                    isGoing = true;
+            }
             typeof(Color).GetProperty("Accent", BindingFlags.Public | BindingFlags.Static).SetValue(null, Color.Transparent); //Remove Line under listview group header
-            ((CurrentRequestSubPageVM)BindingContext).QueryDb(true);
-            
+            Task.Run(() => ((CurrentRequestSubPageVM)BindingContext).QueryDb(true));
+            isGoing = false;
+        }
+
+        private void ContentPage_Disappearing(object sender, EventArgs e)
+        {
+            CurrentRequestSubPageVM bc = (CurrentRequestSubPageVM)BindingContext;
+            if (bc.IsBusy) bc.CTS.Cancel();
+
         }
     }
 }

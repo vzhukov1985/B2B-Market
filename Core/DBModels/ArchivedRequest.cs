@@ -199,8 +199,8 @@ namespace Core.DBModels
             }
         }
 
-        private ObservableCollection<ArchivedOrder> _archivedOrders;
-        public ObservableCollection<ArchivedOrder> ArchivedOrders
+        private List<ArchivedOrder> _archivedOrders;
+        public List<ArchivedOrder> ArchivedOrders
         {
             get { return _archivedOrders; }
             set
@@ -210,8 +210,8 @@ namespace Core.DBModels
             }
         }
 
-        private ObservableCollection<ArchivedRequestsStatus> _archivedRequestsStatuses;
-        public ObservableCollection<ArchivedRequestsStatus> ArchivedRequestsStatuses
+        private List<ArchivedRequestsStatus> _archivedRequestsStatuses;
+        public List<ArchivedRequestsStatus> ArchivedRequestsStatuses
         {
             get { return _archivedRequestsStatuses; }
             set
@@ -264,8 +264,8 @@ namespace Core.DBModels
 
         public ArchivedRequest()
         {
-            ArchivedOrders = new ObservableCollection<ArchivedOrder>();
-            ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>();
+            ArchivedOrders = new List<ArchivedOrder>();
+            ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>();
         }
 
         public static ArchivedRequest CloneForDb(ArchivedRequest request)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -116,20 +117,20 @@ namespace Core.DBModels
 			}
 		}
 
-        private ObservableCollection<Favorite> _favoriteProducts;
-        public ObservableCollection<Favorite> FavoriteProducts
+        private List<Favorite> _favorites;
+        public List<Favorite> Favorites
         {
-            get { return _favoriteProducts; }
+            get { return _favorites; }
             set
             {
-                _favoriteProducts = value;
-                OnPropertyChanged("FavoriteProducts");
+                _favorites = value;
+                OnPropertyChanged("Favorites");
             }
         }
 
-		public ClientUser()
+        public ClientUser()
         {
-			FavoriteProducts = new ObservableCollection<Favorite>();
+			Favorites = new List<Favorite>();
         }
     }
 }
