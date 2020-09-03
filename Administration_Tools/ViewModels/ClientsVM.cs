@@ -88,10 +88,14 @@ namespace Administration_Tools.ViewModels
                 Id = Guid.NewGuid(),
                 ShortName = "Новый Клиент",
                 FullName = "Новый Клиент",
-                BIN = "0",
+                Bin = "0",
+                Country = "Казахстан",
+                City = "Алматы",
                 Address = "Не указан",
                 Phone = "Нет",
-                Email = "Нет"
+                Email = "Нет",
+                ContactPersonName = "",
+                ContactPersonPhone = ""
             };
 
             using (MarketDbContext db = new MarketDbContext())
@@ -105,12 +109,15 @@ namespace Administration_Tools.ViewModels
 
         public void RemoveClient()
         {
-            using (MarketDbContext db = new MarketDbContext())
+            if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Клиент и все его предложения, информация о нём будет удалена. Вы уверены, что хотите удалить клиента?", "ВНИМАНИЕ!!!"))
             {
-                db.Clients.Remove(SelectedClient);
-                db.SaveChanges();
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    db.Clients.Remove(SelectedClient);
+                    db.SaveChanges();
+                }
+                Clients.Remove(SelectedClient);
             }
-            Clients.Remove(SelectedClient);
         }
 
         public void AddContract()

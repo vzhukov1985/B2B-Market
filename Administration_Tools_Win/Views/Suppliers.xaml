@@ -63,7 +63,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_BIN_Field}"/>
-                <TextBox Text="{Binding SelectedSupplier.BIN}" Width="200"/>
+                <TextBox Text="{Binding SelectedSupplier.Bin}" Width="200"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_Country_Field}"/>
@@ -94,10 +94,14 @@
                 <TextBox Text="{Binding SelectedSupplier.ContactPersonPhone}" Width="200"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_FTPAccess_Field}"/>
-                <TextBox Text="{Binding SelectedSupplier.FTPAccess}" Width="300"/>
+                <TextBlock Text="FTP-Имя пользователя"/>
+                <TextBox Text="{Binding SelectedSupplier.FTPUser}" Width="300"/>
             </StackPanel>
-                <CheckBox IsChecked="{Binding SelectedSupplier.IsActive}" Content="{x:Static resx:UILang.UI_Suppliers_IsActive_Field}"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="FTP-пароль"/>
+                <TextBox Text="{Binding SelectedSupplier.FTPPassword}" Width="300"/>
+            </StackPanel>
+            <CheckBox IsChecked="{Binding SelectedSupplier.IsActive}" Content="{x:Static resx:UILang.UI_Suppliers_IsActive_Field}"/>
             <Button Content="{x:Static resx:UILang.UI_Suppliers_SaveChanges}" Width="200" Margin="0,20,0,20" HorizontalAlignment="Left" Command="{Binding SaveSupplierChangesCommand}"/>
             <TextBlock Text="{x:Static resx:UILang.UI_Suppliers_ContractsListHeader}" HorizontalAlignment="Left"/>
             <ListView ItemsSource="{Binding Source={StaticResource SupplierContractsCollection}}" Width="200" Height="200" HorizontalAlignment="Left" SelectedItem="{Binding SelectedContract}">

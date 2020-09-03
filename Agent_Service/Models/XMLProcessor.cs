@@ -76,7 +76,7 @@ namespace UpdateDb_Service.Models
                     }
                     supplier.ShortName = xSupplierInfo.Element("ShortName").Value;
                     supplier.FullName = xSupplierInfo.Element("FullName").Value;
-                    supplier.BIN = xSupplierInfo.Element("BIN").Value;
+                    supplier.Bin = xSupplierInfo.Element("BIN").Value;
                     supplier.Country = xSupplierInfo.Element("Country").Value;
                     supplier.City = xSupplierInfo.Element("City").Value;
                     supplier.Address = xSupplierInfo.Element("Address").Value;

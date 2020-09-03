@@ -38,18 +38,6 @@ namespace Core.DBModels
             }
         }
 
-        private Supplier _supplier;
-        public Supplier Supplier
-        {
-            get { return _supplier; }
-            set
-            {
-                _supplier = value;
-                OnPropertyChanged("Supplier");
-            }
-        }
-
-
         private string _supplierProductExtraPropertyTypeName;
         public string SupplierProductExtraPropertyTypeName
         {
@@ -83,5 +71,15 @@ namespace Core.DBModels
             }
         }
 
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                OnPropertyChanged("Supplier");
+            }
+        }
     }
 }

@@ -36,19 +36,6 @@ namespace Core.DBModels
             }
         }
 
-        private Supplier _supplier;
-        public Supplier Supplier
-        {
-            get { return _supplier; }
-            set
-            {
-                _supplier = value;
-                if (_supplier != null)
-                    SupplierId = _supplier.Id;
-                OnPropertyChanged("Supplier");
-            }
-        }
-
         private Guid _productId;
         public Guid ProductId
         {
@@ -73,5 +60,17 @@ namespace Core.DBModels
             }
         }
 
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                if (_supplier != null)
+                    SupplierId = _supplier.Id;
+                OnPropertyChanged("Supplier");
+            }
+        }
     }
 }

@@ -85,7 +85,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }

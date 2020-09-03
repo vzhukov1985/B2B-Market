@@ -11,9 +11,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ClientApp_Mobile.Services;
+using ClientApp_Mobile.Views;
 using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
@@ -43,7 +45,7 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
-        public async void Authorize()
+        public void Authorize()
         {
             IsBusy = true;
             try
@@ -53,52 +55,73 @@ namespace ClientApp_Mobile.ViewModels
                     ClientUser user = db.ClientsUsers.Where(o => o.Login == Login).FirstOrDefault();
                     if ((user != null) && (Authentication.CheckPassword(Password, user.PasswordHash)))
                     {
-                        UserService.CurrentUser = await db.ClientsUsers
-                                                    .Where(u => u.Id == user.Id)
-                                                    .Include(u => u.Favorites)
-                                                    .ThenInclude(f => f.Product)
-                                                    .Include(u => u.Client)
-                                                    .ThenInclude(c => c.Contracts)
-                                                    .ThenInclude(ct => ct.Supplier)
-                                                    .Include(u => u.Client)
-                                                    .ThenInclude(c => c.CurrentOrders)
-                                                    .ThenInclude(o => o.Offer)
-                                                    .ThenInclude(of => of.QuantityUnit)
-                                                    .Include(u => u.Client)
-                                                    .ThenInclude(c => c.CurrentOrders)
-                                                    .ThenInclude(o => o.Offer)
-                                                    .ThenInclude(of => of.Supplier)
-                                                    .FirstOrDefaultAsync();
-                        Device.BeginInvokeOnMainThread(() =>
-                        {
 
-                            if (Password == user.InitialPassword)
+                        UserService.GetUserInfoFromDb(user.Id);
+
+
+                        if (Password == user.InitialPassword)
+                        {
+                            IsBusy = false;
+                            Device.BeginInvokeOnMainThread(() => AppPageService.GoToFirstTimePasswordSetPage());
+                        }
+                        else
+                        {
+                            if (UserService.AppLocalUsers.UserExistsInApp())
                             {
+                                UserService.AppLocalUsers.RegisterExistingUser();
                                 IsBusy = false;
-                                //TODO:FirstLogin settings
-                                Application.Current.MainPage = new AppShell();
+                                Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
                             }
                             else
                             {
+                                bool biometricAvailable = false;
+                                if (Device.RuntimePlatform == Device.iOS)
+                                {
+                                    string AuthType = DependencyService.Get<IBiometricAuthenticateService>().GetAuthenticationType();
+                                    if (AuthType.Equals("TouchId") || (AuthType.Equals("FaceId")))
+                                    {
+                                        biometricAvailable = true;
+                                    }
+                                }
+
+                                if (Device.RuntimePlatform == Device.Android)
+                                {
+                                    bool res = DependencyService.Get<IBiometricAuthenticateService>().fingerprintEnabled();
+                                    if (res)
+                                    {
+                                        biometricAvailable = true;
+                                    }
+                                }
+
                                 IsBusy = false;
-                                Application.Current.MainPage = new AppShell();
+                                if (biometricAvailable)
+                                {
+                                    Device.BeginInvokeOnMainThread(() => AppPageService.GoToNewLocalUserBiometricSettingsPage());
+                                }
+                                else
+                                {
+                                    UserService.CurrentUser.UseBiometricAccess = false;
+                                    UserService.AppLocalUsers.RegisterNewUser();
+                                    Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
+                                }
                             }
-                        });
-                        return;
+                        }
+                    }
+                    else
+                    {
+                        IsBusy = false;
+                        Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Неверные имя пользователя или пароль. Попробуйте снова."));
                     }
                 }
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    ShellDialogService.ShowErrorDlg("Неверный логин или пароль");
-                    IsBusy = false;
-                });
+
             }
-            catch
+            catch/*(Exception e)*/
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     IsBusy = false;
-                    ShellDialogService.ShowConnectionErrorDlg();
+                    DialogService.ShowConnectionErrorDlg();
+                    // ShellDialogService.ShowMessageDlg(e.Message, "exc");
                 });
                 return;
             }
@@ -108,7 +131,7 @@ namespace ClientApp_Mobile.ViewModels
 
         public AuthPasswordPageVM()
         {
-            AuthorizeCommand = new Command(o => Authorize(), _ => !string.IsNullOrEmpty(Login));
+            AuthorizeCommand = new Command(o => Task.Run(() => Authorize()), _ => !string.IsNullOrEmpty(Login));
         }
     }
 }

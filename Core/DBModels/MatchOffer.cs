@@ -37,21 +37,6 @@ namespace Core.DBModels
             }
         }
 
-        private Supplier _supplier;
-        public Supplier Supplier
-        {
-            get { return _supplier; }
-            set
-            {
-                _supplier = value;
-                if (_supplier != null)
-                    SupplierId = _supplier.Id;
-                OnPropertyChanged("Supplier");
-            }
-        }
-
-
-
         private string _supplierProductCode;
         public string SupplierProductCode
         {
@@ -85,19 +70,6 @@ namespace Core.DBModels
             }
         }
 
-        private MatchProductCategory _matchProductCategory;
-        public MatchProductCategory MatchProductCategory
-        {
-            get { return _matchProductCategory; }
-            set
-            {
-                _matchProductCategory = value;
-                if (_matchProductCategory != null)
-                    MatchProductCategoryId = _matchProductCategory.Id;
-                OnPropertyChanged("MatchProductCategory");
-            }
-        }
-
         private Guid _matchVolumeTypeId;
         public Guid MatchVolumeTypeId
         {
@@ -109,19 +81,6 @@ namespace Core.DBModels
             }
         }
 
-        private MatchVolumeType _matchVolumeType;
-        public MatchVolumeType MatchVolumeType
-        {
-            get { return _matchVolumeType; }
-            set
-            {
-                _matchVolumeType = value;
-                if (_matchVolumeType != null)
-                    MatchVolumeTypeId = _matchVolumeType.Id;
-                OnPropertyChanged("MatchVolumeType");
-            }
-        }
-
         private Guid _matchVolumeUnitId;
         public Guid MatchVolumeUnitId
         {
@@ -130,19 +89,6 @@ namespace Core.DBModels
             {
                 _matchVolumeUnitId = value;
                 OnPropertyChanged("MatchVolumeUnitId");
-            }
-        }
-
-        private MatchVolumeUnit _matchVolumeUnit;
-        public MatchVolumeUnit MatchVolumeUnit
-        {
-            get { return _matchVolumeUnit; }
-            set
-            {
-                _matchVolumeUnit = value;
-                if (_matchVolumeUnit != null)
-                    MatchVolumeUnitId = _matchVolumeUnit.Id;
-                OnPropertyChanged("MatchVolumeUnit");
             }
         }
 
@@ -167,20 +113,6 @@ namespace Core.DBModels
                 OnPropertyChanged("MatchQuantityUnitId");
             }
         }
-
-        private MatchQuantityUnit _matchQuantityUnit;
-        public MatchQuantityUnit MatchQuantityUnit
-        {
-            get { return _matchQuantityUnit; }
-            set
-            {
-                _matchQuantityUnit = value;
-                if (_matchQuantityUnit != null)
-                    MatchQuantityUnitId = _matchQuantityUnit.Id;
-                OnPropertyChanged("MatchQuantityUnit");
-            }
-        }
-
 
         private int _remains;
         public int Remains
@@ -226,6 +158,59 @@ namespace Core.DBModels
             }
         }
 
+        
+        private MatchProductCategory _matchProductCategory;
+        public MatchProductCategory MatchProductCategory
+        {
+            get { return _matchProductCategory; }
+            set
+            {
+                _matchProductCategory = value;
+                if (_matchProductCategory != null)
+                    MatchProductCategoryId = _matchProductCategory.Id;
+                OnPropertyChanged("MatchProductCategory");
+            }
+        }
+
+        private MatchQuantityUnit _matchQuantityUnit;
+        public MatchQuantityUnit MatchQuantityUnit
+        {
+            get { return _matchQuantityUnit; }
+            set
+            {
+                _matchQuantityUnit = value;
+                if (_matchQuantityUnit != null)
+                    MatchQuantityUnitId = _matchQuantityUnit.Id;
+                OnPropertyChanged("MatchQuantityUnit");
+            }
+        }
+
+        private MatchVolumeType _matchVolumeType;
+        public MatchVolumeType MatchVolumeType
+        {
+            get { return _matchVolumeType; }
+            set
+            {
+                _matchVolumeType = value;
+                if (_matchVolumeType != null)
+                    MatchVolumeTypeId = _matchVolumeType.Id;
+                OnPropertyChanged("MatchVolumeType");
+            }
+        }
+
+        private MatchVolumeUnit _matchVolumeUnit;
+        public MatchVolumeUnit MatchVolumeUnit
+        {
+            get { return _matchVolumeUnit; }
+            set
+            {
+                _matchVolumeUnit = value;
+                if (_matchVolumeUnit != null)
+                    MatchVolumeUnitId = _matchVolumeUnit.Id;
+                OnPropertyChanged("MatchVolumeUnit");
+            }
+        }
+
         private Offer _offer;
         public Offer Offer
         {
@@ -239,6 +224,19 @@ namespace Core.DBModels
             }
         }
 
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                if (_supplier != null)
+                    SupplierId = _supplier.Id;
+                OnPropertyChanged("Supplier");
+            }
+        }
+
         private ObservableCollection<MatchProductExtraProperty> _matchProductExtraProperties;
         public ObservableCollection<MatchProductExtraProperty> MatchProductExtraProperties
         {
@@ -249,6 +247,7 @@ namespace Core.DBModels
                 OnPropertyChanged("MatchProductExtraProperties");
             }
         }
+
 
         public static MatchOffer CloneForDB(MatchOffer matchOffer)
         {

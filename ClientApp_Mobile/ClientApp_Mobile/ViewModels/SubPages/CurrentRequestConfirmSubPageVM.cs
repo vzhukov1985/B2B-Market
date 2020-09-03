@@ -129,13 +129,13 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 if (UnProcessedRequestsCount > 0)
                 {
                     if (UnProcessedRequestsCount == Requests.Count)
-                        Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
+                        Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
                     else
-                        Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
+                        Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
                 }
                 else
                 {
-                    Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
+                    Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
                 }
 
                 Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
@@ -143,7 +143,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -151,7 +151,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public async void ChangeComments(ArchivedRequest request)
         {
-            string res = await ShellDialogService.ShowInputDialog("Введите комментарии к заказу:", "Комментарии", Keyboard.Text, request.Comments, "", 300);
+            string res = await DialogService.ShowInputDialog("Введите комментарии к заказу:", "Комментарии", Keyboard.Text, request.Comments, "", 300);
             if (res != null)
                 request.Comments = res;
         }
@@ -163,7 +163,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             else
             {
-                if (await ShellDialogService.ShowOkCancelDialog("Вы действительно хотите удалить коментарии к заказу?", "Удаление комментариев"))
+                if (await DialogService.ShowOkCancelDialog("Вы действительно хотите удалить коментарии к заказу?", "Удаление комментариев"))
                     request.Comments = "";
             }
         }

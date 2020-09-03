@@ -28,7 +28,6 @@ namespace Core.DBModels
             }
         }
 
-
         private Guid _productId;
         public Guid ProductId
         {
@@ -37,6 +36,28 @@ namespace Core.DBModels
             {
                 _productId = value;
                 OnPropertyChanged("ProductId");
+            }
+        }
+
+        private Guid _propertyTypeId;
+        public Guid PropertyTypeId
+        {
+            get { return _propertyTypeId; }
+            set
+            {
+                _propertyTypeId = value;
+                OnPropertyChanged("PropertyTypeId");
+            }
+        }
+
+        private string _value;
+        public string Value
+        {
+            get { return _value; }
+            set
+            {
+                _value = value;
+                OnPropertyChanged("Value");
             }
         }
 
@@ -53,18 +74,6 @@ namespace Core.DBModels
             }
         }
 
-
-        private Guid _propertyTypeId;
-        public Guid PropertyTypeId
-        {
-            get { return _propertyTypeId; }
-            set
-            {
-                _propertyTypeId = value;
-                OnPropertyChanged("PropertyTypeId");
-            }
-        }
-
         private ProductExtraPropertyType _propertyType;
         public ProductExtraPropertyType PropertyType
         {
@@ -75,17 +84,6 @@ namespace Core.DBModels
                 if (_propertyType != null)
                     PropertyTypeId = _propertyType.Id;
                 OnPropertyChanged("PropertyType");
-            }
-        }
-
-        private string _value;
-        public string Value
-        {
-            get { return _value; }
-            set
-            {
-                _value = value;
-                OnPropertyChanged("Value");
             }
         }
 

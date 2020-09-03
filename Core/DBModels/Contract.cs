@@ -26,17 +26,6 @@ namespace Core.DBModels
             }
         }
 
-        private Client client;
-        public Client Client
-        {
-            get { return client; }
-            set
-            {
-                client = value;
-                OnPropertyChanged("Client");
-            }
-        }
-
         private Guid _supplierId;
         public Guid SupplierId
         {
@@ -45,6 +34,17 @@ namespace Core.DBModels
             {
                 _supplierId = value;
                 OnPropertyChanged("SupplierId");
+            }
+        }
+
+        private Client client;
+        public Client Client
+        {
+            get { return client; }
+            set
+            {
+                client = value;
+                OnPropertyChanged("Client");
             }
         }
 

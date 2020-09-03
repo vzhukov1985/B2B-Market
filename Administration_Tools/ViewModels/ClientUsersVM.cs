@@ -93,11 +93,13 @@ namespace Administration_Tools.ViewModels
 			{
 				Id = Guid.NewGuid(),
 				ClientId = Client.Id,
-				Name = "New",
-				Surname = "User",
-				IsAdmin = false,
+				Name = "Новый пользователь",
+				Surname = "Новый пользователь",
 				Login = Authentication.GenerateUniqueLogin(),
-				InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength)
+				//PasswordHash is generated further
+				IsAdmin = false,
+				InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength),
+				PinHash = null,
 			};
 			newUser.PasswordHash = Authentication.HashPassword(newUser.InitialPassword);
 
@@ -112,12 +114,15 @@ namespace Administration_Tools.ViewModels
 
 		public void RemoveUser()
 		{
-			using (MarketDbContext db = new MarketDbContext())
+			if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Пользователь клиента и вся информация о нём будет удалена. Вы уверены, что хотите удалить пользователя клиента?", "ВНИМАНИЕ!!!"))
 			{
-				db.ClientsUsers.Remove(SelectedUser);
-				db.SaveChanges();
+				using (MarketDbContext db = new MarketDbContext())
+				{
+					db.ClientsUsers.Remove(SelectedUser);
+					db.SaveChanges();
+				}
+				Users.Remove(SelectedUser);
 			}
-			Users.Remove(SelectedUser);
 		}
 
 		public void ResetPassword()
@@ -128,6 +133,7 @@ namespace Administration_Tools.ViewModels
 				{
 					SelectedUser.InitialPassword = Authentication.GenerateRandomPassword(initialPasswordLength);
 					SelectedUser.PasswordHash = Authentication.HashPassword(SelectedUser.InitialPassword);
+					SelectedUser.PinHash = null;
 					db.ClientsUsers.Update(SelectedUser);
 				}
 				db.SaveChanges();

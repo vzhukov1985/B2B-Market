@@ -11,6 +11,7 @@ namespace Core.Services
         public static readonly string DbConnectionSalt = "gy!34q2.gteas_";
 
         public static readonly string ClientUserPwdSalt = "q98`Рsd~вя$";
+        public static readonly string ClientUserPINSalt = "!kj8__dsf%Z";
 
         public readonly static string ServerIP = "192.168.1.3";
         public readonly static string b2bDataLocalDir = @"D:/B2B FTP Server Mirror";

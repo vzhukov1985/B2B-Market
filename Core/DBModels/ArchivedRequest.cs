@@ -41,28 +41,14 @@ namespace Core.DBModels
             }
         }
 
-
-        private Guid _clientId;
-        public Guid ClientId
+        private Guid? _clientId;
+        public Guid? ClientId
         {
             get { return _clientId; }
             set
             {
                 _clientId = value;
                 OnPropertyChanged("ClientId");
-            }
-        }
-
-        private Client _client;
-        public Client Client
-        {
-            get { return _client; }
-            set
-            {
-                _client = value;
-                if (_client != null)
-                    ClientId = _client.Id;
-                OnPropertyChanged("Client");
             }
         }
 
@@ -121,19 +107,6 @@ namespace Core.DBModels
             }
         }
 
-        private ArchivedSupplier _archivedSupplier;
-        public ArchivedSupplier ArchivedSupplier
-        {
-            get { return _archivedSupplier; }
-            set
-            {
-                _archivedSupplier = value;
-                if (_archivedSupplier != null)
-                    ArchivedSupplierId = _archivedSupplier.Id;
-                OnPropertyChanged("ArchivedSupplier");
-            }
-        }
-
         private decimal _totalPrice;
         public decimal TotalPrice
         {
@@ -166,27 +139,6 @@ namespace Core.DBModels
                 OnPropertyChanged("DeliveryDateTime");
             }
         }
-        [NotMapped]
-        public DateTime DeliveryDate
-        {
-            get { return DeliveryDateTime.Date; }
-            set
-            {
-                DeliveryDateTime = new DateTime(value.Year, value.Month, value.Day, DeliveryDateTime.Hour, DeliveryDateTime.Minute, DeliveryDateTime.Second);
-                OnPropertyChanged("DeliveryDate");
-            }
-        }
-
-        [NotMapped]
-        public TimeSpan DeliveryTime
-        {
-            get { return DeliveryDateTime.TimeOfDay; }
-            set
-            {
-                DeliveryDateTime = new DateTime(DeliveryDateTime.Year, DeliveryDateTime.Month, DeliveryDateTime.Day, value.Hours, value.Minutes, value.Seconds);
-                OnPropertyChanged("DeliveryTime");
-            }
-        }
 
         private string _comments;
         public string Comments
@@ -196,6 +148,32 @@ namespace Core.DBModels
             {
                 _comments = value;
                 OnPropertyChanged("Comments");
+            }
+        }
+
+        private ArchivedSupplier _archivedSupplier;
+        public ArchivedSupplier ArchivedSupplier
+        {
+            get { return _archivedSupplier; }
+            set
+            {
+                _archivedSupplier = value;
+                if (_archivedSupplier != null)
+                    ArchivedSupplierId = _archivedSupplier.Id;
+                OnPropertyChanged("ArchivedSupplier");
+            }
+        }
+
+        private Client _client;
+        public Client Client
+        {
+            get { return _client; }
+            set
+            {
+                _client = value;
+                if (_client != null)
+                    ClientId = _client.Id;
+                OnPropertyChanged("Client");
             }
         }
 
@@ -218,6 +196,28 @@ namespace Core.DBModels
             {
                 _archivedRequestsStatuses = value;
                 OnPropertyChanged("ArchivedRequestsStatuses");
+            }
+        }
+
+        [NotMapped]
+        public DateTime DeliveryDate
+        {
+            get { return DeliveryDateTime.Date; }
+            set
+            {
+                DeliveryDateTime = new DateTime(value.Year, value.Month, value.Day, DeliveryDateTime.Hour, DeliveryDateTime.Minute, DeliveryDateTime.Second);
+                OnPropertyChanged("DeliveryDate");
+            }
+        }
+
+        [NotMapped]
+        public TimeSpan DeliveryTime
+        {
+            get { return DeliveryDateTime.TimeOfDay; }
+            set
+            {
+                DeliveryDateTime = new DateTime(DeliveryDateTime.Year, DeliveryDateTime.Month, DeliveryDateTime.Day, value.Hours, value.Minutes, value.Seconds);
+                OnPropertyChanged("DeliveryTime");
             }
         }
 

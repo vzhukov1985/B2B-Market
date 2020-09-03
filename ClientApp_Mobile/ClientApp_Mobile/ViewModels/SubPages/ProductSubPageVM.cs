@@ -174,7 +174,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() =>ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() =>DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -184,7 +184,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             if (AreChangesWereMade)
             {
-                if (await ShellDialogService.ShowOkCancelDialog("Внимание! Изменения, которые вы сделали, не сохранены и будут сброшены при переходе с этой страницы", "Внимание!") == false)
+                if (await DialogService.ShowOkCancelDialog("Внимание! Изменения, которые вы сделали, не сохранены и будут сброшены при переходе с этой страницы", "Внимание!") == false)
                     return;
             }
             ShellPageService.GoBack();
@@ -209,7 +209,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }

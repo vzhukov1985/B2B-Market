@@ -12,5 +12,6 @@ namespace Administration_Tools.Services
         Supplier AddContractWithSupplierDlg(ObservableCollection<Supplier> AvailableSuppliers);
 
         void ShowErrorDlg(string Text);
+        bool ShowOkCancelDialog(string text, string caption);
     }
 }

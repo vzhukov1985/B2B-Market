@@ -19,7 +19,7 @@ namespace Core.DBModels
     {
         public MarketDbContext()
         {
-            //Database.EnsureCreated();
+           // Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -90,7 +90,7 @@ namespace Core.DBModels
                 entity.HasOne(d => d.ArchivedRequest)
                     .WithMany(p => p.ArchivedOrders)
                     .HasForeignKey(d => d.ArchivedRequestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ArchivedOrders_To_ArchivedRequests");
             });
 
@@ -113,6 +113,7 @@ namespace Core.DBModels
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ClientId)
+                    .IsRequired(false)
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -140,13 +141,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.ArchivedSupplier)
                     .WithMany()
                     .HasForeignKey(d => d.ArchivedSupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ArchivedRequests_To_ArchivedSuppliers");
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.ArchivedRequests)
                     .HasForeignKey(d => d.ClientId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_ArchivedRequests_To_Clients");
             });
 
@@ -171,13 +172,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.ArchivedRequest)
                     .WithMany(p => p.ArchivedRequestsStatuses)
                     .HasForeignKey(d => d.ArchivedRequestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ArchivedRequestsStatuses_To_ArchivedRequests");
 
                 entity.HasOne(d => d.ArchivedRequestStatusType)
                     .WithMany()
                     .HasForeignKey(d => d.ArchivedRequestStatusTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ArchivedRequestsStatuses_To_ArchivedRequestStatusType");
             });
 
@@ -258,7 +259,7 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.BIN)
+                entity.Property(e => e.Bin)
                     .IsRequired()
                     .HasColumnName("BIN")
                     .HasColumnType("char(12)")
@@ -329,9 +330,14 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.InitialPassword)
+                entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnType("varchar(16)")
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Surname)
+                    .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -341,27 +347,28 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasColumnType("varchar(50)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
                 entity.Property(e => e.PasswordHash)
                     .IsRequired()
                     .HasColumnType("char(60)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Surname)
-                    .HasColumnType("varchar(50)")
+                entity.Property(e => e.InitialPassword)
+                    .IsRequired()
+                    .HasColumnType("varchar(16)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.PinHash)
+                    .HasColumnName("PinHash")
+                    .HasColumnType("char(60)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.ClientId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ClientUsers_To_Client");
             });
 
@@ -395,13 +402,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Product)
                     .WithMany()
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ConflictedDescriptions_To_Product");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ConflictedDescriptions_To_Supplier");
             });
 
@@ -430,13 +437,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Product)
                     .WithMany()
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ConflictedPics_To_Product");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ConflictedPics_To_Supplier");
             });
 
@@ -461,13 +468,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Contracts)
                     .HasForeignKey(d => d.ClientId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Contracts_To_Clients");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany(p => p.Contracts)
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Contracts_To_Suppliers");
             });
 
@@ -492,13 +499,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.CurrentOrders)
                     .HasForeignKey(d => d.ClientId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_CurrentOrders_To_Clients");
 
                 entity.HasOne(d => d.Offer)
                     .WithMany()
                     .HasForeignKey(d => d.OfferId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_CurrentOrders_To_Offers");
             });
 
@@ -523,13 +530,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.ClientUser)
                     .WithMany(p => p.Favorites)
                     .HasForeignKey(d => d.ClientUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Favorites_To_ClientsUsers");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Favorites)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Favorites_To_Products");
             });
 
@@ -604,36 +611,37 @@ namespace Core.DBModels
                 entity.HasOne(d => d.MatchProductCategory)
                     .WithMany()
                     .HasForeignKey(d => d.MatchProductCategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_MatchOffers_To_MatchProductCategories");
 
                 entity.HasOne(d => d.MatchQuantityUnit)
                     .WithMany()
                     .HasForeignKey(d => d.MatchQuantityUnitId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_MatchOffers_To_MatchQuantityUnits");
 
                 entity.HasOne(d => d.MatchVolumeType)
                     .WithMany()
                     .HasForeignKey(d => d.MatchVolumeTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_MatchOffers_To_MatchVolumeTypes");
 
                 entity.HasOne(d => d.MatchVolumeUnit)
                     .WithMany()
                     .HasForeignKey(d => d.MatchVolumeUnitId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_MatchOffers_To_MatchVolumeUnits");
 
                 entity.HasOne(d => d.Offer)
                     .WithMany()
                     .HasForeignKey(d => d.OfferId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MatchOffers_To_Offers");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchOffers_To_Suppliers");
             });
 
@@ -668,12 +676,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.ProductCategory)
                     .WithMany()
                     .HasForeignKey(d => d.ProductCategoryId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MatchProductCategories_To_ProductCategories");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchProductCategories_To_Suppliers");
             });
 
@@ -685,7 +694,7 @@ namespace Core.DBModels
                     .HasName("FK_MatchProductExtraProperties_To_MatchOffers");
 
                 entity.HasIndex(e => e.MatchProductExtraPropertyTypeId)
-                    .HasName("FK_MatchProductExtraProperties_To_MatchProductsExtraPropertyTy1");
+                    .HasName("FK_MatchProductExtraProperties_To_MatchProductsExtraPropertyTypes");
 
                 entity.Property(e => e.Id)
                     .HasCharSet("utf8mb4")
@@ -708,14 +717,14 @@ namespace Core.DBModels
                 entity.HasOne(d => d.MatchOffer)
                     .WithMany(p => p.MatchProductExtraProperties)
                     .HasForeignKey(d => d.MatchOfferId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchProductExtraProperties_To_MatchOffers");
 
                 entity.HasOne(d => d.MatchProductExtraPropertyType)
                     .WithMany()
                     .HasForeignKey(d => d.MatchProductExtraPropertyTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_MatchProductExtraProperties_To_MatchProductsExtraPropertyTy1");
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_MatchProductExtraProperties_To_MatchProductsExtraPropertyTypes");
             });
 
             modelBuilder.Entity<MatchProductExtraPropertyType>(entity =>
@@ -749,12 +758,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.ProductExtraPropertyType)
                     .WithMany()
                     .HasForeignKey(d => d.ProductExtraPropertyTypeId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MatchExtraPropertyTypes_To_ExtraPropertyTypes");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchExtraPropertyTypes_To_Suppliers");
             });
 
@@ -797,12 +807,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.QuantityUnit)
                     .WithMany()
                     .HasForeignKey(d => d.QuantityUnitId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MatchQuantityUnits_To_QuantityUnits");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchQuantityUnits_To_Suppliers");
             });
 
@@ -837,12 +848,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchVolumeTypes_To_Suppliers");
 
                 entity.HasOne(d => d.VolumeType)
                     .WithMany()
                     .HasForeignKey(d => d.VolumeTypeId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MatchVolumeTypes_To_VolumeTypes");
             });
 
@@ -885,12 +897,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MatchVolumeUnits_To_Suppliers");
 
                 entity.HasOne(d => d.VolumeUnit)
                     .WithMany()
                     .HasForeignKey(d => d.VolumeUnitId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MatchVolumeUnits_To_VolumeUnits");
             });
 
@@ -918,6 +931,7 @@ namespace Core.DBModels
                 entity.HasOne(d => d.TopCategory)
                     .WithMany()
                     .HasForeignKey(d => d.TopCategoryId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MidCategories_To_TopCategories");
             });
 
@@ -963,19 +977,19 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Offers)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Offers_To_Products");
 
                 entity.HasOne(d => d.QuantityUnit)
                     .WithMany()
                     .HasForeignKey(d => d.QuantityUnitId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Offers_To_QuantityUnits");
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany(p => p.Offers)
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Offers_To_Suppliers");
             });
 
@@ -1003,6 +1017,7 @@ namespace Core.DBModels
                 entity.HasOne(d => d.MidCategory)
                     .WithMany()
                     .HasForeignKey(d => d.MidCategoryId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_ProductCategories_To_MidCategories");
             });
 
@@ -1025,7 +1040,7 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Product)
                     .WithOne(p => p.Description)
                     .HasForeignKey<ProductDescription>(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProductDescriptions_To_Products");
             });
 
@@ -1060,13 +1075,13 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ExtraProperties)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProductExtraProperties_To_Products");
 
                 entity.HasOne(d => d.PropertyType)
                     .WithMany()
                     .HasForeignKey(d => d.PropertyTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ProductExtraProperties_To_ProductExtraPropertyTypes");
             });
 
@@ -1128,19 +1143,19 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Category)
                     .WithMany()
                     .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Products_To_ProductCategories");
 
                 entity.HasOne(d => d.VolumeType)
                     .WithMany()
                     .HasForeignKey(d => d.VolumeTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Products_To_VolumeTypes");
 
                 entity.HasOne(d => d.VolumeUnit)
                     .WithMany()
                     .HasForeignKey(d => d.VolumeUnitId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Products_To_VolumeUnits");
             });
 
@@ -1178,7 +1193,7 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.BIN)
+                entity.Property(e => e.Bin)
                     .IsRequired()
                     .HasColumnName("BIN")
                     .HasColumnType("char(12)")
@@ -1289,7 +1304,7 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_UnmatchedDescriptions_To_Supplier");
             });
 
@@ -1317,7 +1332,7 @@ namespace Core.DBModels
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_UnmatchedPics_To_Supplier");
             });
 
@@ -1393,7 +1408,7 @@ namespace Core.DBModels
         public virtual DbSet<ConflictedDescription> ConflictedDescriptions { get; set; }
         
 
-        private static object locker = new object();
+        private static readonly object locker = new object();
         public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)
         {
             lock (locker)

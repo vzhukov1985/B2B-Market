@@ -38,18 +38,6 @@ namespace Core.DBModels
             }
         }
 
-        private Supplier _supplier;
-        public Supplier Supplier
-        {
-            get { return _supplier; }
-            set
-            {
-                _supplier = value;
-                OnPropertyChanged("Supplier");
-            }
-        }
-
-
         private string _supplierVUShortName;
         public string SupplierVUShortName
         {
@@ -83,6 +71,17 @@ namespace Core.DBModels
             }
         }
 
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                OnPropertyChanged("Supplier");
+            }
+        }
+
         private VolumeUnit _volumeUnit;
         public VolumeUnit VolumeUnit
         {
@@ -93,6 +92,5 @@ namespace Core.DBModels
                 OnPropertyChanged("VolumeUnit");
             }
         }
-
     }
 }

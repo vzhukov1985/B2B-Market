@@ -25,6 +25,28 @@ namespace Core.DBModels
             }
         }
 
+        private Guid _offerId;
+        public Guid OfferId
+        {
+            get { return _offerId; }
+            set
+            {
+                _offerId = value;
+                OnPropertyChanged("OfferId");
+            }
+        }
+
+        private int _quantity;
+        public int Quantity
+        {
+            get { return _quantity; }
+            set
+            {
+                _quantity = value;
+                OnPropertyChanged("Quantity");
+            }
+        }
+
         private Client _client;
         public Client Client
         {
@@ -38,17 +60,6 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _offerId;
-        public Guid OfferId
-        {
-            get { return _offerId; }
-            set
-            {
-                _offerId = value;
-                OnPropertyChanged("OfferId");
-            }
-        }
-
         private Offer _offer;
         public Offer Offer
         {
@@ -59,17 +70,6 @@ namespace Core.DBModels
                 if (_offer != null)
                     OfferId = _offer.Id;
                 OnPropertyChanged("Offer");
-            }
-        }
-
-        private int _quantity;
-        public int Quantity
-        {
-            get { return _quantity; }
-            set
-            {
-                _quantity = value;
-                OnPropertyChanged("Quantity");
             }
         }
 

@@ -45,19 +45,6 @@ namespace Core.DBModels
             }
         }
 
-        private ProductCategory _category;
-        public ProductCategory Category
-        {
-            get { return _category; }
-            set
-            {
-                _category = value;
-                if (_category != null)
-                    CategoryId = _category.Id;
-                OnPropertyChanged("Category");
-            }
-        }
-
         private int _code;
         public int Code
         {
@@ -92,6 +79,41 @@ namespace Core.DBModels
             }
         }
 
+        private Guid _volumeUnitId;
+        public Guid VolumeUnitId
+        {
+            get { return _volumeUnitId; }
+            set
+            {
+                _volumeUnitId = value;
+                OnPropertyChanged("VolumeUnitId");
+            }
+        }
+
+        private decimal _Volume;
+        public decimal Volume
+        {
+            get { return _Volume; }
+            set
+            {
+                _Volume = value;
+                OnPropertyChanged("Volume");
+            }
+        }
+
+        private ProductCategory _category;
+        public ProductCategory Category
+        {
+            get { return _category; }
+            set
+            {
+                _category = value;
+                if (_category != null)
+                    CategoryId = _category.Id;
+                OnPropertyChanged("Category");
+            }
+        }
+
         private VolumeType _volumeType;
         public VolumeType VolumeType
         {
@@ -105,17 +127,6 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _volumeUnitId;
-        public Guid VolumeUnitId
-        {
-            get { return _volumeUnitId; }
-            set
-            {
-                _volumeUnitId = value;
-                OnPropertyChanged("VolumeUnitId");
-            }
-        }
-
         private VolumeUnit _volumeUnit;
         public VolumeUnit VolumeUnit
         {
@@ -126,17 +137,6 @@ namespace Core.DBModels
                 if (_volumeUnit != null)
                     VolumeUnitId = _volumeUnit.Id;
                 OnPropertyChanged("VolumeUnit");
-            }
-        }
-
-        private decimal _Volume;
-        public decimal Volume
-        {
-            get { return _Volume; }
-            set
-            {
-                _Volume = value;
-                OnPropertyChanged("Volume");
             }
         }
 

@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
+             x:Class="ClientApp_Mobile.Views.AuthPINPage"
+             x:Name="PINPage"
+             BackgroundColor="White">
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{OnPlatform Android=40,iOS=65}"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="45"/>
+                <RowDefinition/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="65"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0"
+               HorizontalOptions="Center"
+               VerticalOptions="End"
+               FontSize="20"
+               FontAttributes="Bold"
+               TextColor="{StaticResource B2B_Blue_Color}"
+               Text="B2B Market HoReCa"/>
+
+            <Label Grid.Row="1"
+               HorizontalOptions="Center"
+               VerticalOptions="End"
+               FontSize="17"
+               Text="Войти как:"/>
+
+            <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="End">
+
+            <Picker HorizontalTextAlignment="Center"
+                    WidthRequest="297"
+                    Margin="0,5,0,0"
+                    FontAttributes="Bold"
+                    ItemsSource="{Binding Users}"
+                    SelectedItem="{Binding SelectedUser}"
+                    TextColor="{StaticResource B2B_DarkBlue_Color}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    x:Name="UsersPicker">
+                </Picker>
+
+                <Button VerticalOptions="Start"
+                        WidthRequest="40"
+                        Margin="0,0,5,0"
+                        BackgroundColor="Transparent"
+                        FontSize="17"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource B2B_DarkBlue_Color}"
+                        Text="X"
+                        Command="{Binding RemoveLocalUserCommand}"/>
+            </StackLayout> 
+
+            <controls:PINEntry Grid.Row="3"
+                           UnfilledLineColor="Black"
+                           FilledLineColor="{StaticResource B2B_Blue_Color}"
+                           IsPINWrong="{Binding PINIsWrong}"
+                           PINCode="{Binding PINCode}"/>
+
+
+            <Label Grid.Row="4"
+                   Padding="10,0,10,0"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   FontSize="17"
+                   Text="{Binding InfoText}"/>
+
+            <Grid Grid.Row="5" Margin="60,0,60,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Row="0" Grid.Column="0"
+                    Style="{StaticResource PINButton}"
+                    Text="1"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="1"/>
+                <Button Grid.Row="0" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="2"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="2"/>
+                <Button Grid.Row="0" Grid.Column="2"
+                    Style="{StaticResource PINButton}"
+                    Text="3"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="3"/>
+                <Button Grid.Row="1" Grid.Column="0"
+                    Style="{StaticResource PINButton}"
+                    Text="4"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="4"/>
+                <Button Grid.Row="1" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="5"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="5"/>
+                <Button Grid.Row="1" Grid.Column="2"
+                    Style="{StaticResource PINButton}"
+                    Text="6"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="6"/>
+                <Button Grid.Row="2" Grid.Column="0"
+                    Style="{StaticResource PINButton}"
+                    Text="7"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="7"/>
+                <Button Grid.Row="2" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="8"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="8"/>
+                <Button Grid.Row="2" Grid.Column="2"
+                    Style="{StaticResource PINButton}"
+                    Text="9"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="9"/>
+
+                <ImageButton Grid.Row="3" Grid.Column="0"
+                             BackgroundColor="Transparent"
+                             Margin="3"
+                             Source="{Binding BiometricImage}"
+                             Command="{Binding ForceBiometricCheckCommand}"/>
+                
+                <Button Grid.Row="3" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="0"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="0"/>
+                
+                <ImageButton Grid.Row="3" Grid.Column="2"
+                         Style="{StaticResource PINImageButton}"
+                         Command="{Binding PINButtonTapCommand}"
+                         Source="Backspace.png"
+                         CommandParameter="Backspace"/>
+
+            </Grid>
+
+            <Button Grid.Row="6"
+                Style="{StaticResource BlueButton}"
+                HorizontalOptions="Center"
+                Margin="0,5,0,15"
+                WidthRequest="235"
+                Text="Войти по паролю"
+                Command="{Binding AuthorizeByPasswordCommand}"/>
+        </Grid>
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
+    </Grid>
+</ContentPage>

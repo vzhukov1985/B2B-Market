@@ -8,6 +8,7 @@ using Administration_Tools_Win.Views;
 using Core.DBModels;
 using System.Resources;
 using System.Reflection;
+using System.Windows;
 
 namespace Administration_Tools_Win.Services
 {
@@ -39,6 +40,12 @@ namespace Administration_Tools_Win.Services
         {
             ResourceManager rm = new ResourceManager("Administration_Tools.Resources.UILang", typeof(IDialogService).Assembly);
             System.Windows.MessageBox.Show(Text, rm.GetString("UI_ErrorDlg_Caption"));
+        }
+        public bool ShowOkCancelDialog(string text, string caption)
+        {
+            if (MessageBox.Show(text, caption, MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                return true;
+            return false;
         }
     }
 }

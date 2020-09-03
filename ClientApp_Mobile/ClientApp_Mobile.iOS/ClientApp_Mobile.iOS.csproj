@@ -66,6 +66,8 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <Compile Include="CustomRenderers\ColoredLineEntryiOS.cs" />
+    <Compile Include="Services\BiometricAuthenticationService.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="NoLineSearchBariOs.cs" />
@@ -152,13 +154,10 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql">
-      <Version>3.1.2</Version>
-    </PackageReference>
     <PackageReference Include="Xam.Plugins.Forms.KeyboardOverlap">
       <Version>1.0.0.4</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1269" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1364" />
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
@@ -251,6 +250,21 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Market_Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\Backspace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\Fingerprint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\FaceID.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\Fingerprint_Inactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\FaceID_Inactive.png" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

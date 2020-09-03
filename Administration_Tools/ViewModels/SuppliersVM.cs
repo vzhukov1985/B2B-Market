@@ -83,11 +83,17 @@ namespace Administration_Tools.ViewModels
                 Id = Guid.NewGuid(),
                 ShortName = "Новый Поставщик",
                 FullName = "Новый Поставщик",
-                BIN = "0",
-                Address = "Не указан",
-                Phone = "Нет",
-                Email = "Нет",
-                FTPAccess = ""
+                Bin = "0",
+                Country = "Казахстан",
+                City = "Алматы",
+                Address = "",
+                Phone = "",
+                Email = "",
+                ContactPersonName = "",
+                ContactPersonPhone = "",
+                IsActive = true,
+                FTPUser = "",
+                FTPPassword = ""
             };
 
             using (MarketDbContext db = new MarketDbContext())
@@ -101,12 +107,15 @@ namespace Administration_Tools.ViewModels
 
         public void RemoveSupplier()
         {
-            using (MarketDbContext db = new MarketDbContext())
+            if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Поставщик и все его предложения, информация о нём будет удалена. Вы уверены, что хотите удалить поставщика?", "ВНИМАНИЕ!!!"))
             {
-                db.Suppliers.Remove(SelectedSupplier);
-                db.SaveChanges();
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    db.Suppliers.Remove(SelectedSupplier);
+                    db.SaveChanges();
+                }
+                Suppliers.Remove(SelectedSupplier);
             }
-            Suppliers.Remove(SelectedSupplier);
         }
 
         public void AddContract()

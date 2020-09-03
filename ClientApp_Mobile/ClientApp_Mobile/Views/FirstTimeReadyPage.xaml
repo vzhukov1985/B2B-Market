@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClientApp_Mobile.Views.FirstTimeReadyPage"
+             Padding="10">
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0"
+                   Style="{StaticResource HeaderText}"
+                   VerticalOptions="Center"
+                   Text="Доступ успешно настроен"/>
+
+            <Label Grid.Row="1"
+                   Style="{StaticResource InfoText}"
+                   VerticalOptions="Start"
+                   Margin="0,20,0,20"
+                   Text="Настройки доступа к приложению успешно установлены. В дальнейшем вы можете изменить их в настройках. Удачной работы и успешных закупок.&#x0a;&#x0a;Добро пожаловать в B2B Market HoReCa!"/>
+
+            <Button Grid.Row="2"
+                    Style="{StaticResource ProceedButton}"
+                    VerticalOptions="Center"
+                    Text="Начать"
+                    Command="{Binding ProceedCommand}"/>
+        </Grid>
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
+    </Grid>
+</ContentPage>

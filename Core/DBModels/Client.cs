@@ -52,13 +52,13 @@ namespace Core.DBModels
         }
 
         private string _bin;
-        public string BIN
+        public string Bin
         {
             get { return _bin; }
             set
             {
                 _bin = value;
-                OnPropertyChanged("BIN");
+                OnPropertyChanged("Bin");
             }
         }
 

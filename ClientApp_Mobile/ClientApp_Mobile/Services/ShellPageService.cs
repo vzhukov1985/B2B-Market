@@ -17,6 +17,7 @@ namespace ClientApp_Mobile.Services
     {
         private static object locker = new object();
         private static bool isGoing = false;
+
         public static async void GoBack()
         {
             await Shell.Current.GoToAsync("..");

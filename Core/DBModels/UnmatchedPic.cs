@@ -36,6 +36,17 @@ namespace Core.DBModels
             }
         }
 
+        private string _supplierProductCode;
+        public string SupplierProductCode
+        {
+            get { return _supplierProductCode; }
+            set
+            {
+                _supplierProductCode = value;
+                OnPropertyChanged("SupplierProductCode");
+            }
+        }
+
         private Supplier _supplier;
         public Supplier Supplier
         {
@@ -46,17 +57,6 @@ namespace Core.DBModels
                 if (_supplier != null)
                     SupplierId = _supplier.Id;
                 OnPropertyChanged("Supplier");
-            }
-        }
-
-        private string _supplierProductCode;
-        public string SupplierProductCode
-        {
-            get { return _supplierProductCode; }
-            set
-            {
-                _supplierProductCode = value;
-                OnPropertyChanged("SupplierProductCode");
             }
         }
     }

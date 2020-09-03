@@ -202,7 +202,7 @@ namespace Core.Services
 
             XElement xClientInfo = new XElement("ClientInformation");
             xClientInfo.Add(new XElement("Name", request.Client.FullName));
-            xClientInfo.Add(new XElement("BIN", request.Client.BIN));
+            xClientInfo.Add(new XElement("BIN", request.Client.Bin));
             xClientInfo.Add(new XElement("Country", request.Client.Country));
             xClientInfo.Add(new XElement("City", request.Client.City));
             xClientInfo.Add(new XElement("Address", request.Client.Address));

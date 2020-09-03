@@ -37,19 +37,6 @@ namespace Core.DBModels
             }
         }
 
-        private Supplier _supplier;
-        public Supplier Supplier
-        {
-            get { return _supplier; }
-            set
-            {
-                _supplier = value;
-                if (_supplier != null)
-                    SupplierId = _supplier.Id;
-                OnPropertyChanged("Supplier");
-            }
-        }
-
         private string _supplierProductCode;
         public string SupplierProductCode
         {
@@ -72,19 +59,6 @@ namespace Core.DBModels
             }
         }
 
-        private Product _product;
-        public Product Product
-        {
-            get { return _product; }
-            set
-            {
-                _product = value;
-                if (_product != null)
-                    ProductId = _product.Id;
-                OnPropertyChanged("Product");
-            }
-        }
-
         private Guid _quantityUnitId;
         public Guid QuantityUnitId
         {
@@ -93,19 +67,6 @@ namespace Core.DBModels
             {
                 _quantityUnitId = value;
                 OnPropertyChanged("QuantityUnitId");
-            }
-        }
-
-        private QuantityUnit _quantityUnit;
-        public QuantityUnit QuantityUnit
-        {
-            get { return _quantityUnit; }
-            set
-            {
-                _quantityUnit = value;
-                if (_quantityUnit != null)
-                    QuantityUnitId = _quantityUnit.Id;
-                OnPropertyChanged("QuantityUnit");
             }
         }
 
@@ -150,6 +111,45 @@ namespace Core.DBModels
             {
                 _isActive = value;
                 OnPropertyChanged("IsActive");
+            }
+        }
+
+        private Product _product;
+        public Product Product
+        {
+            get { return _product; }
+            set
+            {
+                _product = value;
+                if (_product != null)
+                    ProductId = _product.Id;
+                OnPropertyChanged("Product");
+            }
+        }
+
+        private QuantityUnit _quantityUnit;
+        public QuantityUnit QuantityUnit
+        {
+            get { return _quantityUnit; }
+            set
+            {
+                _quantityUnit = value;
+                if (_quantityUnit != null)
+                    QuantityUnitId = _quantityUnit.Id;
+                OnPropertyChanged("QuantityUnit");
+            }
+        }
+
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                if (_supplier != null)
+                    SupplierId = _supplier.Id;
+                OnPropertyChanged("Supplier");
             }
         }
 

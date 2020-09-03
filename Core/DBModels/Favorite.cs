@@ -27,17 +27,6 @@ namespace Core.DBModels
             }
         }
 
-        private ClientUser _clientUser;
-        public ClientUser ClientUser
-        {
-            get { return _clientUser; }
-            set
-            {
-                _clientUser = value;
-                OnPropertyChanged("ClientUser");
-            }
-        }
-
         private Guid _productId;
         public Guid ProductId
         {
@@ -46,6 +35,17 @@ namespace Core.DBModels
             {
                 _productId = value;
                 OnPropertyChanged("ProductId");
+            }
+        }
+
+        private ClientUser _clientUser;
+        public ClientUser ClientUser
+        {
+            get { return _clientUser; }
+            set
+            {
+                _clientUser = value;
+                OnPropertyChanged("ClientUser");
             }
         }
 

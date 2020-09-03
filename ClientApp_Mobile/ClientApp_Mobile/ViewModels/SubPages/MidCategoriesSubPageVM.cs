@@ -76,7 +76,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -108,7 +108,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     catch
                     {
                         IsBusy = false;
-                        Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                        Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                         return;
                     }
 
@@ -158,7 +158,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }

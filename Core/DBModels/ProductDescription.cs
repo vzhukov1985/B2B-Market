@@ -26,18 +26,6 @@ namespace Core.DBModels
             }
         }
 
-        private Product _product;
-        public Product Product
-        {
-            get { return _product; }
-            set
-            {
-                _product = value;
-                OnPropertyChanged("Product");
-            }
-        }
-
-
         private string _text;
         public string Text
         {
@@ -46,6 +34,17 @@ namespace Core.DBModels
             {
                 _text = value;
                 OnPropertyChanged("Text");
+            }
+        }
+
+        private Product _product;
+        public Product Product
+        {
+            get { return _product; }
+            set
+            {
+                _product = value;
+                OnPropertyChanged("Product");
             }
         }
     }

@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
+             x:Class="ClientApp_Mobile.Views.PINSetPage"
+             Padding="10">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{OnPlatform Android=85, iOS=100}"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition Height="300"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0"
+               Style="{StaticResource HeaderText}"
+               VerticalOptions="End"
+               Text="Установка кода быстрого доступа"/>
+
+        <Label Grid.Row="1"
+               Style="{StaticResource InfoText}"
+               VerticalOptions="Center"
+               Text="{Binding Title}"/>
+
+        <controls:PINEntry Grid.Row="2"
+                           UnfilledLineColor="Black"
+                           FilledLineColor="{StaticResource B2B_Blue_Color}"
+                           VerticalOptions="Center"
+                           PINCode="{Binding PINCode}"/>
+
+        <Grid Grid.Row="3" Margin="60,0,60,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0"
+                    Style="{StaticResource PINButton}"
+                    Text="1"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="1"/>
+            <Button Grid.Row="0" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="2"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="2"/>
+            <Button Grid.Row="0" Grid.Column="2"
+                    Style="{StaticResource PINButton}"
+                    Text="3"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="3"/>
+            <Button Grid.Row="1" Grid.Column="0"
+                    Style="{StaticResource PINButton}"
+                    Text="4"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="4"/>
+            <Button Grid.Row="1" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="5"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="5"/>
+            <Button Grid.Row="1" Grid.Column="2"
+                    Style="{StaticResource PINButton}"
+                    Text="6"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="6"/>
+            <Button Grid.Row="2" Grid.Column="0"
+                    Style="{StaticResource PINButton}"
+                    Text="7"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="7"/>
+            <Button Grid.Row="2" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="8"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="8"/>
+            <Button Grid.Row="2" Grid.Column="2"
+                    Style="{StaticResource PINButton}"
+                    Text="9"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="9"/>
+
+            <Button Grid.Row="3" Grid.Column="1"
+                    Style="{StaticResource PINButton}"
+                    Text="0"
+                    Command="{Binding PINButtonTapCommand}"
+                    CommandParameter="0"/>
+            <ImageButton Grid.Row="3" Grid.Column="2"
+                         Style="{StaticResource PINImageButton}"
+                         Command="{Binding PINButtonTapCommand}"
+                         Source="Backspace.png"
+                         CommandParameter="Backspace"/>
+
+        </Grid>
+    </Grid>
+</ContentPage>

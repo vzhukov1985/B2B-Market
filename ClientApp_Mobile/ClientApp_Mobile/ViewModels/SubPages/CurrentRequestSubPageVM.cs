@@ -139,7 +139,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     {
                         Id = s.Key.Id,
                         Address = s.Key.Address,
-                        Bin = s.Key.BIN,
+                        Bin = s.Key.Bin,
                         Email = s.Key.Email,
                         FullName = s.Key.FullName,
                         Phone = s.Key.Phone,
@@ -186,7 +186,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -200,7 +200,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             else
                 dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от поставщика \"{selectedProduct.Orders[0].Supplier.FullName}\"?";
 
-            if (await ShellDialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false)
+            if (await DialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false)
                 return;
 
             await Task.Run(() =>
@@ -225,7 +225,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 }
                 catch
                 {
-                    Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                    Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                     IsBusy = false;
                     return;
                 }
@@ -241,7 +241,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             else
                 dialogText = "Вы действительно хотите удалить все выбранные товары от поставщика \"" + selectedCategory.Name + "\"?";
 
-            if (await ShellDialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false)
+            if (await DialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false)
                 return;
 
             await Task.Run(() =>
@@ -266,7 +266,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 }
                 catch
                 {
-                    Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                    Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                     IsBusy = false;
                     return;
                 }
@@ -405,7 +405,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => ShellDialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }

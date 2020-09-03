@@ -37,18 +37,6 @@ namespace Core.DBModels
             }
         }
 
-        private MatchOffer _matchOffer;
-        public MatchOffer MatchOffer
-        {
-            get { return _matchOffer; }
-            set
-            {
-                _matchOffer = value;
-                OnPropertyChanged("MatchOffer");
-            }
-        }
-
-
         private Guid _matchProductExtraPropertyTypeId;
         public Guid MatchProductExtraPropertyTypeId
         {
@@ -60,18 +48,6 @@ namespace Core.DBModels
             }
         }
 
-        private MatchProductExtraPropertyType _matchProductExtraPropertyType;
-        public MatchProductExtraPropertyType MatchProductExtraPropertyType
-        {
-            get { return _matchProductExtraPropertyType; }
-            set
-            {
-                _matchProductExtraPropertyType = value;
-                OnPropertyChanged("MatchProductExtraPropertyType");
-            }
-        }
-
-
         private string _value;
         public string Value
         {
@@ -80,6 +56,28 @@ namespace Core.DBModels
             {
                 _value = value;
                 OnPropertyChanged("Value");
+            }
+        }
+
+        private MatchOffer _matchOffer;
+        public MatchOffer MatchOffer
+        {
+            get { return _matchOffer; }
+            set
+            {
+                _matchOffer = value;
+                OnPropertyChanged("MatchOffer");
+            }
+        }
+
+        private MatchProductExtraPropertyType _matchProductExtraPropertyType;
+        public MatchProductExtraPropertyType MatchProductExtraPropertyType
+        {
+            get { return _matchProductExtraPropertyType; }
+            set
+            {
+                _matchProductExtraPropertyType = value;
+                OnPropertyChanged("MatchProductExtraPropertyType");
             }
         }
     }

@@ -178,7 +178,7 @@
                                        FontAttributes="Bold"
                                        HorizontalTextAlignment="Center"
                                        VerticalTextAlignment="Center"
-                                       Text="{Binding TotalPrice, StringFormat='Сумма:&#x0a;{0:G20} тг'}" />
+                                       Text="{Binding TotalPrice, StringFormat='Сумма:.#x0a;{0:G20} тг'}" />
 
                                 <BoxView Grid.Row="3" Grid.ColumnSpan="3"
                                          BackgroundColor="{StaticResource B2B_DarkGray_Color}"/>

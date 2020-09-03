@@ -39,18 +39,6 @@ namespace Core.DBModels
 			}
 		}
 
-        private Client _client;
-        public Client Client
-        {
-            get { return _client; }
-            set
-            {
-                _client = value;
-                OnPropertyChanged("Client");
-            }
-        }
-
-
         private string _name;
 		public string Name
 		{
@@ -117,7 +105,29 @@ namespace Core.DBModels
 			}
 		}
 
-        private List<Favorite> _favorites;
+        private string _pinHash;
+        public string PinHash
+        {
+            get { return _pinHash; }
+            set
+            {
+                _pinHash = value;
+                OnPropertyChanged("PinHash");
+            }
+        }
+
+        private Client _client;
+		public Client Client
+		{
+			get { return _client; }
+			set
+			{
+				_client = value;
+				OnPropertyChanged("Client");
+			}
+		}
+
+		private List<Favorite> _favorites;
         public List<Favorite> Favorites
         {
             get { return _favorites; }
@@ -128,9 +138,28 @@ namespace Core.DBModels
             }
         }
 
+		[NotMapped]
+		public bool UseBiometricAccess { get; set; }
+
         public ClientUser()
         {
 			Favorites = new List<Favorite>();
+        }
+
+		public static ClientUser CloneForDb(ClientUser user)
+        {
+			return new ClientUser
+			{
+				Id = user.Id,
+				ClientId = user.ClientId,
+				Name = user.Name,
+				Surname = user.Surname,
+				Login = user.Login,
+				PasswordHash = user.PasswordHash,
+				IsAdmin = user.IsAdmin,
+				InitialPassword = user.InitialPassword,
+				PinHash = user.PinHash,
+			};
         }
     }
 }

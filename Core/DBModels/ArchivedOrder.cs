@@ -38,19 +38,6 @@ namespace Core.DBModels
             }
         }
 
-        private ArchivedRequest _archivedRequest;
-        public ArchivedRequest ArchivedRequest
-        {
-            get { return _archivedRequest; }
-            set
-            {
-                _archivedRequest = value;
-                if (_archivedRequest != null)
-                    ArchivedRequestId = ArchivedRequest.Id;
-                OnPropertyChanged("ArchivedRequest");
-            }
-        }
-
         private string _supplierProductCode;
         public string SupplierProductCode
         {
@@ -163,6 +150,18 @@ namespace Core.DBModels
             }
         }
 
+        private ArchivedRequest _archivedRequest;
+        public ArchivedRequest ArchivedRequest
+        {
+            get { return _archivedRequest; }
+            set
+            {
+                _archivedRequest = value;
+                if (_archivedRequest != null)
+                    ArchivedRequestId = ArchivedRequest.Id;
+                OnPropertyChanged("ArchivedRequest");
+            }
+        }
 
         private Guid _offerId;
         [NotMapped]

@@ -26,6 +26,28 @@ namespace Core.DBModels
             }
         }
 
+        private Guid _archivedRequestStatusTypeId;
+        public Guid ArchivedRequestStatusTypeId
+        {
+            get { return _archivedRequestStatusTypeId; }
+            set
+            {
+                _archivedRequestStatusTypeId = value;
+                OnPropertyChanged("ArchivedRequestStatusTypeId");
+            }
+        }
+
+        private DateTime _dateTime;
+        public DateTime DateTime
+        {
+            get { return _dateTime; }
+            set
+            {
+                _dateTime = value;
+                OnPropertyChanged("DateTime");
+            }
+        }
+
         private ArchivedRequest _archivedRequest;
         public ArchivedRequest ArchivedRequest
         {
@@ -39,17 +61,6 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _archivedRequestStatusTypeId;
-        public Guid ArchivedRequestStatusTypeId
-        {
-            get { return _archivedRequestStatusTypeId; }
-            set
-            {
-                _archivedRequestStatusTypeId = value;
-                OnPropertyChanged("ArchivedRequestStatusTypeId");
-            }
-        }
-
         private ArchivedRequestStatusType _archivedRequestStatusType;
         public ArchivedRequestStatusType ArchivedRequestStatusType
         {
@@ -60,17 +71,6 @@ namespace Core.DBModels
                 if (_archivedRequestStatusType != null)
                     ArchivedRequestStatusTypeId = _archivedRequestStatusType.Id;
                 OnPropertyChanged("ArchivedRequestStatusType");
-            }
-        }
-
-        private DateTime _dateTime;
-        public DateTime DateTime
-        {
-            get { return _dateTime; }
-            set
-            {
-                _dateTime = value;
-                OnPropertyChanged("DateTime");
             }
         }
 

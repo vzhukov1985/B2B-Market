@@ -5,8 +5,10 @@ using ClientApp_Mobile.Views;
 using ClientApp_Mobile.Views.SubPages;
 using Core.DBModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Linq;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -19,30 +21,16 @@ namespace ClientApp_Mobile
         {
             InitializeComponent();
 
-            /*            using (MarketDbContext db = new MarketDbContext())
-                        {
-                            UserService.CurrentUser = db.ClientsUsers
-                                .Where(u => u.Login == "qwe")
-                                .Include(u => u.FavoriteProducts)
-                                .ThenInclude(f => f.Product)
-                                .Include(u => u.Client)
-                                .ThenInclude(c => c.Contracts)
-                                .ThenInclude(ct => ct.Supplier)
-                                .Include(u => u.Client)
-                                .ThenInclude(c => c.CurrentOrders)
-                                .ThenInclude(o => o.Offer)
-                                .ThenInclude(of => of.QuantityUnit)
-                                .Include(u => u.Client)
-                                .ThenInclude(c => c.CurrentOrders)
-                                .ThenInclude(o => o.Offer)
-                                .ThenInclude(of => of.Supplier)
-                                .FirstOrDefault();
-                        }
-
-                        MainPage = new AppShell();*/
-
-            MainPage = new AuthPasswordPage();
-
+            UserService.AppLocalUsers.ReadAppUserPreferences();
+            
+            if (UserService.AppLocalUsers.Any(lu => lu.PINAccess == true))
+            {
+                AppPageService.GoToAuthPINPage();
+            }
+            else
+            {
+                AppPageService.GoToAuthPasswordPage();
+            }
         }
 
         protected override void OnStart()

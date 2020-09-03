@@ -38,18 +38,6 @@ namespace Core.DBModels
             }
         }
 
-        private Supplier _supplier;
-        public Supplier Supplier
-        {
-            get { return _supplier; }
-            set
-            {
-                _supplier = value;
-                OnPropertyChanged("Supplier");
-            }
-        }
-
-
         private string _supplierVolumeTypeName;
         public string SupplierVolumeTypeName
         {
@@ -72,6 +60,17 @@ namespace Core.DBModels
             }
         }
 
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                OnPropertyChanged("Supplier");
+            }
+        }
+
         private VolumeType _volumeType;
         public VolumeType VolumeType
         {
@@ -82,6 +81,5 @@ namespace Core.DBModels
                 OnPropertyChanged("VolumeType");
             }
         }
-
     }
 }

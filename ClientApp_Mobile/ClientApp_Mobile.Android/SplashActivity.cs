@@ -16,7 +16,9 @@ namespace ClientApp_Mobile.Droid
     [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = true, NoHistory = true)]
     public class SplashActivity : AppCompatActivity
     {
+#pragma warning disable IDE0052 // Remove unread private members
         static readonly string TAG = "X:" + typeof(SplashActivity).Name;
+#pragma warning restore IDE0052 // Remove unread private members
 
         public override void OnCreate(Bundle savedInstanceState, PersistableBundle persistentState)
         {

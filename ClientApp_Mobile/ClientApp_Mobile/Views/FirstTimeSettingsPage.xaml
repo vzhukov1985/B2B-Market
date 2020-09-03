@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
+             x:Class="ClientApp_Mobile.Views.FirstTimeSettingsPage"
+             Padding="10">
+
+    <ContentPage.Resources>
+        <conv:StringToBoolConverter x:Key="StringToBoolConverter"/>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0"
+                   Style="{StaticResource HeaderText}"
+                   VerticalOptions="EndAndExpand"
+                   Text="Настройка быстрого входа"/>
+
+            <Label Grid.Row="1"
+                   Style="{StaticResource InfoText}"
+                   VerticalOptions="EndAndExpand"
+                   Margin="0,20,0,20"
+                   Text="{Binding InfoText}"/>
+
+            <Grid Grid.Row="2" Margin="20,20,10,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"/>
+                    <RowDefinition Height="70"/>
+                </Grid.RowDefinitions>
+
+                <StackLayout Grid.Row="0" Orientation="Horizontal">
+                    <Grid>
+                        <CheckBox x:Name="chkPINEnabled"
+                                  VerticalOptions="Center"
+                                  IsChecked="{Binding PINCode, Converter={StaticResource StringToBoolConverter}, Mode=OneWay}"/>
+                        <!-- Dummy button for checkbox-->
+                        <Button WidthRequest="33" 
+                                BackgroundColor="Transparent" 
+                                Command="{Binding ChangePINAccessCommand}"/>
+                    </Grid>
+                    <Label Style="{StaticResource FieldName}"
+                           VerticalOptions="Center"
+                           Text="Использовать код быстрого доступа">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding ChangePINAccessCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+
+                <StackLayout Grid.Row="1" Orientation="Horizontal" IsVisible="{Binding IsBiometricAccessVisible}">
+                    <Grid WidthRequest="42">
+                        <CheckBox VerticalOptions="Center"
+                                  IsChecked="{Binding IsBiometricAccessActivated, Mode=OneWay}"/>
+                        <Button WidthRequest="33" 
+                                BackgroundColor="Transparent"
+                                Command="{Binding ChangeBiometricAccessCommand}"/>
+                    </Grid>
+                    <Label Style="{StaticResource FieldName}"
+                           VerticalOptions="Center"
+                           Text="{Binding AccessTypeInfo}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding ChangeBiometricAccessCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+
+            </Grid>
+
+            <Button Grid.Row="3"
+                    Style="{StaticResource ProceedButton}"
+                    VerticalOptions="Center"
+                    Text="Далее"
+                    Command="{Binding ProceedCommand}"/>
+
+        </Grid>
+        <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
+
+        <ActivityIndicator IsVisible="{Binding IsBusy}"/>
+    </Grid>
+</ContentPage>

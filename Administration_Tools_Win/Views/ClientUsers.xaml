@@ -54,7 +54,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resx:UILang.UI_ClientUsers_SurName_Field}"/>
-                <TextBox Text="{Binding SelectedUser.SurName}" Width="200"/>
+                <TextBox Text="{Binding SelectedUser.Surname}" Width="200"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <CheckBox Content="{x:Static resx:UILang.UI_ClientUsers_IsAdmin_Field}" IsChecked="{Binding SelectedUser.IsAdmin}"/>

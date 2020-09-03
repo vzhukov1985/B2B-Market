@@ -46,12 +46,16 @@
         <Setter Property="Spacing" Value="0"/>
     </Style>
 
+    <Style TargetType="CheckBox">
+        <Setter Property="Color" Value="{StaticResource B2B_Blue_Color}"/>
+    </Style>
+
     <Style TargetType="ActivityIndicator">
         <Setter Property="IsRunning" Value="True"/>
         <Setter Property="Color">
             <Setter.Value>
                 <OnPlatform x:TypeArguments="Color">
-                    <OnPlatform.iOS>White</OnPlatform.iOS>
+                    <OnPlatform.iOS>Black</OnPlatform.iOS>
                     <OnPlatform.Android>
                         <StaticResource Key="B2B_Blue_Color"/>
                     </OnPlatform.Android>
@@ -68,6 +72,69 @@
         </Setter>
     </Style>
 
+
+
+    <Style x:Key="HeaderText" TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{StaticResource B2B_Blue_Color}"/>
+    </Style>
+    <Style x:Key="InfoText" TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="17"/>
+    </Style>
+    <Style x:Key="FieldName" TargetType="Label">
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+    <Style x:Key="FieldEntry" TargetType="Entry">
+        <Setter Property="Margin" Value="10,0,10,0"/>
+    </Style>
+    <Style x:Key="BlueButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource B2B_Blue_Color}"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    <Style x:Key="ProceedButton" TargetType="Button" BasedOn="{StaticResource BlueButton}">
+        <Setter Property="WidthRequest" Value="200"/>
+        <Setter Property="HeightRequest" Value="60"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+    </Style>
+    
+
+    <Style x:Key="WhiteButton" TargetType="Button" BasedOn="{StaticResource BlueButton}">
+        <Setter Property="BackgroundColor" Value="White"/>
+        <Setter Property="TextColor" Value="{StaticResource B2B_Blue_Color}"/>
+    </Style>
+
+
+
+    <Style x:Key="PINButton" TargetType="Button">
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="WidthRequest" Value="66"/>
+        <Setter Property="HeightRequest" Value="66"/>
+        <Setter Property="BorderWidth" Value="0"/>
+        <Setter Property="BorderColor" Value="{StaticResource B2B_Blue_Color}"/>
+        <Setter Property="BackgroundColor" Value="#d7e6f4"/>
+        <Setter Property="CornerRadius" Value="33"/>
+        <Setter Property="FontSize" Value="30"/>
+        <Setter Property="TextColor" Value="{StaticResource B2B_DarkBlue_Color}"/>
+    </Style>
+    
+    <Style x:Key="PINImageButton" TargetType="ImageButton">
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="WidthRequest" Value="66"/>
+        <Setter Property="HeightRequest" Value="66"/>
+        <Setter Property="BorderWidth" Value="0"/>
+        <Setter Property="BorderColor" Value="{StaticResource B2B_Blue_Color}"/>
+        <Setter Property="BackgroundColor" Value="#d7e6f4"/>
+        <Setter Property="CornerRadius" Value="33"/>
+        <Setter Property="Padding" Value="15"/>
+    </Style>    
+
     <Style x:Key="BlockBoxView" TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="Transparent"/>
     </Style>
@@ -75,7 +142,6 @@
     <Style x:Key="BaseListView" TargetType="ListView">
         <Setter Property="SeparatorColor" Value="{StaticResource B2B_DarkGray_Color}"/>
     </Style>
-
 
     <Style x:Key="TitleBarLabel" TargetType="Label">
         <Setter Property="TextColor" Value="White"/>
@@ -236,24 +302,5 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
-
-    <Style x:Key="FieldName" TargetType="Label">
-        <Setter Property="FontSize" Value="18"/>
-    </Style>
-    <Style x:Key="FieldEntry" TargetType="Entry">
-        <Setter Property="Margin" Value="10,0,10,0"/>
-    </Style>
-    <Style x:Key="BlueButton" TargetType="Button">
-        <Setter Property="BackgroundColor" Value="{StaticResource B2B_Blue_Color}"/>
-        <Setter Property="TextColor" Value="White"/>
-        <Setter Property="FontSize" Value="18"/>
-        <Setter Property="FontAttributes" Value="Bold"/>
-    </Style>
-
-    <Style x:Key="WhiteButton" TargetType="Button" BasedOn="{StaticResource BlueButton}">
-        <Setter Property="BackgroundColor" Value="White"/>
-        <Setter Property="TextColor" Value="{StaticResource B2B_Blue_Color}"/>
-    </Style>
-    
+ 
 </ResourceDictionary>
