@@ -118,12 +118,12 @@ namespace Core.Services
         {
             XDocument xDoc = new XDocument();
 
-            XElement xRequests = new XElement("RequestProductsPictures");
-            xRequests.Add(new XAttribute("Version", "1.0"));
-            xRequests.Add(new XAttribute("SupplierId", offer.Supplier.Id));
+            XElement xRequests = new XElement("requestProductsPictures");
+            xRequests.Add(new XAttribute("version", "1.0"));
+            xRequests.Add(new XAttribute("supplierid", offer.Supplier.Id));
 
-            XElement xRequest = new XElement("Request");
-            xRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            XElement xRequest = new XElement("request");
+            xRequest.Add(new XAttribute("supplierproductcode", offer.SupplierProductCode));
             xRequests.Add(xRequest);
 
             xDoc.Add(xRequests);
@@ -137,15 +137,15 @@ namespace Core.Services
         {
             XDocument xDoc = XDocument.Load(xmlReadStream);
 
-            XElement xRequests = xDoc.Element("RequestProductsPictures");
+            XElement xRequests = xDoc.Element("requestproductspictures");
 
             foreach (XElement xRequest in xRequests.Elements())
             {
-                if (xRequest.Attribute("SupplierProductCode").Value == offer.SupplierProductCode)
+                if (xRequest.Attribute("supplierproductcode").Value == offer.SupplierProductCode)
                     return null;
             }
-            XElement xNewRequest = new XElement("Request");
-            xNewRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            XElement xNewRequest = new XElement("request");
+            xNewRequest.Add(new XAttribute("supplierproductcode", offer.SupplierProductCode));
             xRequests.Add(xNewRequest);
 
             MemoryStream resStream = new MemoryStream();
@@ -157,12 +157,12 @@ namespace Core.Services
         {
             XDocument xDoc = new XDocument();
 
-            XElement xRequests = new XElement("RequestProductsDescriptions");
-            xRequests.Add(new XAttribute("Version", "1.0"));
-            xRequests.Add(new XAttribute("SupplierId", offer.Supplier.Id));
+            XElement xRequests = new XElement("requestproductsdescriptions");
+            xRequests.Add(new XAttribute("version", "1.0"));
+            xRequests.Add(new XAttribute("supplierid", offer.Supplier.Id));
 
-            XElement xRequest = new XElement("Request");
-            xRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            XElement xRequest = new XElement("request");
+            xRequest.Add(new XAttribute("supplierproductcode", offer.SupplierProductCode));
             xRequests.Add(xRequest);
 
             xDoc.Add(xRequests);
@@ -176,15 +176,15 @@ namespace Core.Services
         {
             XDocument xDoc = XDocument.Load(xmlReadStream);
 
-            XElement xRequests = xDoc.Element("RequestProductsDescriptions");
+            XElement xRequests = xDoc.Element("requestproductsdescriptions");
 
             foreach (XElement xRequest in xRequests.Elements())
             {
-                if (xRequest.Attribute("SupplierProductCode").Value == offer.SupplierProductCode)
+                if (xRequest.Attribute("supplierproductcode").Value == offer.SupplierProductCode)
                     return null;
             }
-            XElement xNewRequest = new XElement("Request");
-            xNewRequest.Add(new XAttribute("SupplierProductCode", offer.SupplierProductCode));
+            XElement xNewRequest = new XElement("request");
+            xNewRequest.Add(new XAttribute("supplierproductcode", offer.SupplierProductCode));
             xRequests.Add(xNewRequest);
 
             MemoryStream resStream = new MemoryStream();
@@ -195,63 +195,63 @@ namespace Core.Services
         public static void SaveRequestXMLToStream(ArchivedRequest request, Stream stream)
         {
             XDocument xDoc = new XDocument();
-            XElement xRoot = new XElement("OrderFromB2BMarket");
-            xRoot.Add(new XAttribute("Version", "1.0"));
-            xRoot.Add(new XAttribute("Code", request.Code));
-            xRoot.Add(new XAttribute("TimeOfCreation", request.DateTimeSent));
+            XElement xRoot = new XElement("orderfromb2bmarket");
+            xRoot.Add(new XAttribute("version", "1.0"));
+            xRoot.Add(new XAttribute("code", request.Code));
+            xRoot.Add(new XAttribute("timeofcreation", request.DateTimeSent));
 
-            XElement xClientInfo = new XElement("ClientInformation");
-            xClientInfo.Add(new XElement("Name", request.Client.FullName));
-            xClientInfo.Add(new XElement("BIN", request.Client.Bin));
-            xClientInfo.Add(new XElement("Country", request.Client.Country));
-            xClientInfo.Add(new XElement("City", request.Client.City));
-            xClientInfo.Add(new XElement("Address", request.Client.Address));
-            xClientInfo.Add(new XElement("Phone", request.Client.Phone));
-            xClientInfo.Add(new XElement("EMail", request.Client.Email));
-            xClientInfo.Add(new XElement("ContactPersonName", request.Client.ContactPersonName));
-            xClientInfo.Add(new XElement("ContactPersonPhone", request.Client.ContactPersonPhone));
+            XElement xClientInfo = new XElement("clientinformation");
+            xClientInfo.Add(new XElement("name", request.Client.FullName));
+            xClientInfo.Add(new XElement("bin", request.Client.Bin));
+            xClientInfo.Add(new XElement("country", request.Client.Country));
+            xClientInfo.Add(new XElement("city", request.Client.City));
+            xClientInfo.Add(new XElement("address", request.Client.Address));
+            xClientInfo.Add(new XElement("phone", request.Client.Phone));
+            xClientInfo.Add(new XElement("email", request.Client.Email));
+            xClientInfo.Add(new XElement("contactpersonname", request.Client.ContactPersonName));
+            xClientInfo.Add(new XElement("contactpersonphone", request.Client.ContactPersonPhone));
 
-            XElement xDeliveryInfo = new XElement("DeliveryInformation");
-            xDeliveryInfo.Add(new XElement("DeliveryTime", request.DeliveryDateTime));
-            xDeliveryInfo.Add(new XElement("Comments", request.Comments));
+            XElement xDeliveryInfo = new XElement("deliveryinformation");
+            xDeliveryInfo.Add(new XElement("deliverytime", request.DeliveryDateTime));
+            xDeliveryInfo.Add(new XElement("comments", request.Comments));
 
-            XElement xOrders = new XElement("Orders");
-            xOrders.Add(new XAttribute("ItemsQuantity", request.ItemsQuantity));
-            xOrders.Add(new XAttribute("ProductsQuantity", request.ProductsQuantity));
-            xOrders.Add(new XAttribute("TotalPrice", request.TotalPrice));
+            XElement xOrders = new XElement("orders");
+            xOrders.Add(new XAttribute("itemsquantity", request.ItemsQuantity));
+            xOrders.Add(new XAttribute("productsquantity", request.ProductsQuantity));
+            xOrders.Add(new XAttribute("totalprice", request.TotalPrice));
 
             foreach (ArchivedOrder order in request.ArchivedOrders)
             {
-                XElement xOrder = new XElement("Order");
+                XElement xOrder = new XElement("order");
 
-                XElement xProduct = new XElement("Product");
-                xProduct.Add(new XAttribute("SupplierProductCode", order.SupplierProductCode));
-                xProduct.Add(new XElement("Name", order.Product.Name));
-                xProduct.Add(new XElement("Category", order.Product.Category.Name));
-                xProduct.Add(new XElement("VolumeType", order.Product.VolumeType.Name));
+                XElement xProduct = new XElement("product");
+                xProduct.Add(new XAttribute("supplierproductcode", order.SupplierProductCode));
+                xProduct.Add(new XElement("name", order.Product.Name));
+                xProduct.Add(new XElement("category", order.Product.Category.Name));
+                xProduct.Add(new XElement("volumetype", order.Product.VolumeType.Name));
 
-                XElement xVolumeUnit = new XElement("VolumeUnit");
-                xVolumeUnit.Add(new XAttribute("ShortName", order.Product.VolumeUnit.ShortName));
-                xVolumeUnit.Add(new XAttribute("FullName", order.Product.VolumeUnit.FullName));
+                XElement xVolumeUnit = new XElement("volumeunit");
+                xVolumeUnit.Add(new XAttribute("shortname", order.Product.VolumeUnit.ShortName));
+                xVolumeUnit.Add(new XAttribute("fullname", order.Product.VolumeUnit.FullName));
                 xProduct.Add(xVolumeUnit);
-                xProduct.Add(new XElement("Volume", order.Product.Volume));
+                xProduct.Add(new XElement("volume", order.Product.Volume));
 
-                XElement xProductExtraProperties = new XElement("ExtraProperties");
+                XElement xProductExtraProperties = new XElement("extraproperties");
                 foreach (ProductExtraProperty productExtraProperty in order.Product.ExtraProperties)
                 {
-                    XElement xProductExtraProperty = new XElement("ExtraProperty");
+                    XElement xProductExtraProperty = new XElement("extraproperty");
 
-                    xProductExtraProperty.Add(new XAttribute("Type", productExtraProperty.PropertyType));
-                    xProductExtraProperty.Add(new XAttribute("Value", productExtraProperty.Value));
+                    xProductExtraProperty.Add(new XAttribute("type", productExtraProperty.PropertyType));
+                    xProductExtraProperty.Add(new XAttribute("value", productExtraProperty.Value));
                     xProductExtraProperties.Add(xProductExtraProperty);
                 }
                 xProduct.Add(xProductExtraProperties);
 
                 xOrder.Add(xProduct);
-                xOrder.Add(new XElement("QuantityUnit", order.QuantityUnit));
-                xOrder.Add(new XElement("Quantity", order.Quantity));
-                xOrder.Add(new XElement("PricePerItem", order.Price));
-                xOrder.Add(new XElement("TotalPrice", order.Quantity * order.Price));
+                xOrder.Add(new XElement("quantityunit", order.QuantityUnit));
+                xOrder.Add(new XElement("quantity", order.Quantity));
+                xOrder.Add(new XElement("priceperitem", order.Price));
+                xOrder.Add(new XElement("totalprice", order.Quantity * order.Price));
 
                 xOrders.Add(xOrder);
             }

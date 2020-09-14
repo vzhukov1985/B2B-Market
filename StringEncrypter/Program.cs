@@ -13,8 +13,8 @@ namespace StringEncrypter
 
             }
 
-              string StringToEncrypt = "server=192.168.1.3;UserId=Admin;Password=MySQLPassword;database=b2bmarket;";
-              string Password = "gy!34q2.gteas_";
+              string StringToEncrypt = "server=192.168.1.100;UserId=Admin;Password=MySQLPassword;database=b2bmarket;";
+              string Password = CoreSettings.DbConnectionSalt;
              Console.WriteLine(StringCipher.Encrypt(StringToEncrypt, Password));
 
             //string Password = "ap~G3te!d_2G";

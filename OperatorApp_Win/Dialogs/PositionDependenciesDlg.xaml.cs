@@ -8,19 +8,24 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OperatorApp_Win.Views
+namespace OperatorApp_Win.Dialogs
 {
     /// <summary>
-    /// Interaction logic for TopCategoriesPage.xaml
+    /// Interaction logic for PositionOffersDlg.xaml
     /// </summary>
-    public partial class TopCategoriesPage : Page
+    public partial class PositionDependenciesDlg : Window
     {
-        public TopCategoriesPage()
+        public PositionDependenciesDlg()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
         }
     }
 }

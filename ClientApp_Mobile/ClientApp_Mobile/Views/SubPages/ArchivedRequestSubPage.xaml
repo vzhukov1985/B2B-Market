@@ -74,7 +74,7 @@
                                        FontSize="20"
                                        FontAttributes="Bold">
                                     <Label.Text>
-                                        <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
+                                        <MultiBinding  StringFormat="{}{0:G20} {1} x {2:G20} тг">
                                             <Binding Path="Quantity"/>
                                             <Binding Path="QuantityUnit"/>
                                             <Binding Path="Price"/>

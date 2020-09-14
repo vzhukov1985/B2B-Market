@@ -64,13 +64,14 @@
     <MtouchExtraArgs>--linkskip=mscorlib</MtouchExtraArgs>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomRenderers\DecimalEntryiOS.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="CustomRenderers\ColoredLineEntryiOS.cs" />
     <Compile Include="Services\BiometricAuthenticationService.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
-    <Compile Include="NoLineSearchBariOs.cs" />
+    <Compile Include="CustomRenderers\NoLineSearchBariOS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>

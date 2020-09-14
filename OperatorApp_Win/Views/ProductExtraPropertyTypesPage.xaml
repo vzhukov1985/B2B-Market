@@ -69,6 +69,16 @@
                         </TextBlock>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Внести новый" Command="{Binding AddNewProductExtraPropertyTypeBasedOnMatchCommand}"/>
+                        <MenuItem Header="Сопоставить" Command="{Binding MatchProductExtraPropertyTypesCommand}"/>
+                        <MenuItem Header="Позиции поставщика" Command="{Binding ShowPositionOffersCommand}"/>
+                        <MenuItem Header="Удалить" Command="{Binding RemoveMatchProductExtraPropertyTypeCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Удалить неиспользуемые" Command="{Binding RemoveUnusedMatchProductExtraPropertyTypesCommand}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
@@ -131,6 +141,16 @@
                         <TextBlock Text="{Binding Name, StringFormat='&quot;{0}&quot;'}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Добавить новый" Command="{Binding AddProductExtraPropertyTypeCommand}"/>
+                        <MenuItem Header="Связанные позиции" Command="{Binding ShowMatchedPositionDependenciesCommand}"/>
+                        <MenuItem Header="Редактировать" Command="{Binding EditProductExtraPropertyTypeCommand}"/>
+                        <MenuItem Header="Удалить" Command="{Binding RemoveProductExtraPropertyTypeCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Удалить неиспользуемые" Command="{Binding RemoveUnusedProductExtraPropertyTypesCommand}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <Grid Grid.Row="2">

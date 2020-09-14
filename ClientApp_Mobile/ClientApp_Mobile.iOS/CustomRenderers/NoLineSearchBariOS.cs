@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ClientApp_Mobile.iOS;
+using ClientApp_Mobile.iOS.CustomRenderers;
 using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly: ExportRenderer(typeof(ClientApp_Mobile.Renderers.NoLineSearchBar), typeof(NoLineSearchBariOs))]
-namespace ClientApp_Mobile.iOS
+[assembly: ExportRenderer(typeof(ClientApp_Mobile.Renderers.NoLineSearchBar), typeof(NoLineSearchBariOS))]
+namespace ClientApp_Mobile.iOS.CustomRenderers
 {
-    public class NoLineSearchBariOs: SearchBarRenderer
+    public class NoLineSearchBariOS: SearchBarRenderer
     {
         protected override void OnElementChanged(ElementChangedEventArgs<SearchBar> e)
         {

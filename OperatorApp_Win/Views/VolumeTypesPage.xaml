@@ -69,6 +69,17 @@
                         </TextBlock>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Внести новый" Command="{Binding AddNewVolumeTypeBasedOnMatchCommand}"/>
+                        <MenuItem Header="Сопоставить" Command="{Binding MatchVolumeTypesCommand}"/>
+                        <MenuItem Header="Позиции поставщика" Command="{Binding ShowPositionOffersCommand}"/>
+                        <MenuItem Header="Удалить" Command="{Binding RemoveMatchVolumeTypeCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Удалить неиспользуемые" Command="{Binding RemoveUnusedMatchVolumeTypesCommand}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
@@ -131,6 +142,16 @@
                         <TextBlock Text="{Binding Name, StringFormat='&quot;{0}&quot;'}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Добавить новый" Command="{Binding AddVolumeTypeCommand}"/>
+                        <MenuItem Header="Связанные позиции" Command="{Binding ShowMatchedPositionDependenciesCommand}"/>
+                        <MenuItem Header="Редактировать" Command="{Binding EditVolumeTypeCommand}"/>
+                        <MenuItem Header="Удалить" Command="{Binding RemoveVolumeTypeCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Удалить неиспользуемые" Command="{Binding RemoveUnusedVolumeTypesCommand}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <Grid Grid.Row="2">

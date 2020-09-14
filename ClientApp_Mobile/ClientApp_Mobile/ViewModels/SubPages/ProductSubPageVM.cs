@@ -115,10 +115,12 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                 if (offer.IsQuantityWasChanged)
                     AreChangesWereMade = true;
-
-                TotalSum = OffersWithOrders.Sum(o => o.OrderQuantity * o.PriceForClient);
-                UpdateCurrentRequestCommand.ChangeCanExecute();
             }
+
+            TotalSum = OffersWithOrders.Sum(o => o.OrderQuantity * o.PriceForClient);
+            UpdateCurrentRequestCommand.ChangeCanExecute();
+            DecrementOrderCommand.ChangeCanExecute(); 
+            IncrementOrderCommand.ChangeCanExecute();
         }
 
         private void UpdateCurrentRequest()
@@ -169,12 +171,13 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     db.SaveChanges();
                 }
 
+                Device.BeginInvokeOnMainThread(() => ProcessChanges());
                 AreChangesWereMade = false;
                 IsBusy = false;
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() =>DialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 IsBusy = false;
                 return;
             }
@@ -255,7 +258,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             foreach (var order in OffersWithOrders)
             {
                 if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                order.PropertyChanged += (s, a) => { DecrementOrderCommand.ChangeCanExecute(); IncrementOrderCommand.ChangeCanExecute(); ProcessChanges(); };
+                order.PropertyChanged += (s, a) => { if (a.PropertyName == "OrderQuantity") ProcessChanges(); };
             }
 
             ExtraPropsCVHeight = Product.ExtraProperties.Count * 18; //FontSize+5
@@ -263,7 +266,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
             AreChangesWereMade = false;
             if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-            ProcessChanges();
+           // ProcessChanges();
             if (CTS.IsCancellationRequested) { IsBusy = false; return; }
             IsBusy = false;
         }
@@ -282,7 +285,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             User = UserService.CurrentUser;
             Product = product;
 
-            AddRemoveProductToFavouritesCommand = new Command(p => Task.Run (() =>MarketDbContext.AddRemoveProductToFavourites(product, User)));
+            AddRemoveProductToFavouritesCommand = new Command(p => Task.Run(() => MarketDbContext.AddRemoveProductToFavourites(product, User)));
             IncrementOrderCommand = new Command(o => ((OfferWithOrder)o).OrderQuantity++, o => o == null ? false : ((OfferWithOrder)o).OrderQuantity < ((OfferWithOrder)o).Remains);
             DecrementOrderCommand = new Command(o => ((OfferWithOrder)o).OrderQuantity--, o => o == null ? false : ((OfferWithOrder)o).OrderQuantity > 0);
             ChangesInOrderAreMadeCommand = new Command(_ => ProcessChanges());

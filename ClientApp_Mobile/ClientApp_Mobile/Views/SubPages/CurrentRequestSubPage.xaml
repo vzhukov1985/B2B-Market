@@ -21,7 +21,7 @@
             <Label Style="{StaticResource TitleBarLabel}">
                 <Label.Text>
                     <MultiBinding StringFormat="{}{0} ({1})">
-                        <Binding Path="User.Client.FullName"/>
+                        <Binding Path="User.Client.ShortName"/>
                         <Binding Path="User.Name"/>
                     </MultiBinding>
                 </Label.Text>
@@ -230,7 +230,7 @@
                                                            Style="{StaticResource ProductPriceLabel}"
                                                            TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
                                                             <Label.Text>
-                                                                <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
+                                                                <MultiBinding  StringFormat="{}{0:G20} {1} x {2:G20} тг">
                                                                     <Binding Path="OrderQuantity"/>
                                                                     <Binding Path="QuantityUnit"/>
                                                                     <Binding Path="PriceForClient"/>

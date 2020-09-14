@@ -1,0 +1,38 @@
+﻿<Window x:Class="OperatorApp_Win.Dialogs.PositionDependenciesDlg"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OperatorApp_Win.Dialogs"
+        mc:Ignorable="d"
+        Title="Предложения, ссылающиеся на позицию" Height="450" Width="600" WindowStartupLocation="CenterOwner">
+
+    <Window.InputBindings>
+        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}" />
+    </Window.InputBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0" 
+                  Margin="20"
+                  ItemContainerStyle="{StaticResource LVItemFocusedColor}"
+                  ItemsSource="{Binding Positions}"
+                  SelectedItem="{Binding SelectedPositionName}">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Копировать" Command="{Binding CopyToClipboardCommand}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+        </ListView>
+
+        <Button Grid.Row="1"
+                Width="150"
+                Height="35"
+                Margin="10,10,20,10"
+                HorizontalAlignment="Right"
+                IsDefault="True"
+                Content="Закрыть" Click="Button_Click"/>
+    </Grid>
+</Window>

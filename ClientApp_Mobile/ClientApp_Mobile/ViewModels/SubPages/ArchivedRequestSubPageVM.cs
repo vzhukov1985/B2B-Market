@@ -97,7 +97,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             User = UserService.CurrentUser;
             Request = request;
 
-            Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplier.FullName;
+            Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplier.ShortName;
 
             Task.Run(() => QueryDb());
         }

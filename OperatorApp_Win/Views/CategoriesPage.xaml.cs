@@ -16,15 +16,14 @@ using System.Windows.Shapes;
 namespace OperatorApp_Win.Views
 {
     /// <summary>
-    /// Interaction logic for ProductCategoriesPage.xaml
+    /// Interaction logic for CategoriesPage.xaml
     /// </summary>
-    public partial class ProductCategoriesPage : Page
+    public partial class CategoriesPage : Page
     {
-        public ProductCategoriesPage()
+        public CategoriesPage()
         {
             InitializeComponent();
         }
-
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int comboBoxItemIndex = (sender as Selector).SelectedIndex;
@@ -38,6 +37,20 @@ namespace OperatorApp_Win.Views
             {
                 cvs.SortDescriptions.Add(new SortDescription("Supplier.ShortName", ListSortDirection.Ascending));
             }
+        }
+
+        private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            /* using (var ms = new System.IO.MemoryStream(OperatorApp.Resources.Images.EmptyPicture))
+             {
+                 var image = new BitmapImage();
+                 image.BeginInit();
+                 image.CacheOption = BitmapCacheOption.OnLoad; // here
+                 image.StreamSource = ms;
+                 image.EndInit();
+                 ((Image)sender).Source = image;
+             }*/
+          //  ((Image)sender).Source = null;
         }
     }
 }

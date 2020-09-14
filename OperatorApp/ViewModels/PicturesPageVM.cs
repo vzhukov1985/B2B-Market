@@ -234,7 +234,7 @@ namespace OperatorApp.ViewModels
         {
             if (DialogService.ShowOpenPictureDialog())
             {
-                CustomPicture = ImageProcessor.GetResizedConvertedImageData(new Uri(DialogService.FilePath));
+                var CustomPicture = ImageProcessor.GetResizedConvertedProductImageData(new Uri(DialogService.FilePath));
                 if (CustomPicture == null)
                 {
                     DialogService.ShowMessageDialog("Неподдерживаемый формат файла", "Ошибка");

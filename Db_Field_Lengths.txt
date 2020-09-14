@@ -1,0 +1,39 @@
+GUIDs - char(36)
+volumes - decimal(8,3) - max 99 999,999
+quantities - decimal(10,3) -  - max 9 999 999,999
+prices - decimal (10,2) - max 99 999 999,99
+
+
+
+categories names - varchar(50)
+product name - varchar(100)
+
+supplier product code - varchar(30)
+supplier category name - varchar(200)
+supplier product name - varchar(1000)
+
+internal product code - int
+quantityunit - varchar(50)
+volumetype - varchar(30)
+volumeunit - varchar(30)
+
+
+
+client shortname - varchar(100)
+client fullname - varchar(200)
+User name - varchar(50)
+User surname - varchar(50)
+User login - varchar(20)
+PasswordHash - char(60)
+InitialPassword - varchar(16)
+PinHash - char(60)
+bin - char(12)
+country - varchar(50)
+city - varchar(50)
+address - varchar(200)
+phone - varchar(30)
+e-mail - char(320) - maximum valid e-mail account
+ContactPersonName - varchar(100)
+contactPersonPhone - varchar(30)
+
+Archived address - varchar(350) =country+city+address

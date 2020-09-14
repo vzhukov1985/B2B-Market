@@ -70,8 +70,8 @@ namespace Core.DBModels
             }
         }
 
-        private int _remains;
-        public int Remains
+        private decimal _remains;
+        public decimal Remains
         {
             get { return _remains; }
             set

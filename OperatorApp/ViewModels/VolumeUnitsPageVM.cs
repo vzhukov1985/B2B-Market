@@ -299,7 +299,6 @@ namespace OperatorApp.ViewModels
         }
 
 
-
         public async Task QueryDb(bool UpdateVolumeUnitsToMatch = true, bool UpdateVolumeUnits = true)
         {
             using (MarketDbContext db = new MarketDbContext())
@@ -350,6 +349,9 @@ namespace OperatorApp.ViewModels
         public CommandType ShowPreviousPageCommand { get; }
         public CommandType ShowNextPageCommand { get; }
 
+        public CommandType ShowPositionOffersCommand { get; }
+        public CommandType ShowMatchedPositionDependenciesCommand { get; }
+
         public VolumeUnitsPageVM(IPageService pageService, IDialogService dialogService)
         {
             PageService = pageService;
@@ -390,6 +392,11 @@ namespace OperatorApp.ViewModels
             ShowPreviousPageCommand.Create(_ => PageService.ShowVolumeTypesPage());
             ShowNextPageCommand = new CommandType();
             ShowNextPageCommand.Create(_ => PageService.ShowProductExtraPropertyTypesPage());
+
+            ShowPositionOffersCommand = new CommandType();
+            ShowPositionOffersCommand.Create(_ => DialogService.ShowPositionOffers(SelectedMatchVolumeUnit), _ => SelectedMatchVolumeUnit != null);
+            ShowMatchedPositionDependenciesCommand = new CommandType();
+            ShowMatchedPositionDependenciesCommand.Create(_ => DialogService.ShowPositionOffers(SelectedVolumeUnit), _ => SelectedVolumeUnit != null);
 
             _ = QueryDb(false, true); //Query with true,false executes when ShowUncheckedOnly property is set
         }

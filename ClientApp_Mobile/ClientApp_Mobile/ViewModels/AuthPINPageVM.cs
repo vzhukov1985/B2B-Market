@@ -174,14 +174,20 @@ namespace ClientApp_Mobile.ViewModels
                         MessagingCenter.Unsubscribe<object>("AndroidAuth", "Success");
                         MessagingCenter.Subscribe<object>("AndroidAuth", "Success", (sender) =>
                         {
-                            InfoText = "Отпечаток распознан. Выполняется вход...";
-                            Task.Run(() => ProceedAuth());
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                InfoText = "Отпечаток распознан. Выполняется вход...";
+                                Task.Run(() => ProceedAuth());
+                            });
                         });
                         MessagingCenter.Unsubscribe<object>("AndroidAuth", "Fail");
                         MessagingCenter.Subscribe<object>("AndroidAuth", "Fail", (sender) =>
                         {
-                            InfoText = "Отпечаток не распознан. Попробуйте еще раз или введите код:";
-                            PINIsWrong = true; PINIsWrong = false;
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                InfoText = "Отпечаток не распознан. Попробуйте еще раз или введите код:";
+                                PINIsWrong = true; PINIsWrong = false;
+                            });
                         });
 
                         DependencyService.Get<IBiometricPieAuthenticate>().RegisterOrAuthenticate();
@@ -193,14 +199,21 @@ namespace ClientApp_Mobile.ViewModels
                         MessagingCenter.Unsubscribe<string>("AndroidAuth", "Success");
                         MessagingCenter.Subscribe<string>("AndroidAuth", "Success", (sender) =>
                         {
-                            InfoText = "Отпечаток распознан. Выполняется вход...";
-                            Task.Run(() => ProceedAuth());
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+
+                                InfoText = "Отпечаток распознан. Выполняется вход...";
+                                Task.Run(() => ProceedAuth());
+                            });
                         });
                         MessagingCenter.Unsubscribe<string>("AndroidAuth", "Fail");
                         MessagingCenter.Subscribe<string>("AndroidAuth", "Fail", (sender) =>
                         {
-                            InfoText = "Отпечаток не распознан. Попробуйте еще раз или введите код:";
-                            PINIsWrong = true; PINIsWrong = false;
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                InfoText = "Отпечаток не распознан. Попробуйте еще раз или введите код:";
+                                PINIsWrong = true; PINIsWrong = false;
+                            });
                         });
                     }
                 }

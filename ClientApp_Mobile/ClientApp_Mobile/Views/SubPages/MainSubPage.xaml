@@ -18,7 +18,7 @@
             <Label Style="{StaticResource TitleBarLabel}">
                 <Label.Text>
                     <MultiBinding StringFormat="{}{0} ({1})">
-                        <Binding Path="User.Client.FullName"/>
+                        <Binding Path="User.Client.ShortName"/>
                         <Binding Path="User.Name"/>
                     </MultiBinding>
                 </Label.Text>
@@ -109,7 +109,7 @@
                                            Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"/>
 
                                     <Label Grid.Row="0" Grid.Column="1"
-                                           Text="{Binding FullName}"
+                                           Text="{Binding ShortName}"
                                            TextColor="{Binding IsContractedWithClient, Converter={StaticResource BoolToContractedColorConverter}}"
                                            Style="{StaticResource TopCategorySuppliersLabel}"/>
 

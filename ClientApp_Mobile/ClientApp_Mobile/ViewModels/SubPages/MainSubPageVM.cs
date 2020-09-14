@@ -35,7 +35,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             set
             {
                 _topCategories = value;
-                HeightCategories = (_topCategories.Count * 65) + (_topCategories.Count * 1);
+                if (_topCategories != null)
+                    HeightCategories = (_topCategories.Count * 65) + (_topCategories.Count * 1);
                 OnPropertyChanged("TopCategories");
             }
         }
@@ -47,7 +48,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             set
             {
                 _suppliers = value;
-                HeightSuppliers = ((_suppliers.Count+1) * 65) + ((_suppliers.Count+1) * 1);
+                if (_suppliers != null)
+                    HeightSuppliers = ((_suppliers.Count + 1) * 65) + ((_suppliers.Count + 1) * 1);
                 OnPropertyChanged("Suppliers");
             }
         }
@@ -79,13 +81,13 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         private void ShowSupplierProducts(Supplier selectedSupplier)
         {
-            if (selectedSupplier.FullName == "Наши поставщики")
+            if (selectedSupplier.ShortName == "Наши поставщики")
             {
                 ShellPageService.GotoOffersPage("Наши поставщики", null, ContractedSuppliersIds);
             }
             else
             {
-                ShellPageService.GotoOffersPage(selectedSupplier.FullName, null, new List<Guid>() { selectedSupplier.Id });
+                ShellPageService.GotoOffersPage(selectedSupplier.ShortName, null, new List<Guid>() { selectedSupplier.Id });
             }
         }
 
@@ -95,20 +97,25 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             try
             {
                 ContractedSuppliersIds = new List<Guid>(User.Client.Contracts.Select(c => c.Supplier.Id));
+
                 List<Supplier> unsortedSuppliersList;
+
                 using (MarketDbContext db = new MarketDbContext())
                 {
                     TopCategories = await db.TopCategories.AsNoTracking().ToListAsync();
 
                     unsortedSuppliersList = await db.Suppliers
+                        .Select(s => new Supplier { Id = s.Id, ShortName = s.ShortName })
                         .AsNoTracking()
                         .Where(s => s.IsActive == true)
                         .ToListAsync();
                 }
+
                 foreach (Supplier supplier in unsortedSuppliersList)
                     supplier.IsContractedWithClient = ContractedSuppliersIds.Contains(supplier.Id);
-                Suppliers = unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.FullName).ToList(); ;
-                Suppliers.Insert(0, new Supplier { IsContractedWithClient = true, FullName = "Наши поставщики", Id = Guid.Empty });
+
+                Suppliers = unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.ShortName).ToList(); ;
+                Suppliers.Insert(0, new Supplier { IsContractedWithClient = true, ShortName = "Наши поставщики", Id = Guid.Empty });
                 IsBusy = false;
             }
             catch
@@ -119,7 +126,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        
+
         public Command ShowMidCategoriesCommand { get; }
         public Command ShowSupplierProductsCommand { get; }
 

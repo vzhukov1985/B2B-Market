@@ -49,7 +49,7 @@
 
                             <Label Grid.Row="0"
                                    Style="{StaticResource GroupLabel}"
-                                   Text="{Binding ArchivedSupplier.FullName}"/>
+                                   Text="{Binding ArchivedSupplier.ShortName}"/>
 
                             <CollectionView Grid.Row="1" ItemsSource="{Binding ArchivedOrders}" SelectionMode="None" HeightRequest="{Binding ArchivedOrders.Count, Converter={StaticResource LVHeightCurrentRequestConfirm}}">
                                 <CollectionView.ItemTemplate>
@@ -95,7 +95,7 @@
                                                        Margin="0,0,15,7"
                                                        FontAttributes="Bold">
                                                     <Label.Text>
-                                                        <MultiBinding  StringFormat="{}{0} {1} x {2:G20} тг">
+                                                        <MultiBinding  StringFormat="{}{0:G20} {1} x {2:G20} тг">
                                                             <Binding Path="Quantity"/>
                                                             <Binding Path="QuantityUnit"/>
                                                             <Binding Path="Price"/>
@@ -178,7 +178,7 @@
                                        FontAttributes="Bold"
                                        HorizontalTextAlignment="Center"
                                        VerticalTextAlignment="Center"
-                                       Text="{Binding TotalPrice, StringFormat='Сумма:.#x0a;{0:G20} тг'}" />
+                                       Text="{Binding TotalPrice, StringFormat='Сумма:&#x0a;{0:G20} тг'}" />
 
                                 <BoxView Grid.Row="3" Grid.ColumnSpan="3"
                                          BackgroundColor="{StaticResource B2B_DarkGray_Color}"/>

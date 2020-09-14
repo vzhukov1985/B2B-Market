@@ -18,7 +18,7 @@
             <Label Style="{StaticResource TitleBarLabel}">
                 <Label.Text>
                     <MultiBinding StringFormat="{}{0} ({1})">
-                        <Binding Path="User.Client.FullName"/>
+                        <Binding Path="User.Client.ShortName"/>
                         <Binding Path="User.Name"/>
                     </MultiBinding>
                 </Label.Text>
@@ -148,12 +148,14 @@
                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=DecrementOrderCommand}"
                                                  CommandParameter="{Binding .}"/>
 
-                                        <Entry WidthRequest="50"
-                                           HorizontalTextAlignment="Center"
-                                           Margin="7,0,7,0"
-                                           Keyboard="Numeric"
-                                           Text="{Binding OrderQuantity,Mode=TwoWay}"
-                                           ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=ChangesInOrderAreMadeCommand}"/>
+                                        <controls:DecimalEntry WidthRequest="50"
+                                                               HorizontalTextAlignment="Center"
+                                                               Margin="7,0,7,0"
+                                                               Keyboard="Numeric"
+                                                               Text="{Binding OrderQuantity,Mode=OneWay, StringFormat='{}{0:G20}'}"
+                                                               Completed="DecimalEntry_Completed"
+                                                               ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=ChangesInOrderAreMadeCommand}"/>
+
 
                                         <ImageButton Style="{StaticResource PlusButton}" 
                                                  WidthRequest="45" HeightRequest="45"

@@ -71,7 +71,7 @@
                                 <Label.Text>
                                     <MultiBinding StringFormat="{}{0:d} - {1}">
                                         <Binding Path="DateTimeSent"/>
-                                        <Binding Path="ArchivedSupplier.FullName"/>
+                                        <Binding Path="ArchivedSupplier.ShortName"/>
                                     </MultiBinding>
                                 </Label.Text>
                             </Label>

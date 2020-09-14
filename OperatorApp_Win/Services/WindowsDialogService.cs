@@ -57,6 +57,98 @@ namespace OperatorApp_Win.Services
             
         }
 
+        public string ShowPositionOffers(MatchQuantityUnit qu)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(qu);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(QuantityUnit qu)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(qu);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(MatchVolumeType vt)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(vt);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(VolumeType vt)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(vt);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(MatchVolumeUnit vu)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(vu);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(VolumeUnit vu)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(vu);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(MatchProductExtraPropertyType pept)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(pept);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(ProductExtraPropertyType pept)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(pept);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(MatchProductCategory pc)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(pc);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+        public string ShowPositionOffers(ProductCategory pc)
+        {
+            var dc = new PositionDependenciesDlgVM<RelayCommand>(pc);
+            PositionDependenciesDlg dlg = new PositionDependenciesDlg() { DataContext = dc };
+            if (dlg.ShowDialog() == true)
+                return dc.SelectedPositionName;
+            else
+                return null;
+        }
+
+        
         public bool ShowWarningElementsRemoveDialog(List<Tuple<string, string>> elements)
         {
             WarningElementsRemoveDlg dlg = new WarningElementsRemoveDlg() { DataContext = new WarningElementsRemoveDlgVM(elements) };
@@ -78,5 +170,6 @@ namespace OperatorApp_Win.Services
             }
             return false;
         }
+
     }
 }

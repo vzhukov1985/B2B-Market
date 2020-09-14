@@ -19,7 +19,7 @@ namespace Core.DBModels
     {
         public MarketDbContext()
         {
-           // Database.EnsureCreated();
+           //  Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -36,48 +36,23 @@ namespace Core.DBModels
             {
                 entity.ToTable("archivedorders");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ArchivedRequestId)
                     .HasName("FK_ArchivedOrders_To_ArchivedRequests");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ArchivedRequestId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.Price).HasColumnType("decimal(19,4)");
-
-                entity.Property(e => e.ProductCategory)
                     .IsRequired()
-                    .HasColumnType("varchar(200)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.ProductName)
-                    .IsRequired()
-                    .HasColumnType("varchar(1000)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.ProductVolume).HasColumnType("decimal(18,5)");
-
-                entity.Property(e => e.ProductVolumeType)
-                    .IsRequired()
-                    .HasColumnType("varchar(50)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.ProductVolumeUnit)
-                    .IsRequired()
-                    .HasColumnType("varchar(50)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.QuantityUnit)
-                    .IsRequired()
-                    .HasColumnType("varchar(50)")
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -86,6 +61,54 @@ namespace Core.DBModels
                     .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductName)
+                    .IsRequired()
+                    .HasColumnType("varchar(100)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductCategory)
+                    .IsRequired()
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductCode)
+                    .IsRequired()
+                    .HasColumnType("int");
+
+                entity.Property(e => e.ProductVolumeType)
+                    .IsRequired()
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductVolumeUnit)
+                    .IsRequired()
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductVolume)
+                    .IsRequired()
+                    .HasColumnType("decimal(8,3)");
+
+                entity.Property(e => e.QuantityUnit)
+                    .IsRequired()
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Quantity)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,3)");
+
+                entity.Property(e => e.Price)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,2)");
+
+
 
                 entity.HasOne(d => d.ArchivedRequest)
                     .WithMany(p => p.ArchivedOrders)
@@ -98,45 +121,78 @@ namespace Core.DBModels
             {
                 entity.ToTable("archivedrequests");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ArchivedSupplierId)
                     .HasName("FK_ArchivedRequests_To_ArchivedSuppliers");
 
                 entity.HasIndex(e => e.ClientId)
                     .HasName("FK_ArchivedRequests_To_Clients");
 
+
+                
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ArchivedSupplierId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasColumnType("int");
 
                 entity.Property(e => e.ClientId)
                     .IsRequired(false)
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.Comments)
-                    .HasColumnType("varchar(300)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.DeliveryDateTime)
-                    .HasColumnType("timestamp")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.SenderName)
+                    .IsRequired(false)
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SenderSurname)
+                    .IsRequired(false)
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.TotalPrice).HasColumnType("decimal(19,4)");
+                entity.Property(e => e.ItemsQuantity)
+                    .IsRequired()
+                    .HasColumnType("int");
+
+                entity.Property(e => e.ProductsQuantity)
+                    .IsRequired()
+                    .HasColumnType("int");
+
+                entity.Property(e => e.ArchivedSupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.TotalPrice)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,2)");
+
+                entity.Property(e => e.DateTimeSent)
+                    .IsRequired()
+                    .HasColumnType("timestamp");
+
+                entity.Property(e => e.DeliveryDateTime)
+                    .IsRequired()
+                    .HasColumnType("timestamp");
+
+                entity.Property(e => e.Comments)
+                    .IsRequired(false)
+                    .HasColumnType("varchar(300)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.ArchivedSupplier)
                     .WithMany()
@@ -153,21 +209,31 @@ namespace Core.DBModels
 
             modelBuilder.Entity<ArchivedRequestsStatus>(entity =>
             {
+                entity.ToTable("archivedrequestsstatuses");
+
                 entity.HasKey(e => new { e.ArchivedRequestId, e.ArchivedRequestStatusTypeId })
                     .HasName("PRIMARY");
-
-                entity.ToTable("archivedrequestsstatuses");
 
                 entity.HasIndex(e => e.ArchivedRequestStatusTypeId)
                     .HasName("FK_ArchivedRequestsStatuses_To_ArchivedRequestStatusType");
 
+
+
                 entity.Property(e => e.ArchivedRequestId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ArchivedRequestStatusTypeId)
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.DateTime)
+                    .HasColumnType("timestamp");
+
+
 
                 entity.HasOne(d => d.ArchivedRequest)
                     .WithMany(p => p.ArchivedRequestsStatuses)
@@ -186,17 +252,24 @@ namespace Core.DBModels
             {
                 entity.ToTable("archivedrequeststatustypes");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Description)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Name)
+                entity.Property(e => e.Description)
                     .IsRequired()
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
@@ -207,12 +280,26 @@ namespace Core.DBModels
             {
                 entity.ToTable("archivedsuppliers");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Address)
-                    .HasColumnType("varchar(1000)")
+                entity.Property(e => e.ShortName)
+                    .IsRequired()
+                    .HasColumnType("varchar(100)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.FullName)
+                    .IsRequired()
+                    .HasColumnType("varchar(200)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -223,25 +310,18 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Email)
-                    .HasColumnType("varchar(320)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.FullName)
-                    .IsRequired()
-                    .HasColumnType("varchar(1000)")
+                entity.Property(e => e.Address)
+                    .HasColumnType("varchar(350)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Phone)
-                    .HasColumnType("varchar(100)")
+                    .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ShortName)
-                    .IsRequired()
-                    .HasColumnType("varchar(200)")
+                entity.Property(e => e.Email)
+                    .HasColumnType("varchar(320)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
             });
@@ -250,12 +330,28 @@ namespace Core.DBModels
             {
                 entity.ToTable("clients");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Address)
-                    .HasColumnType("varchar(30)")
+                entity.Property(e => e.ShortName)
+                    .IsRequired()
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValueSql("'Новый Клиент'")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.FullName)
+                    .IsRequired()
+                    .HasColumnType("varchar(200)")
+                    .HasDefaultValueSql("'Новый Клиент'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -266,23 +362,23 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
+                entity.Property(e => e.Country)
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
                 entity.Property(e => e.City)
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.ContactPersonName)
+                
+                entity.Property(e => e.Address)
                     .HasColumnType("varchar(200)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ContactPersonPhone)
+                entity.Property(e => e.Phone)
                     .HasColumnType("varchar(30)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.Country)
-                    .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -291,22 +387,13 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.FullName)
-                    .IsRequired()
-                    .HasColumnType("varchar(1000)")
-                    .HasDefaultValueSql("'Новый Клиент'")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.Phone)
+                entity.Property(e => e.ContactPersonName)
                     .HasColumnType("varchar(100)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ShortName)
-                    .IsRequired()
-                    .HasColumnType("varchar(200)")
-                    .HasDefaultValueSql("'Новый Клиент'")
+                entity.Property(e => e.ContactPersonPhone)
+                    .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
             });
@@ -315,6 +402,9 @@ namespace Core.DBModels
             {
                 entity.ToTable("clientsusers");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ClientId)
                     .HasName("FK_ClientUsers_To_Client");
 
@@ -322,11 +412,17 @@ namespace Core.DBModels
                     .HasName("UQ_ClientUsers_Login")
                     .IsUnique();
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ClientId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -353,6 +449,10 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
+                entity.Property(e => e.IsAdmin)
+                    .IsRequired()
+                    .HasColumnType("tinyint(1)");
+
                 entity.Property(e => e.InitialPassword)
                     .IsRequired()
                     .HasColumnType("varchar(16)")
@@ -365,6 +465,8 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
+
+
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.ClientId)
@@ -376,13 +478,32 @@ namespace Core.DBModels
             {
                 entity.ToTable("conflicteddescriptions");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ProductId)
                     .HasName("FK_ConflictedDescriptions_To_Product");
 
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_ConflictedDescriptions_To_Supplier");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -391,13 +512,7 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ProductId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.SupplierId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.HasOne(d => d.Product)
                     .WithMany()
@@ -416,54 +531,75 @@ namespace Core.DBModels
             {
                 entity.ToTable("conflictedpics");
 
-                entity.HasIndex(e => e.ProductId)
-                    .HasName("FK_ConflictedPics_To_Product");
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
 
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_ConflictedPics_To_Supplier");
 
+                entity.HasIndex(e => e.ProductId)
+                    .HasName("FK_ConflictedPics_To_Product");
+
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ProductId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.HasOne(d => d.Product)
-                    .WithMany()
-                    .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_ConflictedPics_To_Product");
+
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ConflictedPics_To_Supplier");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany()
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ConflictedPics_To_Product");
             });
 
             modelBuilder.Entity<Contract>(entity =>
             {
+                entity.ToTable("contracts");
+
                 entity.HasKey(e => new { e.ClientId, e.SupplierId })
                     .HasName("PRIMARY");
-
-                entity.ToTable("contracts");
 
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_Contracts_To_Suppliers");
 
+
+
                 entity.Property(e => e.ClientId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Contracts)
@@ -480,21 +616,33 @@ namespace Core.DBModels
 
             modelBuilder.Entity<CurrentOrder>(entity =>
             {
+                entity.ToTable("currentorders");
+
                 entity.HasKey(e => new { e.ClientId, e.OfferId })
                     .HasName("PRIMARY");
-
-                entity.ToTable("currentorders");
 
                 entity.HasIndex(e => e.OfferId)
                     .HasName("FK_CurrentOrders_To_Offers");
 
+
+
                 entity.Property(e => e.ClientId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.OfferId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Quantity)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,3)");
+
+
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.CurrentOrders)
@@ -516,16 +664,27 @@ namespace Core.DBModels
 
                 entity.ToTable("favorites");
 
+                entity.HasIndex(e => e.ClientUserId)
+                    .HasName("FK_Favorites_To_ClientUsers");
+
                 entity.HasIndex(e => e.ProductId)
                     .HasName("FK_Favorites_To_Products");
 
+
+
                 entity.Property(e => e.ClientUserId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ProductId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.ClientUser)
                     .WithMany(p => p.Favorites)
@@ -543,6 +702,9 @@ namespace Core.DBModels
             modelBuilder.Entity<MatchOffer>(entity =>
             {
                 entity.ToTable("matchoffers");
+
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
 
                 entity.HasIndex(e => e.MatchProductCategoryId)
                     .HasName("FK_MatchOffers_To_MatchProductCategories");
@@ -562,29 +724,23 @@ namespace Core.DBModels
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_MatchOffers_To_Suppliers");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.DiscountPrice).HasColumnType("decimal(19,4)");
-
-                entity.Property(e => e.MatchProductCategoryId)
+                entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.MatchQuantityUnitId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.MatchVolumeTypeId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.MatchVolumeUnitId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.OfferId)
+                entity.Property(e => e.SupplierProductCode)
+                    .IsRequired()
+                    .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -594,19 +750,52 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ProductVolume).HasColumnType("decimal(18,5)");
-
-                entity.Property(e => e.RetailPrice).HasColumnType("decimal(19,4)");
-
-                entity.Property(e => e.SupplierId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.SupplierProductCode)
+                entity.Property(e => e.MatchProductCategoryId)
                     .IsRequired()
-                    .HasColumnType("varchar(30)")
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.MatchVolumeTypeId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.MatchVolumeUnitId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductVolume)
+                    .IsRequired()
+                    .HasColumnType("decimal(8,3)");
+
+                entity.Property(e => e.MatchQuantityUnitId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Remains)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,3)");
+
+                entity.Property(e => e.RetailPrice)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,2)");
+
+                entity.Property(e => e.DiscountPrice)
+                    .HasColumnType("decimal(10,2)");
+
+                entity.Property(e => e.OfferId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.MatchProductCategory)
                     .WithMany()
@@ -649,21 +838,26 @@ namespace Core.DBModels
             {
                 entity.ToTable("matchproductcategories");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ProductCategoryId)
                     .HasName("FK_MatchProductCategories_To_ProductCategories");
 
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_MatchProductCategories_To_Suppliers");
 
-                entity.Property(e => e.Id)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ProductCategoryId)
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -672,6 +866,14 @@ namespace Core.DBModels
                     .HasColumnType("varchar(200)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductCategoryId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.ProductCategory)
                     .WithMany()
@@ -690,21 +892,32 @@ namespace Core.DBModels
             {
                 entity.ToTable("matchproductextraproperties");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.MatchOfferId)
                     .HasName("FK_MatchProductExtraProperties_To_MatchOffers");
 
                 entity.HasIndex(e => e.MatchProductExtraPropertyTypeId)
                     .HasName("FK_MatchProductExtraProperties_To_MatchProductsExtraPropertyTypes");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.MatchOfferId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.MatchProductExtraPropertyTypeId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -713,6 +926,8 @@ namespace Core.DBModels
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.MatchOffer)
                     .WithMany(p => p.MatchProductExtraProperties)
@@ -731,21 +946,26 @@ namespace Core.DBModels
             {
                 entity.ToTable("matchproductextrapropertytypes");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ProductExtraPropertyTypeId)
                     .HasName("FK_MatchExtraPropertyTypes_To_ExtraPropertyTypes");
 
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_MatchExtraPropertyTypes_To_Suppliers");
 
-                entity.Property(e => e.Id)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ProductExtraPropertyTypeId)
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -754,6 +974,14 @@ namespace Core.DBModels
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductExtraPropertyTypeId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.ProductExtraPropertyType)
                     .WithMany()
@@ -772,21 +1000,26 @@ namespace Core.DBModels
             {
                 entity.ToTable("matchquantityunits");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.QuantityUnitId)
                     .HasName("FK_MatchQuantityUnits_To_QuantityUnits");
 
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_MatchQuantityUnits_To_Suppliers");
 
-                entity.Property(e => e.Id)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.QuantityUnitId)
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -803,6 +1036,14 @@ namespace Core.DBModels
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.QuantityUnitId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.QuantityUnit)
                     .WithMany()
@@ -821,17 +1062,26 @@ namespace Core.DBModels
             {
                 entity.ToTable("matchvolumetypes");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_MatchVolumeTypes_To_Suppliers");
 
                 entity.HasIndex(e => e.VolumeTypeId)
                     .HasName("FK_MatchVolumeTypes_To_VolumeTypes");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -842,8 +1092,12 @@ namespace Core.DBModels
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.VolumeTypeId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
@@ -862,17 +1116,26 @@ namespace Core.DBModels
             {
                 entity.ToTable("matchvolumeunits");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_MatchVolumeUnits_To_Suppliers");
 
                 entity.HasIndex(e => e.VolumeUnitId)
                     .HasName("FK_MatchVolumeUnits_To_VolumeUnits");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("Char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -891,8 +1154,12 @@ namespace Core.DBModels
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.VolumeUnitId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
@@ -911,10 +1178,17 @@ namespace Core.DBModels
             {
                 entity.ToTable("midcategories");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.TopCategoryId)
                     .HasName("FK_MidCategories_To_TopCategories");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -925,19 +1199,26 @@ namespace Core.DBModels
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.TopCategoryId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.TopCategory)
                     .WithMany()
                     .HasForeignKey(d => d.TopCategoryId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MidCategories_To_TopCategories");
             });
 
             modelBuilder.Entity<Offer>(entity =>
             {
                 entity.ToTable("offers");
+
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
 
                 entity.HasIndex(e => e.ProductId)
                     .HasName("FK_Offers_To_Products");
@@ -948,23 +1229,17 @@ namespace Core.DBModels
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_Offers_To_Suppliers");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.DiscountPrice).HasColumnType("decimal(19,4)");
-
-                entity.Property(e => e.ProductId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.QuantityUnitId)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.RetailPrice).HasColumnType("decimal(19,4)");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -973,6 +1248,36 @@ namespace Core.DBModels
                     .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ProductId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.QuantityUnitId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Remains)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,3)");
+
+                entity.Property(e => e.RetailPrice)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,2)");
+
+                entity.Property(e => e.DiscountPrice)
+                    .IsRequired()
+                    .HasColumnType("decimal(10,2)");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasColumnType("tinyint(1)");
+
+
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Offers)
@@ -997,45 +1302,63 @@ namespace Core.DBModels
             {
                 entity.ToTable("productcategories");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.MidCategoryId)
                     .HasName("FK_ProductCategories_To_MidCategories");
 
-                entity.Property(e => e.Id)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.MidCategoryId)
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnType("varchar(200)")
+                    .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.MidCategoryId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.MidCategory)
                     .WithMany()
                     .HasForeignKey(d => d.MidCategoryId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProductCategories_To_MidCategories");
             });
 
             modelBuilder.Entity<ProductDescription>(entity =>
             {
+                entity.ToTable("productdescriptions");
+
                 entity.HasKey(e => e.ProductId)
                     .HasName("PRIMARY");
 
-                entity.ToTable("productdescriptions");
+
 
                 entity.Property(e => e.ProductId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Text)
+                    .IsRequired(false)
                     .HasColumnType("longtext")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.Product)
                     .WithOne(p => p.Description)
@@ -1048,21 +1371,32 @@ namespace Core.DBModels
             {
                 entity.ToTable("productextraproperties");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.ProductId)
                     .HasName("FK_ProductExtraProperties_To_Products");
 
                 entity.HasIndex(e => e.PropertyTypeId)
                     .HasName("FK_ProductExtraProperties_To_ProductExtraPropertyTypes");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.ProductId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.PropertyTypeId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1071,6 +1405,8 @@ namespace Core.DBModels
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ExtraProperties)
@@ -1089,7 +1425,12 @@ namespace Core.DBModels
             {
                 entity.ToTable("productextrapropertytypes");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1104,7 +1445,8 @@ namespace Core.DBModels
             {
                 entity.ToTable("products");
 
-                entity.HasKey(e => e.Id);
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
 
                 entity.HasIndex(e => e.CategoryId)
                     .HasName("FK_Products_To_ProductCategories");
@@ -1115,30 +1457,47 @@ namespace Core.DBModels
                 entity.HasIndex(e => e.VolumeUnitId)
                     .HasName("FK_Products_To_VolumeUnits");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.CategoryId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasColumnType("int");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnType("varchar(1000)")
+                    .HasColumnType("varchar(100)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Volume).HasColumnType("decimal(18,5)");
-
                 entity.Property(e => e.VolumeTypeId)
-                    .HasDefaultValueSql("'95290064-1f67-4b40-84ee-be5dd70b0c4f'")
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.VolumeUnitId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Volume)
+                    .IsRequired()
+                    .HasColumnType("decimal(8,3)");
+
+
 
                 entity.HasOne(d => d.Category)
                     .WithMany()
@@ -1163,7 +1522,14 @@ namespace Core.DBModels
             {
                 entity.ToTable("quantityunits");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+                
+                
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1184,12 +1550,28 @@ namespace Core.DBModels
             {
                 entity.ToTable("suppliers");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Address)
-                    .HasColumnType("varchar(300)")
+                entity.Property(e => e.ShortName)
+                    .IsRequired()
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValueSql("'Новый Поставщик'")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.FullName)
+                    .IsRequired()
+                    .HasColumnType("varchar(200)")
+                    .HasDefaultValueSql("'Новый Поставщик'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1201,28 +1583,56 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.City)
+                entity.Property(e => e.Country)
+                    .IsRequired(false)
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ContactPersonName)
+                entity.Property(e => e.City)
+                    .IsRequired(false)
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Address)
+                    .IsRequired(false)
                     .HasColumnType("varchar(200)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ContactPersonPhone)
+                entity.Property(e => e.Phone)
+                    .IsRequired(false)
                     .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Country)
-                    .HasColumnType("varchar(50)")
+                entity.Property(e => e.Email)
+                    .IsRequired(false)
+                    .HasColumnType("varchar(320)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Email)
-                    .HasColumnType("varchar(320)")
+                entity.Property(e => e.ContactPersonName)
+                    .IsRequired(false)
+                    .HasColumnType("varchar(100)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ContactPersonPhone)
+                    .IsRequired(false)
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasColumnType("tinyint(1)");
+
+                entity.Property(e => e.FTPUser)
+                    .IsRequired()
+                    .HasColumnName("FTPUser")
+                    .HasColumnType("varchar(45)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1232,39 +1642,18 @@ namespace Core.DBModels
                     .HasColumnType("varchar(45)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.FTPUser)
-                    .IsRequired()
-                    .HasColumnName("FTPUser")
-                    .HasColumnType("varchar(45)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.FullName)
-                    .IsRequired()
-                    .HasColumnType("varchar(1000)")
-                    .HasDefaultValueSql("'Новый Поставщик'")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.Phone)
-                    .HasColumnType("varchar(30)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.ShortName)
-                    .IsRequired()
-                    .HasColumnType("varchar(200)")
-                    .HasDefaultValueSql("'Новый Поставщик'")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
             });
 
             modelBuilder.Entity<TopCategory>(entity =>
             {
                 entity.ToTable("topcategories");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1279,19 +1668,23 @@ namespace Core.DBModels
             {
                 entity.ToTable("unmatcheddescriptions");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_UnmatchedDescriptions_To_Supplier");
 
-                entity.Property(e => e.Id)
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.Description)
-                    .HasColumnType("longtext")
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1300,6 +1693,13 @@ namespace Core.DBModels
                     .HasColumnType("varchar(30)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Description)
+                    .HasColumnType("longtext")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
@@ -1312,14 +1712,23 @@ namespace Core.DBModels
             {
                 entity.ToTable("unmatchedpics");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.HasIndex(e => e.SupplierId)
                     .HasName("FK_UnmatchedPics_To_Supplier");
 
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.SupplierId)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1329,6 +1738,8 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
+                
+                
                 entity.HasOne(d => d.Supplier)
                     .WithMany()
                     .HasForeignKey(d => d.SupplierId)
@@ -1340,7 +1751,14 @@ namespace Core.DBModels
             {
                 entity.ToTable("volumetypes");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
@@ -1355,17 +1773,22 @@ namespace Core.DBModels
             {
                 entity.ToTable("volumeunits");
 
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
                 entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.FullName)
+                entity.Property(e => e.ShortName)
                     .IsRequired()
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
-                entity.Property(e => e.ShortName)
+                entity.Property(e => e.FullName)
                     .IsRequired()
                     .HasColumnType("varchar(50)")
                     .HasCharSet("utf8mb4")
@@ -1406,7 +1829,7 @@ namespace Core.DBModels
         public virtual DbSet<ConflictedPic> ConflictedPics { get; set; }
         public virtual DbSet<UnmatchedDescription> UnmatchedDescriptions { get; set; }
         public virtual DbSet<ConflictedDescription> ConflictedDescriptions { get; set; }
-        
+
 
         private static readonly object locker = new object();
         public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)
@@ -1484,7 +1907,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeTypeId).Distinct();
+                IEnumerable<Guid?> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeTypeId).Distinct();
                 return db.MatchVolumeTypes.Where(mvt => !allMatchOffers.Contains(mvt.Id)).Select(mvt => mvt.Id).ToList();
             }
         }
@@ -1492,7 +1915,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeTypeId).Distinct();
+                IEnumerable<Guid?> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeTypeId).Distinct();
                 return db.MatchVolumeTypes.Where(mvt => !allMatchOffers.Contains(mvt.Id)).Include(vt => vt.Supplier).ToList();
             }
         }
@@ -1521,7 +1944,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeUnitId).Distinct();
+                IEnumerable<Guid?> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeUnitId).Distinct();
                 return db.MatchVolumeUnits.Where(mvu => !allMatchOffers.Contains(mvu.Id)).Select(mvu => mvu.Id).ToList();
             }
         }
@@ -1529,7 +1952,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeUnitId).Distinct();
+                IEnumerable<Guid?> allMatchOffers = db.MatchOffers.Select(mo => mo.MatchVolumeUnitId).Distinct();
                 return db.MatchVolumeUnits.Where(mvu => !allMatchOffers.Contains(mvu.Id)).Include(vu => vu.Supplier).ToList();
             }
         }

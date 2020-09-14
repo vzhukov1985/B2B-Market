@@ -1,0 +1,31 @@
+B2B Market - Администратор
+B2B_Market_Administrator
+1193198147:AAFjrPo3p1Gmyj-SCpDOI7t1JrTJq6HmDy0
+
+Commands:
+All:
+ AddMeAsAdmin - добавить в группу администраторов бота
+Admins:
+ UpdateDb - обновить БД
+ AgentLog - выслать лог-файл агента
+ ChangeAddAdminPassword - сменить пароль, используемый для добавления администраторов
+ ShowAllAdmins - показать всех текущих администраторов
+ DropAdmin - удалить администратора из списка
+ DropOperator - отключить текущего оператора от бота
+ ConnectOperator - подключить оператора
+ DbStatus - статус необработанных данных БД
+
+
+
+
+
+
+B2B Market - Оператор
+B2B_Market_Operator_bot
+1338661891:AAHYl_0yStZDDZWz6yga7lIEYJsxcRxBZaI
+
+Commands:
+All:
+ ConnectMe - выслать запрос на добавление
+Operator:
+ DbStatus - статус необработанных данных БД

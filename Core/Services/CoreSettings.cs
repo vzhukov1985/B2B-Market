@@ -6,14 +6,20 @@ namespace Core.Services
 {
     public static class CoreSettings
     {
-        //server=192.168.1.3;UserId=Admin;Password=MySQLPassword;database=b2bmarket;
+        //Local Asus cable -  server=192.168.1.3;UserId=Admin;Password=MySQLPassword;database=b2bmarket;
         public static readonly string EncryptedDbConnectionString = "9ucmH/N6jVy9M9+laUnDs3x62+eernAe6yqDs/Fa/NlwXJuKNovM/GgAkVzrRii6rvCVKFIJd0dnwn3OVNAUYsI7U3MCSJCqVJf8MJOEAU78GEHA3LSSYwTgiFYXHa2NQZhQ/28SMCryMXMlI38PcA==";
+        //Local Asus wifi - server=192.168.1.100;UserId=Admin;Password=MySQLPassword;database=b2bmarket;
+       // public static readonly string EncryptedDbConnectionString = "IDATzl/gMMa2UQTYY+HkEDkA2h9hjuaspgJI/rCw4QZiqnYZwToM9irkNEZqbt/YZ6aVrb1SH0Qqv1g4E4qcqIGlAvJhfB9a5hYWWmpgUQnCBf7DJN9uyutq/+FATwF4SnEqXmcZoygDo54wBYT10g==";
+
         public static readonly string DbConnectionSalt = "gy!34q2.gteas_";
 
         public static readonly string ClientUserPwdSalt = "q98`Рsd~вя$";
         public static readonly string ClientUserPINSalt = "!kj8__dsf%Z";
 
+        //Local Asus cable
         public readonly static string ServerIP = "192.168.1.3";
+        //Local Asus wifi
+        //public readonly static string ServerIP = "192.168.1.100";
         public readonly static string b2bDataLocalDir = @"D:/B2B FTP Server Mirror";
 
         public readonly static string HTTPServerUrl = "http://"+ ServerIP;
@@ -25,8 +31,12 @@ namespace Core.Services
         public readonly static string LogFileName = "AgentLog.txt";
 
         public readonly static string PictureExtension = ".jpg";
-        public readonly static int ProductPictureHeight = 300;
         public readonly static int ProductPictureWidth = 300;
+        public readonly static int ProductPictureHeight = 300;
+
+        public readonly static int TopCategoryPictureWidth = 600;
+        public readonly static int TopCategoryPictureHeight = 300;
+
 
         public readonly static string PicturesPath = "/Pictures";
         public readonly static string ProductsPicturesPath = PicturesPath + "/Products";
@@ -39,14 +49,14 @@ namespace Core.Services
         public readonly static string SuppliersPicturePath = PicturesPath + "/Suppliers";
 
         public readonly static string SuppliersPath = "/Suppliers";
-        public readonly static string SupplierOffersPath = "/Offers";
-        public readonly static string SupplierOrdersPath = "/Orders";
-        public readonly static string SupplierDescriptionsPath = "/Descriptions";
+        public readonly static string SupplierOffersPath = "/offers";
+        public readonly static string SupplierOrdersPath = "/orders";
+        public readonly static string SupplierDescriptionsPath = "/descriptions";
 
-        public readonly static string ProductPicturesRequestFileName = "ReqProdPics.xml";
-        public readonly static string ProductPicturesExtractionFileName = "ProdPics.xml";
-        public readonly static string ProductDescriptionsRequestFileName = "ReqProdDesc.xml";
-        public readonly static string ProductDescriptionsExtractionFileName = "ProdDesc.xml";
+        public readonly static string ProductPicturesRequestFileName = "reqprodpics.xml";
+        public readonly static string ProductPicturesExtractionFileName = "prodpics.xml";
+        public readonly static string ProductDescriptionsRequestFileName = "reqproddesc.xml";
+        public readonly static string ProductDescriptionsExtractionFileName = "proddesc.xml";
 
         public readonly static string SettingsPath = "/Settings";
         public readonly static string AgentSettingsFileName = "Agent.xml";

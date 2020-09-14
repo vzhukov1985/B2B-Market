@@ -61,7 +61,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             get
             {
                 if (Categories != null)
-                    return Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity);
+                    return (int)Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity);
                 return 0;
             }
         }
@@ -128,7 +128,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     ClientId = User.ClientId,
                     SenderName = User.Name,
                     SenderSurname = User.Surname,
-                    ItemsQuantity = Orders.Where(o => o.SupplierId == s.Key.Id).Sum(o => o.OrderQuantity),
+                    ItemsQuantity = (int)Orders.Where(o => o.SupplierId == s.Key.Id).Sum(o => o.OrderQuantity),
                     ProductsQuantity = Orders.Where(o => o.SupplierId == s.Key.Id).GroupBy(o => o.ProductId).Count(),
                     TotalPrice = Orders.Where(o => o.SupplierId == s.Key.Id).Sum(o => o.PriceForClient * o.OrderQuantity),
                     ArchivedSupplierId = s.Key.Id,
@@ -143,7 +143,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                         Email = s.Key.Email,
                         FullName = s.Key.FullName,
                         Phone = s.Key.Phone,
-                        ShortName = s.Key.Phone
+                        ShortName = s.Key.ShortName
                     },
                     ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>
                 {
@@ -198,7 +198,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             if (IsGroupingByCategories)
                 dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от всех поставщиков?";
             else
-                dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от поставщика \"{selectedProduct.Orders[0].Supplier.FullName}\"?";
+                dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от поставщика \"{selectedProduct.Orders[0].Supplier.ShortName}\"?";
 
             if (await DialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false)
                 return;
@@ -215,11 +215,9 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                         db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId));
                         db.SaveChanges();
                     }
-                    foreach (CurrentOrder order in User.Client.CurrentOrders)
-                    {
-                        if (OffersToRemoveIds.Contains(order.OfferId) && order.ClientId == User.ClientId)
-                            User.Client.CurrentOrders.Remove(order);
-                    }
+
+                    User.Client.CurrentOrders.RemoveAll(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId);
+
                     QueryDb(false);
                     IsBusy = false;
                 }
@@ -256,11 +254,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                         db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId));
                         db.SaveChanges();
                     }
-                    foreach (CurrentOrder order in User.Client.CurrentOrders)
-                    {
-                        if (OffersToRemoveIds.Contains(order.OfferId) && order.ClientId == User.ClientId)
-                            User.Client.CurrentOrders.Remove(order);
-                    }
+
+                    User.Client.CurrentOrders.RemoveAll(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId);
+
+
                     QueryDb(false);
                     IsBusy = false;
                 }

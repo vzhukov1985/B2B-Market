@@ -344,6 +344,9 @@ namespace OperatorApp.ViewModels
         public CommandType ShowPreviousPageCommand { get; }
         public CommandType ShowNextPageCommand { get; }
 
+        public CommandType ShowPositionOffersCommand { get; }
+        public CommandType ShowMatchedPositionDependenciesCommand { get; }
+
         public ProductExtraPropertyTypesPageVM(IPageService pageService, IDialogService dialogService)
         {
             PageService = pageService;
@@ -383,7 +386,12 @@ namespace OperatorApp.ViewModels
             ShowPreviousPageCommand = new CommandType();
             ShowPreviousPageCommand.Create(_ => PageService.ShowVolumeUnitsPage());
             ShowNextPageCommand = new CommandType();
-            ShowNextPageCommand.Create(_ => PageService.ShowProductCategoriesPage());
+            ShowNextPageCommand.Create(_ => PageService.ShowCategoriesPage());
+
+            ShowPositionOffersCommand = new CommandType();
+            ShowPositionOffersCommand.Create(_ => DialogService.ShowPositionOffers(SelectedMatchProductExtraPropertyType), _ => SelectedMatchProductExtraPropertyType != null);
+            ShowMatchedPositionDependenciesCommand = new CommandType();
+            ShowMatchedPositionDependenciesCommand.Create(_ => DialogService.ShowPositionOffers(SelectedProductExtraPropertyType), _ => SelectedProductExtraPropertyType != null);
 
             _ = QueryDb(false, true); //Query with true,false executes when ShowUncheckedOnly property is set
         }

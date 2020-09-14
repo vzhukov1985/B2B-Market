@@ -22,6 +22,17 @@ namespace OperatorApp.Services
             List<ProductExtraPropertyType> availableProductExtraPropertyTypes,
             List<QuantityUnit> availableQuantityUnits);
 
+        string ShowPositionOffers(MatchQuantityUnit qu);
+        string ShowPositionOffers(QuantityUnit qu);
+        string ShowPositionOffers(MatchVolumeType vt);
+        string ShowPositionOffers(VolumeType vt);
+        string ShowPositionOffers(MatchVolumeUnit vu);
+        string ShowPositionOffers(VolumeUnit vu);
+        string ShowPositionOffers(MatchProductExtraPropertyType pept);
+        string ShowPositionOffers(ProductExtraPropertyType pept);
+        string ShowPositionOffers(MatchProductCategory pc);
+        string ShowPositionOffers(ProductCategory pc);
+
         bool ShowWarningElementsRemoveDialog(List<Tuple<string,string>> elements);
 
         bool ShowOpenPictureDialog();

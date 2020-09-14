@@ -36,8 +36,8 @@ namespace Core.DBModels
             }
         }
 
-        private int _quantity;
-        public int Quantity
+        private decimal _quantity;
+        public decimal Quantity
         {
             get { return _quantity; }
             set

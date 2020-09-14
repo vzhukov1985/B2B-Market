@@ -70,8 +70,8 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _matchVolumeTypeId;
-        public Guid MatchVolumeTypeId
+        private Guid? _matchVolumeTypeId;
+        public Guid? MatchVolumeTypeId
         {
             get { return _matchVolumeTypeId; }
             set
@@ -81,8 +81,8 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _matchVolumeUnitId;
-        public Guid MatchVolumeUnitId
+        private Guid? _matchVolumeUnitId;
+        public Guid? MatchVolumeUnitId
         {
             get { return _matchVolumeUnitId; }
             set
@@ -114,8 +114,8 @@ namespace Core.DBModels
             }
         }
 
-        private int _remains;
-        public int Remains
+        private decimal _remains;
+        public decimal Remains
         {
             get { return _remains; }
             set

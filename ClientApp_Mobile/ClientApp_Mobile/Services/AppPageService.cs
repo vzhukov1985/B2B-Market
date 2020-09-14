@@ -12,17 +12,25 @@ namespace ClientApp_Mobile.Services
     {
         public static void GoToAuthPasswordPage()
         {
-            Application.Current.MainPage = new AuthPasswordPage() { BindingContext = new AuthPasswordPageVM() };
+            var page = new AuthPasswordPage();
+            var bc = new AuthPasswordPageVM();
+            page.BindingContext = bc;
+            Application.Current.MainPage = page;
         }
 
         public static void GoToAuthPINPage()
         {
-            Application.Current.MainPage = new AuthPINPage() { BindingContext = new AuthPINPageVM() };
+            var page = new AuthPINPage();
+            var bc = new AuthPINPageVM();
+            page.BindingContext = bc;
+            Application.Current.MainPage = page;
         }
 
         public static async void GoToFirstTimePasswordSetPage()
         {
-            var page = new FirstTimePwdSetPage { BindingContext = new FirstTimePwdSetPageVM() };
+            var page = new FirstTimePwdSetPage();
+            var bc = new FirstTimePwdSetPageVM();
+            page.BindingContext = bc;
             await Application.Current.MainPage.Navigation.PushModalAsync(page);
         }
 

@@ -682,7 +682,7 @@ namespace OperatorApp.ViewModels
             MatchOffersCommand.Create(_ => MatchOffers(), _ => SelectedProduct != null && SelectedMatchOffer != null);
 
             ShowPreviousPageCommand = new CommandType();
-            ShowPreviousPageCommand.Create(_ => PageService.ShowTopCategoriesPage());
+            ShowPreviousPageCommand.Create(_ => PageService.ShowCategoriesPage());
             ShowNextPageCommand = new CommandType();
             ShowNextPageCommand.Create(_ => PageService.ShowPicturesPage());
 

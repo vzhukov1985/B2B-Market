@@ -70,6 +70,17 @@
                         </TextBlock>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Внести новую" Command="{Binding AddNewQuantityUnitBasedOnMatchCommand}"/>
+                        <MenuItem Header="Сопоставить" Command="{Binding MatchQuantityUnitsCommand}"/>
+                        <MenuItem Header="Позиции поставщика" Command="{Binding ShowPositionOffersCommand}"/>
+                        <MenuItem Header="Удалить" Command="{Binding RemoveMatchQuantityUnitCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Удалить неиспользуемые" Command="{Binding RemoveUnusedMatchQuantityUnitsCommand}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
@@ -139,6 +150,16 @@
                         </TextBlock>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Добавить новую" Command="{Binding AddQuantityUnitCommand}"/>
+                        <MenuItem Header="Связанные позиции" Command="{Binding ShowMatchedPositionDependenciesCommand}"/>
+                        <MenuItem Header="Редактировать" Command="{Binding EditQuantityUnitCommand}"/>
+                        <MenuItem Header="Удалить" Command="{Binding RemoveQuantityUnitCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Удалить неиспользуемые" Command="{Binding RemoveUnusedQuantityUnitsCommand}"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <Grid Grid.Row="2">
@@ -194,7 +215,7 @@
         
         </Grid>
 
-        <Button Grid.Row="2" Grid.Column="0" Content="Внести новый" Style="{StaticResource BigButton}" Command="{Binding AddNewQuantityUnitBasedOnMatchCommand}"/>
+        <Button Grid.Row="2" Grid.Column="0" Content="Внести новую" Style="{StaticResource BigButton}" Command="{Binding AddNewQuantityUnitBasedOnMatchCommand}"/>
         <Button Grid.Row="2" Grid.Column="1" Content="Сопоставить" Style="{StaticResource BigButton}" Command="{Binding MatchQuantityUnitsCommand}"/>
 
         <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">

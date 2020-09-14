@@ -21,9 +21,7 @@ namespace OperatorApp.ViewModels
         public CommandType VolumeTypesPageCommand { get; }
         public CommandType VolumeUnitsPageCommand { get; }
         public CommandType ProductExtraPropertyTypesPageCommand { get; }
-        public CommandType ProductCategoriesPageCommand { get; }
-        public CommandType MidCategoriesPageCommand { get; }
-        public CommandType TopCategoriesPageCommand { get; }
+        public CommandType CategoriesPageCommand { get; }
         public CommandType OffersPageCommand { get;}
         public CommandType PicturesPageCommand { get; }
         public CommandType DescriptionsPageCommand { get; }
@@ -38,12 +36,8 @@ namespace OperatorApp.ViewModels
             VolumeUnitsPageCommand.Create(_ => pageService.ShowVolumeUnitsPage());
             ProductExtraPropertyTypesPageCommand = new CommandType();
             ProductExtraPropertyTypesPageCommand.Create(_ => pageService.ShowProductExtraPropertyTypesPage());
-            ProductCategoriesPageCommand = new CommandType();
-            ProductCategoriesPageCommand.Create(_ => pageService.ShowProductCategoriesPage());
-            MidCategoriesPageCommand = new CommandType();
-            MidCategoriesPageCommand.Create(_ => pageService.ShowMidCategoriesPage());
-            TopCategoriesPageCommand = new CommandType();
-            TopCategoriesPageCommand.Create(_ => pageService.ShowTopCategoriesPage());
+            CategoriesPageCommand = new CommandType();
+            CategoriesPageCommand.Create(_ => pageService.ShowCategoriesPage());
             OffersPageCommand = new CommandType();
             OffersPageCommand.Create(_ => pageService.ShowOffersPage());
             PicturesPageCommand = new CommandType();

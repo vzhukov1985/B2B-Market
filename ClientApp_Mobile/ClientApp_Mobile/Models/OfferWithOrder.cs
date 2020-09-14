@@ -29,8 +29,8 @@ namespace ClientApp_Mobile.Models
             }
         }
 
-        private int _orderQuantity;
-        public int OrderQuantity
+        private decimal _orderQuantity;
+        public decimal OrderQuantity
         {
             get { return _orderQuantity; }
             set
@@ -40,8 +40,8 @@ namespace ClientApp_Mobile.Models
             }
         }
 
-        private int _orderQuantityBeforeUserChanges;
-        public int OrderQuantityBeforeUserChanges
+        private decimal _orderQuantityBeforeUserChanges;
+        public decimal OrderQuantityBeforeUserChanges
         {
             get { return _orderQuantityBeforeUserChanges; }
             set

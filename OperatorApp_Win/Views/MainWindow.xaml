@@ -25,18 +25,16 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Content="Ед. изм. кол-ва" Style="{StaticResource MenuButton}" Command="{Binding QuantityUnitsPageCommand}"/>
             <Button Grid.Column="1" Content="Типы объема/веса" Style="{StaticResource MenuButton}" Command="{Binding VolumeTypesPageCommand}"/>
             <Button Grid.Column="2" Content="Ед. изм. об/веса" Style="{StaticResource MenuButton}" Command="{Binding VolumeUnitsPageCommand}"/>
             <Button Grid.Column="3" Content="Доп. св-ва" Style="{StaticResource MenuButton}" Command="{Binding ProductExtraPropertyTypesPageCommand}"/>
-            <Button Grid.Column="4" Content="Кат 1-го уровня" Style="{StaticResource MenuButton}" Command="{Binding ProductCategoriesPageCommand}"/>
-            <Button Grid.Column="5" Content="Кат 2-го уровня" Style="{StaticResource MenuButton}" Command="{Binding MidCategoriesPageCommand}"/>
-            <Button Grid.Column="6" Content="Кат 3-го уровня" Style="{StaticResource MenuButton}" Command="{Binding TopCategoriesPageCommand}"/>
-            <Button Grid.Column="7" Content="Товары" Style="{StaticResource MenuButton}" Command="{Binding OffersPageCommand}"/>
-            <Button Grid.Column="8" Content="Картинки" Style="{StaticResource MenuButton}" Command="{Binding PicturesPageCommand}"/>
-            <Button Grid.Column="9" Content="Описания" Style="{StaticResource MenuButton}" Command="{Binding DescriptionsPageCommand}"/>
+            <Button Grid.Column="4" Content="Категории" Style="{StaticResource MenuButton}" Command="{Binding CategoriesPageCommand}"/>
+            <Button Grid.Column="5" Content="Товары" Style="{StaticResource MenuButton}" Command="{Binding OffersPageCommand}"/>
+            <Button Grid.Column="6" Content="Картинки" Style="{StaticResource MenuButton}" Command="{Binding PicturesPageCommand}"/>
+            <Button Grid.Column="7" Content="Описания" Style="{StaticResource MenuButton}" Command="{Binding DescriptionsPageCommand}"/>
+            <Button Grid.Column="8" Content="Очистка" Style="{StaticResource MenuButton}" Command="{Binding CleaningPageCommand}"/>
         </Grid>
             
            

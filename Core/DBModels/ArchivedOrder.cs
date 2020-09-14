@@ -128,8 +128,8 @@ namespace Core.DBModels
         }
 
 
-        private int _quantity;
-        public int Quantity
+        private decimal _quantity;
+        public decimal Quantity
         {
             get { return _quantity; }
             set
@@ -199,9 +199,9 @@ namespace Core.DBModels
             }
         }
 
-        private int _remains;
+        private decimal _remains;
         [NotMapped]
-        public int Remains
+        public decimal Remains
         {
             get { return _remains; }
             set

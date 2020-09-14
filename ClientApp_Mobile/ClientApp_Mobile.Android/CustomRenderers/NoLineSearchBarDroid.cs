@@ -9,12 +9,12 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using ClientApp_Mobile.Droid;
+using ClientApp_Mobile.Droid.CustomRenderers;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(ClientApp_Mobile.Renderers.NoLineSearchBar), typeof(NoLineSearchBarDroid))]
-namespace ClientApp_Mobile.Droid
+namespace ClientApp_Mobile.Droid.CustomRenderers
 {
     class NoLineSearchBarDroid : SearchBarRenderer
     {

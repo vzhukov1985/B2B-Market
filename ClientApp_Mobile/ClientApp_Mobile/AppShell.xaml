@@ -73,7 +73,7 @@
         </DataTemplate>
     </Shell.ItemTemplate>
     
-    <FlyoutItem Title="Market" Route="Main">
+    <FlyoutItem Title="Главная" Route="Main">
         <ShellContent Title="Главная" 
                       Icon="Tab_Home.png" 
                       Route="TabMain" 
@@ -110,5 +110,5 @@
                       ContentTemplate="{DataTemplate localsp:ArchivedRequestsListSubPage}">
         </ShellContent>
     </FlyoutItem>
-
+    
 </Shell>

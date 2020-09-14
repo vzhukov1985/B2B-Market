@@ -52,6 +52,11 @@ namespace Core.Services
             }
         }
 
+        public static Uri GetTopCategoryPictureUri(Guid topCategoryId)
+        {
+            return new Uri(CoreSettings.FTPAdminAccessString + CoreSettings.TopCategoriesPicturePath + $"/{topCategoryId}{CoreSettings.PictureExtension}");
+        }
+
         public static List<Guid> GetProductsMatchedPicturesGuids()
         {
             List<Guid> result = new List<Guid>();
@@ -297,7 +302,7 @@ namespace Core.Services
             FtpWebRequest ftpRequest;
             try
             {
-                ftpRequest = (FtpWebRequest)WebRequest.Create(GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierOrdersPath + "/Order" + request.Code.ToString() + ".xml");
+                ftpRequest = (FtpWebRequest)WebRequest.Create(GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierOrdersPath + "/order" + request.Code.ToString() + ".xml");
             }
             catch
             {

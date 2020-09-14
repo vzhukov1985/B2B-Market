@@ -26,7 +26,7 @@ namespace Core.Services
             }
         }
 
-        private static Bitmap ResizeBitmap(Bitmap bmpSource)
+        private static Bitmap ResizeBitmap(Bitmap bmpSource, int width, int height)
         {
             int sourceWidth = bmpSource.Width;
             int sourceHeight = bmpSource.Height;
@@ -34,8 +34,8 @@ namespace Core.Services
             int sourceY = 0;
             int destX = 0;
             int destY = 0;
-            int Width = CoreSettings.ProductPictureWidth;
-            int Height = CoreSettings.ProductPictureHeight;
+            int Width = width;
+            int Height = height;
 
             float nPercent;
             float nPercentW;
@@ -77,7 +77,7 @@ namespace Core.Services
             return bmpDest;
         }
 
-        public static bool ResizeAndConvertImageToJpeg(Uri source, Uri dest)
+        public static bool ResizeAndConvertProductImageToJpeg(Uri source, Uri dest, int width, int height, bool deleteSourceFile = true)
         {
             Bitmap bmpSource;
             Stream srcStream;
@@ -87,7 +87,7 @@ namespace Core.Services
             switch (source.Scheme)
             {
                 case "file":
-                    srcStream = new FileStream(source.LocalPath, FileMode.Open);
+                    srcStream = new FileStream(source.LocalPath, FileMode.Open, access: FileAccess.Read, share: FileShare.Read);
                     
                     break;
                 case "ftp":
@@ -112,11 +112,11 @@ namespace Core.Services
             {
                 wc.Dispose();
                 srcStream.Dispose();
-                DeleteSourceImage(source);
+                if (deleteSourceFile) DeleteSourceImage(source);
                 return false;
             }
 
-            Bitmap bmpDest = ResizeBitmap(bmpSource);
+            Bitmap bmpDest = ResizeBitmap(bmpSource, width, height);
 
             switch (dest.Scheme)
             {
@@ -145,11 +145,11 @@ namespace Core.Services
             bmpDest.Dispose();
             srcStream.Dispose();
             destStream.Dispose();
-            DeleteSourceImage(source);
+            if (deleteSourceFile) DeleteSourceImage(source);
             return true;
         }
 
-        public static byte[] GetResizedConvertedImageData(Uri source)
+        public static byte[] GetResizedConvertedProductImageData(Uri source)
         {
             Bitmap bmpSource;
             Stream srcStream;
@@ -184,7 +184,7 @@ namespace Core.Services
                 return null;
             }
 
-            Bitmap bmpDest = ResizeBitmap(bmpSource);
+            Bitmap bmpDest = ResizeBitmap(bmpSource,CoreSettings.ProductPictureWidth, CoreSettings.ProductPictureHeight);
             using (var stream = new MemoryStream())
             {
                 wc.Dispose();
