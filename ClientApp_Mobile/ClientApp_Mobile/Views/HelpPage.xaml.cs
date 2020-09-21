@@ -1,5 +1,4 @@
-﻿using ClientApp_Mobile.ViewModels.SubPages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +7,14 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace ClientApp_Mobile.Views.SubPages
+namespace ClientApp_Mobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MainSubPage : ContentPage
+    public partial class HelpPage : ContentPage
     {
-        public MainSubPage()
+        public HelpPage()
         {
             InitializeComponent();
-            BindingContext = new MainSubPageVM();
         }
     }
 }

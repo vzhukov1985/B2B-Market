@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
 {
     public class PINSetPageVM:BaseVM
     {
+        public delegate Task GoBackFunction();
+        private GoBackFunction goBack;
+
 
         private string _pinCode;
         public string PINCode
@@ -45,16 +49,17 @@ namespace ClientApp_Mobile.ViewModels
             if (PINCode.Length == 4) { Proceed(); }
         }
 
-        private async void Proceed()
+        private void Proceed()
         {
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            goBack();
         }
 
         public Command PINButtonTapCommand { get; }
 
-        public PINSetPageVM(string title)
+        public PINSetPageVM(string title, GoBackFunction goBackFunc)
         {
             Title = title;
+            goBack = goBackFunc;
 
             PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
         }

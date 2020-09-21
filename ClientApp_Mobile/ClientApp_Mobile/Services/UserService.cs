@@ -45,6 +45,9 @@ namespace ClientApp_Mobile.Services
                                     .ThenInclude(of => of.Supplier)
                                     .FirstOrDefault();
                 }
+
+                CurrentUser.Client.ContractedSuppliersIDs = new List<Guid>(CurrentUser.Client.Contracts.Select(c => c.Supplier.Id));
+
             }
             catch
             {

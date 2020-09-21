@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
@@ -45,8 +46,26 @@ namespace ClientApp_Mobile.ViewModels
             return true;
         }
 
+        public Command ContactSupportCommand => new Command(async() =>
+        {
+            try
+            {
+                var message = new EmailMessage
+                {
+                    Subject = $"Проблема c моб. прил. B2B Market HoReCa ({UserService.CurrentUser?.Login})",
+                    To = new List<string> { "support@b2bmarket.kz" }
+                };
+                await Email.ComposeAsync(message);
+            }
+            catch
+            {
+                return;
+            }
+        });
+
         public BaseVM()
         {
+
         }
 
     }

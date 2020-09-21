@@ -25,8 +25,6 @@ namespace ClientApp_Mobile.iOS.Services
             var context = new LAContext();
             if (context.CanEvaluatePolicy(LAPolicy.DeviceOwnerAuthenticationWithBiometrics, out NSError AuthError))
             {
-
-
                 var replyHandler = new LAContextReplyHandler((success, error) => {
 
                     Device.BeginInvokeOnMainThread(() => {

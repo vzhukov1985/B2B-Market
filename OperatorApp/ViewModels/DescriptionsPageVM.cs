@@ -118,7 +118,7 @@ namespace OperatorApp.ViewModels
                     {
                         using (MarketDbContext db = new MarketDbContext())
                         {
-                            SelectedProduct.Description = db.ProductDescriptions.Find(SelectedProduct.Id);
+                            SelectedProduct.Description = db.ProductDescriptions.Where(pd => pd.ProductId == SelectedProduct.Id).FirstOrDefault();
                         }
                     }
                 }
@@ -236,7 +236,7 @@ namespace OperatorApp.ViewModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                ProductDescription desc = db.ProductDescriptions.Find(SelectedProduct.Id);
+                ProductDescription desc = db.ProductDescriptions.Where(pd => pd.ProductId == SelectedProduct.Id).FirstOrDefault();
                 if (desc == null)
                 {
                     db.Add(new ProductDescription { ProductId = SelectedProduct.Id, Text = SelectedProduct.Description.Text });

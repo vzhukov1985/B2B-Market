@@ -40,11 +40,6 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Column="1" Text="{Binding Product.Name}"
-                       FontSize="20" FontAttributes="Bold"
-                       HorizontalTextAlignment="Center"
-                       Margin="10"/>
-
                     <Image Grid.Column="0"
                        Style="{StaticResource ProductFavoriteIconImage}"
                        VerticalOptions="Center"
@@ -56,6 +51,14 @@
                                               Command="{Binding AddRemoveProductToFavouritesCommand}"/>
                         </Image.GestureRecognizers>
                     </Image>
+
+                    <Label Grid.Column="1" Text="{Binding Product.Name}"
+                           FontSize="20" FontAttributes="Bold"
+                           HeightRequest="60"
+                           VerticalTextAlignment="Center"
+                           HorizontalTextAlignment="Center"
+                           Margin="10"/>
+
                 </Grid>
 
                 <Grid>

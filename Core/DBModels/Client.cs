@@ -183,6 +183,19 @@ namespace Core.DBModels
             }
         }
 
+        private List<Guid> _contractedSuppliersIDs;
+        [NotMapped]
+        public List<Guid> ContractedSuppliersIDs
+        {
+            get { return _contractedSuppliersIDs; }
+            set
+            {
+                _contractedSuppliersIDs = value;
+                OnPropertyChanged("ContractedSuppliersIDs");
+            }
+        }
+
+
 
         public Client()
         {

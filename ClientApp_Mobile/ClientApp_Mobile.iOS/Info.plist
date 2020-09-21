@@ -20,9 +20,9 @@
 	<key>MinimumOSVersion</key>
 	<string>8.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>B2B&#x2007;Market&#x2007;HoReCa</string>
+	<string>B2bM HoReCa</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.zhukovtechnologies.B2BMarketHoReCa</string>
+	<string>com.zhukovtech.B2BMHoReCa</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleName</key>
@@ -33,7 +33,7 @@
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-  <key>NSFaceIDUsageDescription</key>
-  <string>Разрешите вход с помощью Face ID</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Разрешите вход с помощью Face ID</string>
 </dict>
 </plist>

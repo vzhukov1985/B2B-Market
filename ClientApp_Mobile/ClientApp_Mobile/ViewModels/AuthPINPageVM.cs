@@ -57,7 +57,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 _selectedUser = value;
                 OnPropertyChanged("SelectedUser");
-                if (value != null) CheckBiometricAccess();
+                if (value != null && !IsBiometricCheckActive) CheckBiometricAccess();
                 if (Device.RuntimePlatform == Device.iOS) MessagingCenter.Send<string>("iOS_Picker", "Unfocus");
             }
         }
@@ -107,18 +107,37 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    pinHash = (db.ClientsUsers.Find(SelectedUser.Id)).PinHash;
+                    pinHash = db.ClientsUsers.Where(cu => cu.Id == SelectedUser.Id).Select(cu => cu.PinHash).FirstOrDefault();
                 }
-
-                if (Authentication.CheckPIN(PINCode, pinHash))
+                if (pinHash != null)
                 {
-                    ProceedAuth();
+                    if (Authentication.CheckPIN(PINCode, pinHash))
+                    {
+                        ProceedAuth();
+                    }
+                    else
+                    {
+                        Device.BeginInvokeOnMainThread(() => { PINIsWrong = true; PINIsWrong = false; });
+                    }
+                    IsBusy = false;
                 }
                 else
                 {
-                    Device.BeginInvokeOnMainThread(() => { PINIsWrong = true; PINIsWrong = false; });
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        UserService.AppLocalUsers.RemoveAppUser(SelectedUser);
+                        Users.Remove(SelectedUser);
+                        if (Users.Count > 0)
+                        {
+                            SelectedUser = Users[0];
+                        }
+                        else
+                        {
+                            AppPageService.GoToAuthPasswordPage();
+                        }
+                        DialogService.ShowErrorDlg("Код быстрого доступа был сброшен на другом устройстве. Вход для этого пользователя возможен только по паролю");
+                    });
                 }
-                IsBusy = false;
             }
             catch
             {
@@ -132,7 +151,7 @@ namespace ClientApp_Mobile.ViewModels
         private void CheckBiometricAccess()
         {
             MessagingCenter.Send<string>("AndroidAuth", "Cancel");
-            if (SelectedUser.BiometricAccess == false)
+            if (SelectedUser.UseBiometricAccess == false)
             {
                 InfoText = "Введите код:";
                 BiometricImage = ImageSource.FromFile("Fingerprint_Inactive.png");
@@ -158,6 +177,7 @@ namespace ClientApp_Mobile.ViewModels
                     InfoText = "Введите код или используйте Face ID";
                     BiometricImage = ImageSource.FromFile("FaceID.png");
                 }
+                IsBiometricCheckActive = true;
                 GetAuthResults(authType);
             }
 
@@ -238,6 +258,7 @@ namespace ClientApp_Mobile.ViewModels
         private async void GetAuthResults(string authType)
         {
             var result = await DependencyService.Get<IBiometricAuthenticateService>().AuthenticateUserIDWithTouchID();
+            IsBiometricCheckActive = false;
             if (result)
             {
                 InfoText = authType == "TouchId" ? "Отпечаток распознан. Выполняется вход..." : "Лицо распознано. Выполняется вход...";
@@ -255,10 +276,10 @@ namespace ClientApp_Mobile.ViewModels
             if (await DialogService.ShowOkCancelDialog($"Пользователь \"{SelectedUser.DisplayName}\" будет удален из списка быстрого доступа для этого устройства. Вы хотите продолжить?", "ВНИМАНИЕ!") == true)
             {
                 UserService.AppLocalUsers.RemoveAppUser(SelectedUser);
+                Users.Remove(SelectedUser);
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    Users = new ObservableCollection<AppLocalUser>(UserService.AppLocalUsers);
-                    if (UserService.AppLocalUsers.Count == 0)
+                    if (Users.Count == 0)
                     {
                         AppPageService.GoToAuthPasswordPage();
                     }
@@ -275,15 +296,21 @@ namespace ClientApp_Mobile.ViewModels
         public Command RemoveLocalUserCommand { get; }
         public Command ForceBiometricCheckCommand { get; }
 
+        private bool IsBiometricCheckActive;
+
         public AuthPINPageVM()
         {
             Users = new ObservableCollection<AppLocalUser>(UserService.AppLocalUsers);
+            var userFromSettings = Users[UserService.AppLocalUsers.LastEnterUserIndex];
+            Users.RemoveAll(u => u.UsePINAccess == false);
+            if (!Users.Contains(userFromSettings))
+            {
+                UserService.AppLocalUsers.LastEnterUserIndex = 0;
+            }
             SelectedUser = Users[UserService.AppLocalUsers.LastEnterUserIndex];
             PINIsWrong = false;
 
-            CheckBiometricAccess();
-
-            PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
+             PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
             AuthorizeByPasswordCommand = new Command(_ => { MessagingCenter.Send<string>("AndroidAuth", "Cancel"); AppPageService.GoToAuthPasswordPage(); });
             RemoveLocalUserCommand = new Command(_ => RemoveLocalUser());
             ForceBiometricCheckCommand = new Command(_ => CheckBiometricAccess());

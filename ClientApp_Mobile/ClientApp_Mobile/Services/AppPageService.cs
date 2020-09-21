@@ -2,6 +2,7 @@
 using ClientApp_Mobile.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -10,27 +11,33 @@ namespace ClientApp_Mobile.Services
 {
     public static class AppPageService
     {
+        public static void GoToAuthorizationPage()
+        {
+            if (UserService.AppLocalUsers.Any(lu => lu.UsePINAccess == true))
+            {
+                GoToAuthPINPage();
+            }
+            else
+            {
+                GoToAuthPasswordPage();
+            }
+        }
+
         public static void GoToAuthPasswordPage()
         {
-            var page = new AuthPasswordPage();
-            var bc = new AuthPasswordPageVM();
-            page.BindingContext = bc;
+            var page = new AuthPasswordPage { BindingContext = new AuthPasswordPageVM() };
             Application.Current.MainPage = page;
         }
 
         public static void GoToAuthPINPage()
         {
-            var page = new AuthPINPage();
-            var bc = new AuthPINPageVM();
-            page.BindingContext = bc;
+            var page = new AuthPINPage { BindingContext = new AuthPINPageVM() };
             Application.Current.MainPage = page;
         }
 
         public static async void GoToFirstTimePasswordSetPage()
         {
-            var page = new FirstTimePwdSetPage();
-            var bc = new FirstTimePwdSetPageVM();
-            page.BindingContext = bc;
+            var page = new FirstTimePwdSetPage { BindingContext = new FirstTimePwdSetPageVM() };
             await Application.Current.MainPage.Navigation.PushModalAsync(page);
         }
 
@@ -54,13 +61,22 @@ namespace ClientApp_Mobile.Services
 
         public static void GoToMainMage()
         {
-            Application.Current.MainPage = new AppShell();
+            var page = new MainPage { BindingContext = new MainPageVM() };
+            if (UserService.AppLocalUsers.Any(lu => lu.UsePINAccess == true))
+            {
+                page.Items[2].Items[0].Items[0].ContentTemplate = new DataTemplate(typeof(AuthPINPage));
+            }
+            else
+            {
+                page.Items[2].Items[0].Items[0].ContentTemplate = new DataTemplate(typeof(AuthPasswordPage));
+            }
+            Application.Current.MainPage = page;
         }
 
         public static async Task<string> ShowSetPinPage(string title)
         {
             var source = new TaskCompletionSource<string>();
-            var page = new PINSetPage { BindingContext = new PINSetPageVM(title) }; ;
+            var page = new PINSetPage { BindingContext = new PINSetPageVM(title, () => Application.Current.MainPage.Navigation.PopModalAsync()) }; ;
             page.PageDisapearing += (pinCode) =>
             {
                 source.SetResult(pinCode);
@@ -72,11 +88,11 @@ namespace ClientApp_Mobile.Services
         public static async Task<bool> ShowBiometricTestPage()
         {
             var source = new TaskCompletionSource<bool>();
-            var bc = new BiometricTestPageVM();
+            var bc = new BiometricTestPageVM(() => Application.Current.MainPage.Navigation.PopModalAsync());
             var page = new BiometricTestPage() { BindingContext = bc };
-            page.PageDisapearing += (Result) =>
+            bc.ProceedCompleted += (bool result) =>
             {
-                source.SetResult(Result);
+                source.SetResult(result);
             };
             await Application.Current.MainPage.Navigation.PushModalAsync(page);
             return await source.Task;

@@ -12,6 +12,7 @@ using Core.Services;
 using Core.Models;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Core.DBModels
 {
@@ -19,13 +20,13 @@ namespace Core.DBModels
     {
         public MarketDbContext()
         {
-           //  Database.EnsureCreated();
+            //  Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql(StringCipher.Decrypt(CoreSettings.EncryptedDbConnectionString, CoreSettings.DbConnectionSalt));
+                optionsBuilder.UseMySql(CoreSettings.DbConnectionString);
                 //optionsBuilder.EnableSensitiveDataLogging(true); //TODO: Delete when deploy
             }
         }

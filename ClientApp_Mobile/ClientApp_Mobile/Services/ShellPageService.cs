@@ -39,8 +39,8 @@ namespace ClientApp_Mobile.Services
             if (selectedTopCategory != null)
             {
                 await Shell.Current.GoToAsync($"MidCategories");
-                CategoriesSubPage pg = (CategoriesSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
                 MidCategoriesSubPageVM bc = new MidCategoriesSubPageVM(selectedTopCategory);
+                CategoriesSubPage pg = (CategoriesSubPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
                 pg.BindingContext = bc;
             }
             isGoing = false;
@@ -148,6 +148,42 @@ namespace ClientApp_Mobile.Services
                 pg.BindingContext = bc;
             }
             isGoing = false;
+        }
+
+        public static async void GotoChangePasswordPage()
+        {
+            await Shell.Current.GoToAsync("ChangePassword");
+            ChangePasswordPage pg = (ChangePasswordPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+            ChangePasswordPageVM bc = new ChangePasswordPageVM();
+            pg.BindingContext = bc;
+        }
+
+        public static async Task<string> GotoSetPINPage(string title)
+        {
+            var source = new TaskCompletionSource<string>();
+            await Shell.Current.GoToAsync("PINPage");
+            var page = (PINSetPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+            var bc = new PINSetPageVM(title, () => Shell.Current.GoToAsync(".."));
+            page.BindingContext = bc;
+            page.PageDisapearing += (pinCode) =>
+            {
+                source.SetResult(pinCode);
+            };
+            return await source.Task;
+        }
+
+        public static async Task<bool> GotoBiometricTestPage()
+        {
+            var source = new TaskCompletionSource<bool>();
+            await Shell.Current.GoToAsync("BiometricTest");
+            var page = (BiometricTestPage)(Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?.PresentedPage;
+            var bc = new BiometricTestPageVM(() => Shell.Current.GoToAsync(".."));
+            page.BindingContext = bc;
+            bc.ProceedCompleted += (bool Result) =>
+            {
+                source.SetResult(Result);
+            };
+            return await source.Task;
         }
 
         public ShellPageService()

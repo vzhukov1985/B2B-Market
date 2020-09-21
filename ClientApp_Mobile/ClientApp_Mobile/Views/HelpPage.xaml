@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClientApp_Mobile.Views.HelpPage">
+    
+    
+    <Shell.TitleView>
+        <Grid>
+            <Label Style="{StaticResource TitleBarLabel}"
+                   Text="Справка"/>
+        </Grid>
+    </Shell.TitleView>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" 
+               Style="{StaticResource HeaderText}"
+               Text="Справка по приложению B2B Market HoReCa"/>
+
+        <Label Grid.Row="1"
+               Style="{StaticResource InfoText}" Margin="0,50,0,0"
+               VerticalOptions="Center"
+               FontAttributes="Bold"
+               Text="Справочный раздел для приложения находится в разработке."/>
+
+        <Label Grid.Row="2"
+               Style="{StaticResource InfoText}" Margin="0,10,0,0">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Если у вас возникли проблемы при работе с приложением, Вы можете связаться с нами по электронной почте: "/>
+                    <Span TextDecorations="Underline"
+                          TextColor="{StaticResource B2B_Blue_Color}"
+                          Text="support@b2bmarket.kz">
+                        <Span.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ContactSupportCommand}"/>
+                        </Span.GestureRecognizers>
+                    </Span>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+    </Grid>
+
+</ContentPage>

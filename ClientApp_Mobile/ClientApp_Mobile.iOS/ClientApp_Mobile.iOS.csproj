@@ -65,6 +65,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CustomRenderers\DecimalEntryiOS.cs" />
+    <Compile Include="CustomRenderers\ShellRendererNoDivideriOS.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="CustomRenderers\ColoredLineEntryiOS.cs" />
@@ -158,8 +159,10 @@
     <PackageReference Include="Xam.Plugins.Forms.KeyboardOverlap">
       <Version>1.0.0.4</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1364" />
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
+    <PackageReference Include="Xamarin.Forms">
+      <Version>4.8.0.1451</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
@@ -266,6 +269,15 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\FaceID_Inactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\User.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\IncorrectMark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\CorrectMark.png" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

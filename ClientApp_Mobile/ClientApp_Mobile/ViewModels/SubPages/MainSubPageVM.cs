@@ -77,13 +77,11 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         }
 
 
-        private List<Guid> ContractedSuppliersIds;
-
         private void ShowSupplierProducts(Supplier selectedSupplier)
         {
             if (selectedSupplier.ShortName == "Наши поставщики")
             {
-                ShellPageService.GotoOffersPage("Наши поставщики", null, ContractedSuppliersIds);
+                ShellPageService.GotoOffersPage("Наши поставщики", null, UserService.CurrentUser.Client.ContractedSuppliersIDs);
             }
             else
             {
@@ -96,8 +94,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             IsBusy = true;
             try
             {
-                ContractedSuppliersIds = new List<Guid>(User.Client.Contracts.Select(c => c.Supplier.Id));
-
                 List<Supplier> unsortedSuppliersList;
 
                 using (MarketDbContext db = new MarketDbContext())
@@ -105,14 +101,14 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     TopCategories = await db.TopCategories.AsNoTracking().ToListAsync();
 
                     unsortedSuppliersList = await db.Suppliers
-                        .Select(s => new Supplier { Id = s.Id, ShortName = s.ShortName })
                         .AsNoTracking()
+                        .Select(s => new Supplier { Id = s.Id, ShortName = s.ShortName, IsActive = s.IsActive })
                         .Where(s => s.IsActive == true)
                         .ToListAsync();
                 }
 
                 foreach (Supplier supplier in unsortedSuppliersList)
-                    supplier.IsContractedWithClient = ContractedSuppliersIds.Contains(supplier.Id);
+                    supplier.IsContractedWithClient = UserService.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
 
                 Suppliers = unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.ShortName).ToList(); ;
                 Suppliers.Insert(0, new Supplier { IsContractedWithClient = true, ShortName = "Наши поставщики", Id = Guid.Empty });

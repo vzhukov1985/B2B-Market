@@ -15,8 +15,8 @@ namespace ClientApp_Mobile.Models
         public string Name { get; set; }
         public string Surname { get; set; }
         public string CompanyName { get; set; }
-        public bool PINAccess { get; set; }
-        public bool BiometricAccess { get; set; }
+        public bool UsePINAccess { get; set; }
+        public bool UseBiometricAccess { get; set; }
 
         public string DisplayName { get => $"{CompanyName} - {Name} {Surname}"; }
 
@@ -27,8 +27,8 @@ namespace ClientApp_Mobile.Models
             Name = Preferences.Get($"User{Index}Name", "");
             Surname = Preferences.Get($"User{Index}Surname", "");
             CompanyName = Preferences.Get($"User{Index}Company", "");
-            PINAccess = Preferences.Get($"User{Index}PINAccess", false);
-            BiometricAccess = Preferences.Get($"User{Index}BiometricAccess", false);
+            UsePINAccess = Preferences.Get($"User{Index}PINAccess", false);
+            UseBiometricAccess = Preferences.Get($"User{Index}BiometricAccess", false);
         }
 
         public void UpdateCurrentUserPreferences(int index)
@@ -39,8 +39,8 @@ namespace ClientApp_Mobile.Models
             Name = user.Name;
             Surname = user.Surname;
             CompanyName = user.Client.ShortName;
-            PINAccess = !string.IsNullOrEmpty(user.PinHash);
-            BiometricAccess = user.UseBiometricAccess;
+            UsePINAccess = !string.IsNullOrEmpty(user.PinHash);
+            UseBiometricAccess = user.UseBiometricAccess;
             UpdateAppUserPreferences();
         }
 
@@ -50,8 +50,8 @@ namespace ClientApp_Mobile.Models
             Preferences.Set($"User{Index}Name", Name);
             Preferences.Set($"User{Index}Surname", Surname);
             Preferences.Set($"User{Index}Company", CompanyName);
-            Preferences.Set($"User{Index}PINAccess", PINAccess);
-            Preferences.Set($"User{Index}BiometricAccess", BiometricAccess);
+            Preferences.Set($"User{Index}PINAccess", UsePINAccess);
+            Preferences.Set($"User{Index}BiometricAccess", UseBiometricAccess);
         }
 
         public AppLocalUser()
@@ -63,9 +63,14 @@ namespace ClientApp_Mobile.Models
 
     public class AppLocalUsers : List<AppLocalUser>
     {
-        public int CurrentUserIndex { get; set; }
+        private int CurrentUserIndex { get; set; }
         public int LastEnterUserIndex { get; set; }
 
+
+        public AppLocalUser CurrentUser
+        {
+            get => this[CurrentUserIndex];
+        }
 
         public bool UserExistsInApp()
         {
@@ -97,7 +102,7 @@ namespace ClientApp_Mobile.Models
                 {
                     CurrentUserIndex = i;
                     LastEnterUserIndex = CurrentUserIndex;
-                    UserService.CurrentUser.UseBiometricAccess = this[CurrentUserIndex].BiometricAccess;
+                    UserService.CurrentUser.UseBiometricAccess = this[CurrentUserIndex].UseBiometricAccess;
                     UpdateCurrentUserPreferences();
                     Preferences.Set("LastEnterUserIndex", CurrentUserIndex);
                     break;
@@ -110,7 +115,7 @@ namespace ClientApp_Mobile.Models
         {
             foreach (var user in this)
             {
-                user.BiometricAccess = false;
+                user.UseBiometricAccess = false;
                 user.UpdateAppUserPreferences();
             }
         }

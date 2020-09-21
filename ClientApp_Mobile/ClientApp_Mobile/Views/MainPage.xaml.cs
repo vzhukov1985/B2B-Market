@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace ClientApp_Mobile
+namespace ClientApp_Mobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AppShell : Shell
+    public partial class MainPage : Shell
     {
 
-        public AppShell()
+        public MainPage()
         {
             InitializeComponent();
 
@@ -32,6 +32,10 @@ namespace ClientApp_Mobile
             Routing.RegisterRoute("ProductPicture", typeof(ProductPictureSubPage));
             Routing.RegisterRoute("CurrentRequestConfirm", typeof(CurrentRequestConfirmSubPage));
             Routing.RegisterRoute("ArchivedRequest", typeof(ArchivedRequestSubPage));
+
+            Routing.RegisterRoute("ChangePassword", typeof(ChangePasswordPage));
+            Routing.RegisterRoute("PINPage", typeof(PINSetPage));
+            Routing.RegisterRoute("BiometricTest", typeof(BiometricTestPage));
         }
     }
 }

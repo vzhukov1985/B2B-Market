@@ -144,7 +144,11 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 using (MarketDbContext db = new MarketDbContext())
                 {
                     if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
-                    SubCategories = await db.MidCategories.AsNoTracking().Where(c => c.TopCategoryId == SelectedTopCategory.Id).OrderBy(c => c.Name).ToListAsync(CTS.Token);
+                    SubCategories = new List<MidCategory>(await db.MidCategories
+                                                                  .AsNoTracking()
+                                                                  .Where(c => c.TopCategoryId == SelectedTopCategory.Id)
+                                                                  .ToListAsync(CTS.Token))
+                                                            .OrderBy(c => c.Name).ToList();
                 }
                 if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                 SubCategories.Insert(0, new MidCategory { Name = "Все товары" });

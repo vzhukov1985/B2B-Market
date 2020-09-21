@@ -64,7 +64,7 @@ namespace UpdateDb_Service.Models
             {
                 try
                 {
-                    supplier = db.Suppliers.Find(new Guid(xSupplierInfo.Attribute("id").Value));
+                    supplier = db.Suppliers.Where(s => s.Id == new Guid(xSupplierInfo.Attribute("id").Value)).FirstOrDefault();
                     if (supplier == null)
                     {
                         logger.Stats.Exceptions.Add(new UpdateException($"Supplier with Id {xSupplierInfo.Attribute("id").Value} was not found")
@@ -231,7 +231,7 @@ namespace UpdateDb_Service.Models
                                 Offer correspondingOffer;
                                 if (matchOfferExists.OfferId != null)
                                 {
-                                    correspondingOffer = db.Offers.Find(matchOfferExists.OfferId);
+                                    correspondingOffer = db.Offers.Where(o => o.Id == matchOfferExists.OfferId).FirstOrDefault();
                                     correspondingOffer.Remains = Convert.ToDecimal(xOffer.Element("remains").Value);
                                     correspondingOffer.RetailPrice = Convert.ToDecimal(xOffer.Element("retailprice").Value, new CultureInfo("en-US"));
                                     correspondingOffer.DiscountPrice = Convert.ToDecimal(xOffer.Element("discountprice").Value, new CultureInfo("en-US"));
@@ -250,7 +250,7 @@ namespace UpdateDb_Service.Models
                                 Offer correspondingOffer;
                                 if (matchOfferExists.OfferId != null)
                                 {
-                                    correspondingOffer = db.Offers.Find(matchOfferExists.OfferId);
+                                    correspondingOffer = db.Offers.Where(o => o.Id == matchOfferExists.OfferId).FirstOrDefault();
                                     db.Offers.Remove(correspondingOffer);
                                 }
 
@@ -333,7 +333,7 @@ namespace UpdateDb_Service.Models
                     List<Guid> matchOffersToRemoveIds = allExistingMatchOffersIds.Except(offersProcessedIds).ToList();
                     foreach (Guid matchOfferToRemoveId in matchOffersToRemoveIds)
                     {
-                        MatchOffer matchOfferToRemove = db.MatchOffers.Find(matchOfferToRemoveId);
+                        MatchOffer matchOfferToRemove = db.MatchOffers.Where(mo => mo.Id == matchOfferToRemoveId).FirstOrDefault();
                         if (matchOfferToRemove.OfferId != null)
                         {
                             List<CurrentOrder> curOrders = db.CurrentOrders.Include(co => co.Offer).Where(co => co.OfferId == matchOfferToRemove.OfferId).ToList();
@@ -420,7 +420,7 @@ namespace UpdateDb_Service.Models
                                 Guid productId;
                                 using (MarketDbContext db = new MarketDbContext())
                                 {
-                                    productId = db.Offers.Find(matchOffer.OfferId).ProductId;
+                                    productId = db.Offers.Where(o => o.Id == matchOffer.OfferId).Select(o => o.ProductId).FirstOrDefault();
                                 }
                                 string destFileName = CoreSettings.b2bDataLocalDir + CoreSettings.MatchedProductsPicturesPath + "/" + productId.ToString() + CoreSettings.PictureExtension;
 
@@ -510,12 +510,12 @@ namespace UpdateDb_Service.Models
                             Guid productId;
                             using (MarketDbContext db = new MarketDbContext())
                             {
-                                productId = db.Offers.Find(matchOffer.OfferId).ProductId;
+                                productId = db.Offers.Where(o => o.Id == matchOffer.OfferId).Select(o => o.ProductId).FirstOrDefault();
                             }
                             ProductDescription prodDesc;
                             using (MarketDbContext db = new MarketDbContext())
                             {
-                                prodDesc = db.ProductDescriptions.Find(productId);
+                                prodDesc = db.ProductDescriptions.Where(pd => pd.ProductId == productId).FirstOrDefault();
                             }
 
                             if (prodDesc == null || prodDesc.Text == "")

@@ -9,6 +9,10 @@ namespace ClientApp_Mobile.ViewModels
 {
     public class BiometricTestPageVM : BaseVM
     {
+        public delegate Task GoBackFunction();
+        private GoBackFunction goBack;
+        public Action<bool> ProceedCompleted;
+
         private string _infoText;
         public string InfoText
         {
@@ -116,15 +120,23 @@ namespace ClientApp_Mobile.ViewModels
         private async void Proceed(bool result)
         {
             MessagingCenter.Send<string>("AndroidAuth", "Cancel");
-            Result = result;
-            await Application.Current.MainPage.Navigation.PopModalAsync();
+            ProceedCompleted?.Invoke(result);
+            if (ProceedCompleted != null)
+            {
+                foreach (var @delegate in ProceedCompleted.GetInvocationList())
+                {
+                    ProceedCompleted -= @delegate as Action<bool>;
+                }
+            }
+            await goBack();
         }
 
         public Command CancelCommand { get; }
 
-        public BiometricTestPageVM()
+        public BiometricTestPageVM(GoBackFunction goBackFunction)
         {
             CancelCommand = new Command(_ => Proceed(false));
+            goBack = goBackFunction;
 
             CheckBiometricTypes();
             StartBiometricCheck();

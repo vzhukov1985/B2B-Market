@@ -185,7 +185,7 @@ namespace OperatorApp.ViewModels
             using (MarketDbContext db = new MarketDbContext())
             {
                 UnmatchedDescription unmatchedDescRecord = db.UnmatchedDescriptions.Where(up => up.SupplierProductCode == SelectedMatchOffer.SupplierProductCode && up.SupplierId == SelectedMatchOffer.SupplierId).FirstOrDefault();
-                SelectedProduct.Description = db.ProductDescriptions.Find(SelectedProduct.Id);
+                SelectedProduct.Description = db.ProductDescriptions.Where(pd => pd.ProductId == SelectedProduct.Id).FirstOrDefault();
                 if (unmatchedDescRecord != null)
                 {
                     if (SelectedProduct.Description != null && SelectedProduct.Description.Text != "")
@@ -333,7 +333,7 @@ namespace OperatorApp.ViewModels
 
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    newOffer.Product.Code = db.Products.Find(newOffer.ProductId).Code;
+                    newOffer.Product.Code = db.Products.Where(p => p.Id == newOffer.ProductId).Select(p => p.Code).FirstOrDefault();
                 }
                 allOffers.Add(newOffer);
                 Products.Add(newOffer.Product);
@@ -528,7 +528,7 @@ namespace OperatorApp.ViewModels
                     if (DialogService.ShowOkCancelDialog("ВНИМАНИЕ!!! Вы уверены, что хотите удалить продукт \"" + SelectedProduct.Name + "\"?", "ВНИМАНИЕ!!!"))
                     {
                         db.ProductExtraProperties.RemoveRange(SelectedProduct.ExtraProperties.Select(ep => ProductExtraProperty.CloneForDB(ep)));
-                        var prodDesc = db.ProductDescriptions.Find(SelectedProduct.Id);
+                        var prodDesc = db.ProductDescriptions.Where(p => p.ProductId == SelectedProduct.Id).FirstOrDefault();
                         if (prodDesc != null)
                             db.ProductDescriptions.Remove(prodDesc);
                         db.Products.Remove(Product.CloneForDB(SelectedProduct));

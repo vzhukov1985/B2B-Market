@@ -4,6 +4,7 @@ using ClientApp_Mobile.ViewModels.SubPages;
 using ClientApp_Mobile.Views;
 using ClientApp_Mobile.Views.SubPages;
 using Core.DBModels;
+using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
@@ -22,15 +23,9 @@ namespace ClientApp_Mobile
             InitializeComponent();
 
             UserService.AppLocalUsers.ReadAppUserPreferences();
-            
-            if (UserService.AppLocalUsers.Any(lu => lu.PINAccess == true))
-            {
-                AppPageService.GoToAuthPINPage();
-            }
-            else
-            {
-                AppPageService.GoToAuthPasswordPage();
-            }
+
+             AppPageService.GoToAuthorizationPage();
+           // Application.Current.MainPage = new MainPage() { BindingContext = new MainPageVM() };
         }
 
         protected override void OnStart()

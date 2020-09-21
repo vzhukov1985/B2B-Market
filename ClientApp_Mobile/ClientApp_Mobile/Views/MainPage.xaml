@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ClientApp_Mobile.Views"
+             xmlns:localsp="clr-namespace:ClientApp_Mobile.Views.SubPages"
+             xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
+             xmlns:vm="clr-namespace:ClientApp_Mobile.ViewModels"
+             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
+             x:Class="ClientApp_Mobile.Views.MainPage"
+             FlyoutBackgroundColor="#0a2743">
+
+    <Shell.Resources>
+        <conv:UserIsAdminToTextConverter x:Key="UserIsAdminToTextConverter"/>
+    </Shell.Resources>
+
+   
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="#0b2d4d">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Image Grid.Row="0"
+                       Margin="0,20,0,20"
+                       Source="User.png"/>
+
+                <Label Grid.Row="1"
+                       HorizontalTextAlignment="Center"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="White">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0} {1}">
+                            <Binding Path="User.Name"/>
+                            <Binding Path="User.Surname"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+
+                <Label Grid.Row="2"
+                       HorizontalTextAlignment="Center"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       Text="{Binding User.Client.ShortName}"/>
+
+                <Label Grid.Row="3"
+                       HorizontalTextAlignment="Center"
+                       FontSize="13"
+                       TextColor="Gray"
+                       Text="{Binding User.IsAdmin, Converter={StaticResource UserIsAdminToTextConverter}}"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid x:Name="FlyoutItemLayout">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource B2B_Blue_Color}"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups> 
+                <Label Style="{StaticResource FlyOutItemLabel}"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <Grid x:Name="FlyoutItemLayout2">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter TargetName="FlyoutItemLayout2"  Property="BackgroundColor" Value="{StaticResource B2B_Blue_Color}"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+                <Label Style="{StaticResource FlyOutItemLabel}"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.MenuItemTemplate> 
+
+    <FlyoutItem Title="Главная" Route="Main">
+        <ShellContent Title="Главная" 
+                      Icon="Tab_Home.png" 
+                      Route="TabMain" 
+                      ContentTemplate="{DataTemplate localsp:MainSubPage}">
+        </ShellContent>
+
+        <ShellContent Title="Поиск" 
+                      Icon="Tab_Search.png" 
+                      Route="TabSearch" 
+                      ContentTemplate="{DataTemplate localsp:SearchSubPage}"/>
+
+        <ShellContent Title="Избранное" 
+                      Icon="Tab_Favorite.png" 
+                      Route="TabFavorites">
+            <ShellContent.ContentTemplate>
+                <DataTemplate>
+                    <localsp:OffersSubPage ShowFavoritesOnly="True"/>
+                </DataTemplate>
+            </ShellContent.ContentTemplate>
+        </ShellContent>
+
+        <ShellContent Title="Заявка"
+                      Icon="Tab_Current_Request.png"
+                      Route="TabCurrentRequest"
+                      ContentTemplate="{DataTemplate localsp:CurrentRequestSubPage}">
+        </ShellContent>
+
+        <ShellContent Title="История"
+                      Icon="Tab_Orders_History.png"
+                      Route="TabOrdersHistory"
+                      ContentTemplate="{DataTemplate localsp:ArchivedRequestsListSubPage}">
+        </ShellContent>
+    </FlyoutItem>
+
+
+    <FlyoutItem Title="Настройки">
+        <ShellContent Route="UserSettings" ContentTemplate="{DataTemplate local:UserSettingsPage}"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Сменить пользователя">
+        <ShellContent Route="ChangeUser" Shell.FlyoutBehavior="Disabled" Shell.NavBarIsVisible="False"/>
+    </FlyoutItem>
+    
+    <MenuItem>
+        <Shell.MenuItemTemplate>
+            <DataTemplate>
+                <Grid HeightRequest="1">
+                    <BoxView BackgroundColor="#1e3a52" Margin="10,0,10,0"/>
+                </Grid>
+            </DataTemplate>
+        </Shell.MenuItemTemplate>
+    </MenuItem>
+    
+    <FlyoutItem Title="Справка">
+        <ShellContent Route="Help" ContentTemplate="{DataTemplate local:HelpPage}"/>
+    </FlyoutItem>
+
+</Shell>

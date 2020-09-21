@@ -71,9 +71,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             try
             {
                 if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
-                ContractedSuppliersIds = UserService.CurrentUser.Client.Contracts.Select(p => p.Supplier.Id).ToList();
-
-                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                 FavoriteProductsIds = UserService.CurrentUser.Favorites.Select(f => f.Product.Id).ToList();
 
                 List<Product> unsortedProductsList;
@@ -128,9 +125,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             IsBusy = true;
             if (CTS.Token.IsCancellationRequested) { IsBusy = false; return false; }
-            ContractedSuppliersIds = UserService.CurrentUser.Client.Contracts.Select(p => p.Supplier.Id).ToList();
+            
 
             List<Favorite> unsortedFavoritesList;
+
             if (queryFavoritesFromDb)
             {
                 Title = "Избранное";
@@ -191,6 +189,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public OffersSubPageVM()
         {
+            ContractedSuppliersIds = UserService.CurrentUser.Client.ContractedSuppliersIDs;
+
             AddRemoveProductToFavouritesCommand = new Command(p => Task.Run(() =>MarketDbContext.AddRemoveProductToFavourites((Product)p, UserService.CurrentUser)));
             ShowProductCommand = new Command<Product>(p => ShellPageService.GotoProductPage(p));
         }

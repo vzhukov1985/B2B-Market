@@ -94,7 +94,7 @@ namespace ClientApp_Mobile.ViewModels
                                 }
 
                                 IsBusy = false;
-                                if (biometricAvailable)
+                                if (biometricAvailable && user.PinHash != null)
                                 {
                                     Device.BeginInvokeOnMainThread(() => AppPageService.GoToNewLocalUserBiometricSettingsPage());
                                 }

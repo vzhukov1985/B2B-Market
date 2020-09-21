@@ -14,23 +14,9 @@ namespace ClientApp_Mobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class BiometricTestPage : ContentPage
     {
-        public event Action<bool> PageDisapearing;
-
         public BiometricTestPage()
         {
             InitializeComponent();
-        }
-        protected override void OnDisappearing()
-        {
-            PageDisapearing?.Invoke(((BiometricTestPageVM)BindingContext).Result);
-            if (PageDisapearing != null)
-            {
-                foreach (var @delegate in PageDisapearing.GetInvocationList())
-                {
-                    PageDisapearing -= @delegate as Action<bool>;
-                }
-            }
-            base.OnDisappearing();
         }
     }
 }

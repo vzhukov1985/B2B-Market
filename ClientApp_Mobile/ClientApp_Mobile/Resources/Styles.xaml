@@ -29,12 +29,21 @@
         <Setter Property="Shell.FlyoutBackgroundColor" Value="Black"/>
     </Style>
     <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
-    <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}">
-        
+    <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}"/>
+
+
+
+    <Style x:Key="FlyOutItemLabel" TargetType="Label" Class="FlyoutItemLabelStyle">
+        <Setter Property="FontAttributes" Value="{x:OnPlatform iOS=Bold}"/>
+        <Setter Property="Margin" Value="20,17,0,17"/>
+        <Setter Property="VerticalTextAlignment" Value="Center"/>
+        <Setter Property="TextColor" Value="{StaticResource B2B_Gray_Color}"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Text" Value="{Binding Title}"/>
     </Style>
 
-
-
+    
+    
 
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{StaticResource LabelsColor}"/>
@@ -111,6 +120,10 @@
         <Setter Property="TextColor" Value="{StaticResource B2B_Blue_Color}"/>
     </Style>
 
+    <Style x:Key="SettingsBlock" TargetType="StackLayout">
+        <Setter Property="Margin" Value="20,10,20,10"/>
+    </Style>
+
 
 
     <Style x:Key="PINButton" TargetType="Button">
@@ -138,6 +151,8 @@
         <Setter Property="Padding" Value="15"/>
     </Style>    
 
+    
+    
     <Style x:Key="BlockBoxView" TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="Transparent"/>
     </Style>
