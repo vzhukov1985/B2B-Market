@@ -24,8 +24,7 @@ namespace ClientApp_Mobile
 
             UserService.AppLocalUsers.ReadAppUserPreferences();
 
-             AppPageService.GoToAuthorizationPage();
-           // Application.Current.MainPage = new MainPage() { BindingContext = new MainPageVM() };
+            AppPageService.GoToAuthorizationPage();
         }
 
         protected override void OnStart()

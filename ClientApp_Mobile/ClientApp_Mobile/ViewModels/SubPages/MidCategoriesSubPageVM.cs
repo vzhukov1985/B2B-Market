@@ -57,7 +57,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 {
                     try
                     {
-                        filterGuids = await db.ProductCategories.Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync(CTS.Token);
+                        filterGuids = await db.ProductCategories.Where(c => AllMidCategoriesGuids.Contains(c.MidCategoryId)).Select(c => c.Id).ToListAsync(CTS.Token);
                     }
                     catch (OperationCanceledException)
                     {

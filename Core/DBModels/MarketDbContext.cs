@@ -311,6 +311,16 @@ namespace Core.DBModels
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
+                entity.Property(e => e.Country)
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.City)
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
                 entity.Property(e => e.Address)
                     .HasColumnType("varchar(350)")
                     .HasCharSet("utf8mb4")
@@ -2050,7 +2060,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allProductCategories = db.ProductCategories.Select(mo => mo.MidCategoryId == null ? Guid.Empty : (Guid)mo.MidCategoryId).Distinct();
+                IEnumerable<Guid> allProductCategories = db.ProductCategories.Select(mo => mo.MidCategoryId).Distinct();
                 return db.MidCategories.Where(mc => !allProductCategories.Contains(mc.Id)).Select(mqu => mqu.Id).ToList();
             }
         }
@@ -2058,7 +2068,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allProductCategories = db.ProductCategories.Select(mo => mo.MidCategoryId == null ? Guid.Empty : (Guid)mo.MidCategoryId).Distinct();
+                IEnumerable<Guid> allProductCategories = db.ProductCategories.Select(mo => mo.MidCategoryId).Distinct();
                 return db.MidCategories.Where(mc => !allProductCategories.Contains(mc.Id)).ToList();
             }
         }
@@ -2067,7 +2077,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allMidCategories = db.MidCategories.Select(mo => mo.TopCategoryId == null ? Guid.Empty : (Guid)mo.TopCategoryId).Distinct();
+                IEnumerable<Guid> allMidCategories = db.MidCategories.Select(mo => mo.TopCategoryId).Distinct();
                 return db.TopCategories.Where(mc => !allMidCategories.Contains(mc.Id)).Select(mqu => mqu.Id).ToList();
             }
         }
@@ -2075,7 +2085,7 @@ namespace Core.DBModels
         {
             using (MarketDbContext db = new MarketDbContext())
             {
-                IEnumerable<Guid> allMidCategories = db.MidCategories.Select(mo => mo.TopCategoryId == null ? Guid.Empty : (Guid)mo.TopCategoryId).Distinct();
+                IEnumerable<Guid> allMidCategories = db.MidCategories.Select(mo => mo.TopCategoryId).Distinct();
                 return db.TopCategories.Where(mc => !allMidCategories.Contains(mc.Id)).ToList();
             }
         }

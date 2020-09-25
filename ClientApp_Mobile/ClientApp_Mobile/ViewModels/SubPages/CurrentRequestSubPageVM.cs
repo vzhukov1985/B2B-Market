@@ -41,9 +41,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 _categories = value;
                 OnPropertyChanged("Categories");
-                OnPropertyChanged("ItemsCount");
-                OnPropertyChanged("ProductsNamesCount");
-                OnPropertyChanged("SuppliersCount");
                 OnPropertyChanged("TotalSum");
             }
         }
@@ -56,36 +53,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 _isGroupingByCategories = value;
                 OnPropertyChanged("IsGroupingByCategories");
-            }
-        }
-
-        public int ItemsCount
-        {
-            get
-            {
-                if (Categories != null)
-                    return (int)Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity);
-                return 0;
-            }
-        }
-
-        public int ProductsNamesCount
-        {
-            get
-            {
-                if (Categories != null)
-                    return Categories.Where(c => c.IsSelected).SelectMany(c => c).Count();
-                return 0;
-            }
-        }
-
-        public int SuppliersCount
-        {
-            get
-            {
-                if (Categories != null)
-                    return Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).GroupBy(o => o.SupplierId).Count();
-                return 0;
             }
         }
 
@@ -111,8 +78,136 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         }
 
         private List<Guid> ContractedSuppliersIds;
-        List<OrderFromDbView> AllCurrentOrders;
+        private List<OrderFromDbView> AllCurrentOrders;
 
+
+        public Command AddRemoveProductToFavouritesCommand { get; }
+        public Command ShowProductCommand { get; }
+        public Command SwitchGroupingCommand { get; }
+        public Command ProceedRequestCommand { get; }
+
+        public Command RemoveProductCommand { get; }
+        public Command RemoveProductsCategoryCommand { get; }
+
+
+        public CurrentRequestSubPageVM()
+        {
+            User = UserService.CurrentUser;
+            ContractedSuppliersIds = UserService.CurrentUser.Client.ContractedSuppliersIDs;
+
+            AddRemoveProductToFavouritesCommand = new Command<ProductForRequestView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
+            ShowProductCommand = new Command(p => ShellPageService.GotoProductPage(GetProductByOfferId(p is OrderForRequestView order ? order.OfferId : ((ProductForRequestView)p).Orders.FirstOrDefault().OfferId)));
+
+            SwitchGroupingCommand = new Command(_ => Task.Run(() => { IsGroupingByCategories = !IsGroupingByCategories; QueryDb(); }));
+            ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()), _ => CheckIfRequestIsReadyToProceed());
+            RemoveProductCommand = new Command(p => RemoveProduct((ProductForRequestView)p));
+            RemoveProductsCategoryCommand = new Command(c => RemoveProductsCategory((CategoryForRequestView)c));
+        }
+
+        public async void QueryDb()
+        {
+            IsBusy = true;
+
+            try
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    db.GetService<ILoggerFactory>().AddProvider(new DbLoggerProvider());
+
+                    AllCurrentOrders = await db.CurrentOrders
+                                         .Where(co => co.ClientId == UserService.CurrentUser.ClientId)
+                                         .Select(co => new OrderFromDbView
+                                         {
+                                             ProductId = co.Offer.Product.Id,
+                                             ProductName = co.Offer.Product.Name,
+                                             ProductPictureUri = co.Offer.Product.PictureUri,
+                                             ProductTopCategoryId = co.Offer.Product.Category.MidCategory.TopCategoryId,
+                                             ProductTopCategoryName = co.Offer.Product.Category.MidCategory.TopCategory.Name,
+                                             ProductCategoryName = co.Offer.Product.Category.Name,
+                                             VolumeType = co.Offer.Product.VolumeType.Name,
+                                             Volume = co.Offer.Product.Volume,
+                                             VolumeUnit = co.Offer.Product.VolumeUnit.ShortName,
+                                             OfferId = co.OfferId,
+                                             IsActive = co.Offer.IsActive,
+                                             IsSupplierActive = co.Offer.Supplier.IsActive,
+                                             OrderQuantity = co.Quantity,
+                                             PriceForClient = ContractedSuppliersIds.Contains(co.Offer.SupplierId) ? co.Offer.DiscountPrice : co.Offer.RetailPrice,
+                                             QuantityUnit = co.Offer.QuantityUnit.ShortName,
+                                             Remains = co.Offer.Remains,
+                                             SupplierId = co.Offer.SupplierId,
+                                             SupplierShortName = co.Offer.Supplier.ShortName,
+                                             SupplierAddress = co.Offer.Supplier.Address,
+                                             SupplierBin = co.Offer.Supplier.Bin,
+                                             SupplierEmail = co.Offer.Supplier.Email,
+                                             SupplierFullName = co.Offer.Supplier.FullName,
+                                             SupplierPhone = co.Offer.Supplier.Phone
+                                         }).ToListAsync(CTS.Token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                IsBusy = false;
+                return;
+            }
+            catch
+            {
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                IsBusy = false;
+                return;
+            }
+
+            foreach (var order in AllCurrentOrders)
+            {
+                order.IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId);
+            }
+
+            if (IsGroupingByCategories)
+            {
+                Categories = AllCurrentOrders
+                                 .GroupBy(o => o.ProductTopCategoryId)
+                                 .Select(gtc =>
+                                     new CategoryForRequestView(gtc.FirstOrDefault().ProductTopCategoryName,
+                                                                true,
+                                                                GetProductsListFromGroupedOrders(gtc).OrderBy(p => p.Name)))
+                                 .OrderBy(c => c.Name).ToList();
+            }
+            else
+            {
+                Categories = AllCurrentOrders
+                                 .GroupBy(o => o.SupplierId)
+                                 .Select(gs =>
+                                    new CategoryForRequestView(gs.FirstOrDefault().SupplierShortName,
+                                                               false,
+                                                               GetProductsListFromGroupedOrders(gs).OrderBy(p => p.Name)))
+                                 .OrderBy(c => c.IsContractedCategory)
+                                 .ThenBy(c => c.Name).ToList();
+            }
+
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            Device.BeginInvokeOnMainThread(() => ProceedRequestCommand.ChangeCanExecute());
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            foreach (var cat in Categories)
+            {
+                cat.PropertyChanged += (s, a) =>
+                {
+                    if (a.PropertyName == "IsSelected" && AllCurrentOrders != null)
+                    {
+                        foreach (var product in (CategoryForRequestView)s)
+                        {
+                            foreach (var order in product.Orders)
+                            {
+                                AllCurrentOrders.Where(o => o.OfferId == order.OfferId).FirstOrDefault().IsSelected = ((CategoryForRequestView)s).IsSelected;
+                            }
+                        }
+                    }
+                    OnPropertyChanged("TotalSum");
+                    ProceedRequestCommand.ChangeCanExecute();
+                };
+            }
+            IsBusy = false;
+        }
 
         private void ProceedRequest()
         {
@@ -148,17 +243,19 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 ArchivedSupplier = new ArchivedSupplier
                 {
                     Id = so.FirstOrDefault().SupplierId,
-                    Address = so.FirstOrDefault().SupplierAddress,
-                    Bin = so.FirstOrDefault().SupplierBin,
-                    Email = so.FirstOrDefault().SupplierEmail,
+                    ShortName = so.FirstOrDefault().SupplierShortName,
                     FullName = so.FirstOrDefault().SupplierFullName,
+                    Bin = so.FirstOrDefault().SupplierBin,
+                    Country = so.FirstOrDefault().SupplierCountry,
+                    City = so.FirstOrDefault().SupplierCity,
+                    Address = so.FirstOrDefault().SupplierAddress,
                     Phone = so.FirstOrDefault().SupplierPhone,
-                    ShortName = so.FirstOrDefault().SupplierName
+                    Email = so.FirstOrDefault().SupplierEmail,
                 },
                 ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>
                 {
                     new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
-                    new ArchivedRequestsStatus { ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
+                    new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
                 },
                 ArchivedOrders = so.Select(o => new ArchivedOrder
                 {
@@ -180,10 +277,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     {
                         Id = o.ProductId,
                         Name = o.ProductName,
-                        Category = new ProductCategory { Name = o.ProductCategoryName},
+                        Category = new ProductCategory { Name = o.ProductCategoryName },
                         Code = o.ProductCode,
-                        VolumeType = new VolumeType { Name = o.VolumeType},
-                        VolumeUnit = new VolumeUnit { ShortName = o.VolumeUnit},
+                        VolumeType = new VolumeType { Name = o.VolumeType },
+                        VolumeUnit = new VolumeUnit { ShortName = o.VolumeUnit },
                         Volume = o.Volume
                     }
                 }).ToList()
@@ -281,72 +378,51 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             });
         }
 
-        private List<CategoryForRequestView> GroupOrdersbySuppliers(IEnumerable<OrderFromDbView> orders)
+        private void AddRemoveProductToFavorites(ProductForRequestView p)
         {
-            return orders.GroupBy(o => o.SupplierId)
-                         .Select(gs => new CategoryForRequestView(gs.FirstOrDefault().SupplierName, false, gs.GroupBy(gp => gp.ProductId).Select(gp => new ProductForRequestView
-                         {
-                             CategoryName = gp.FirstOrDefault().ProductCategoryName,
-                             Id = gp.Key,
-                             IsFavoriteForUser = gp.FirstOrDefault().IsFavoriteForUser,
-                             IsOfContractedSupplier = ContractedSuppliersIds.Contains(gs.Key),
-                             Name = gp.FirstOrDefault().ProductName,
-                             PictureUri = gp.FirstOrDefault().ProductPictureUri,
-                             Volume = gp.FirstOrDefault().Volume,
-                             VolumeType = gp.FirstOrDefault().VolumeType,
-                             VolumeUnit = gp.FirstOrDefault().VolumeUnit,
-                             Orders = gp.Select(o => new OrderForRequestView
-                             {
-                                 IsActive = o.IsActive,
-                                 IsOfContractedSupplier = ContractedSuppliersIds.Contains(o.SupplierId),
-                                 IsSupplierActive = o.IsSupplierActive,
-                                 OfferId = o.OfferId,
-                                 OrderQuantity = o.OrderQuantity,
-                                 PriceForClient = o.PriceForClient,
-                                 QuantityUnit = o.QuantityUnit,
-                                 Remains = o.Remains,
-                                 SupplierId = o.SupplierId,
-                                 SupplierName = o.SupplierName,
-                                 SupplierAddress = o.SupplierAddress,
-                                 SupplierBin = o.SupplierBin,
-                                 SupplierEmail = o.SupplierEmail,
-                                 SupplierPhone = o.SupplierPhone,
-                                 SupplierFullName = o.SupplierFullName
-
-                             }).OrderByDescending(o => o.IsOfContractedSupplier).ThenBy(o => o.SupplierName).ToList()
-                         }).OrderBy(p => p.Name))).OrderBy(c => c.Name).ToList();
-
+            MarketDbContext.AddRemoveProductToFavourites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, UserService.CurrentUser);
+            foreach (var product in Categories.SelectMany(c => c))
+            {
+                if (product.Id == p.Id)
+                    product.IsFavoriteForUser = !product.IsFavoriteForUser;
+            }
         }
 
-        private List<CategoryForRequestView> GroupOrdersByCategories(IEnumerable<OrderFromDbView> orders)
+        private IEnumerable<ProductForRequestView> GetProductsListFromGroupedOrders(IGrouping<Guid, OrderFromDbView> group)
         {
-            return orders.GroupBy(o => o.ProductTopCategoryName)
-                             .Select(gtc => new CategoryForRequestView(gtc.Key, true, gtc.GroupBy(gp => gp.ProductId).Select(gp => new ProductForRequestView
-                             {
-                                 CategoryName = gp.FirstOrDefault().ProductCategoryName,
-                                 Id = gp.Key,
-                                 IsFavoriteForUser = gp.FirstOrDefault().IsFavoriteForUser,
-                                 IsOfContractedSupplier = ContractedSuppliersIds.Contains(gp.FirstOrDefault().SupplierId),
-                                 Name = gp.FirstOrDefault().ProductName,
-                                 PictureUri = gp.FirstOrDefault().ProductPictureUri,
-                                 Volume = gp.FirstOrDefault().Volume,
-                                 VolumeType = gp.FirstOrDefault().VolumeType,
-                                 VolumeUnit = gp.FirstOrDefault().VolumeUnit,
-                                 Orders = gp.Select(o => new OrderForRequestView
-                                 {
-                                     IsActive = o.IsActive,
-                                     IsOfContractedSupplier = ContractedSuppliersIds.Contains(o.SupplierId),
-                                     IsSupplierActive = o.IsSupplierActive,
-                                     OfferId = o.OfferId,
-                                     OrderQuantity = o.OrderQuantity,
-                                     PriceForClient = o.PriceForClient,
-                                     QuantityUnit = o.QuantityUnit,
-                                     Remains = o.Remains,
-                                     SupplierId = o.SupplierId,
-                                     SupplierName = o.SupplierName
-                                 }).OrderByDescending(o => o.IsOfContractedSupplier).ThenBy(o => o.SupplierName).ToList()
-                             }).OrderBy(p => p.Name))).OrderBy(c => c.Name).ToList();
+            return group.GroupBy(gp => gp.ProductId).Select(gp => new ProductForRequestView
+            {
+                CategoryName = gp.FirstOrDefault().ProductCategoryName,
+                Id = gp.Key,
+                IsFavoriteForUser = gp.FirstOrDefault().IsFavoriteForUser,
+                IsOfContractedSupplier = ContractedSuppliersIds.Contains(gp.FirstOrDefault().SupplierId),
+                Name = gp.FirstOrDefault().ProductName,
+                PictureUri = gp.FirstOrDefault().ProductPictureUri,
+                Volume = gp.FirstOrDefault().Volume,
+                VolumeType = gp.FirstOrDefault().VolumeType,
+                VolumeUnit = gp.FirstOrDefault().VolumeUnit,
+                Orders = gp.Select(o => new OrderForRequestView
+                {
+                    IsActive = o.IsActive,
+                    IsOfContractedSupplier = ContractedSuppliersIds.Contains(o.SupplierId),
+                    IsSupplierActive = o.IsSupplierActive,
+                    OfferId = o.OfferId,
+                    OrderQuantity = o.OrderQuantity,
+                    PriceForClient = o.PriceForClient,
+                    QuantityUnit = o.QuantityUnit,
+                    Remains = o.Remains,
+                    SupplierId = o.SupplierId,
+                    SupplierName = o.SupplierShortName,
+                    SupplierAddress = o.SupplierAddress,
+                    SupplierBin = o.SupplierBin,
+                    SupplierEmail = o.SupplierEmail,
+                    SupplierPhone = o.SupplierPhone,
+                    SupplierFullName = o.SupplierFullName
+
+                }).OrderByDescending(o => o.IsOfContractedSupplier).ThenBy(o => o.SupplierName).ToList()
+            });
         }
+
 
         private Product GetProductByOfferId(Guid offerId)
         {
@@ -365,132 +441,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             };
         }
 
-        private void AddRemoveProductToFavorites(ProductForRequestView p)
-        {
-            MarketDbContext.AddRemoveProductToFavourites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, UserService.CurrentUser);
-            foreach(var product in Categories.SelectMany(c => c))
-            {
-                if (product.Id == p.Id)
-                    product.IsFavoriteForUser = !product.IsFavoriteForUser;
-            }
-        }
-
-        public async void QueryDb()
-        {
-            IsBusy = true;
-
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    AllCurrentOrders = await db.CurrentOrders
-                                         .Where(co => co.ClientId == UserService.CurrentUser.ClientId)
-                                         .Select(co => new OrderFromDbView
-                                         {
-                                             ProductId = co.Offer.Product.Id,
-                                             ProductName = co.Offer.Product.Name,
-                                             ProductPictureUri = co.Offer.Product.PictureUri,
-                                             ProductTopCategoryName = co.Offer.Product.Category.MidCategory.TopCategory.Name,
-                                             ProductCategoryName = co.Offer.Product.Category.Name,
-                                             VolumeType = co.Offer.Product.VolumeType.Name,
-                                             Volume = co.Offer.Product.Volume,
-                                             VolumeUnit = co.Offer.Product.VolumeUnit.ShortName,
-                                             OfferId = co.OfferId,
-                                             IsActive = co.Offer.IsActive,
-                                             IsSupplierActive = co.Offer.Supplier.IsActive,
-                                             OrderQuantity = co.Quantity,
-                                             PriceForClient = ContractedSuppliersIds.Contains(co.Offer.SupplierId) ? co.Offer.DiscountPrice : co.Offer.RetailPrice,
-                                             QuantityUnit = co.Offer.QuantityUnit.ShortName,
-                                             Remains = co.Offer.Remains,
-                                             SupplierId = co.Offer.SupplierId,
-                                             SupplierName = co.Offer.Supplier.ShortName,
-                                             SupplierAddress = co.Offer.Supplier.Address,
-                                             SupplierBin = co.Offer.Supplier.Bin,
-                                             SupplierEmail = co.Offer.Supplier.Email,
-                                             SupplierFullName = co.Offer.Supplier.FullName,
-                                             SupplierPhone = co.Offer.Supplier.Phone
-                                         }).ToListAsync(CTS.Token);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                IsBusy = false;
-                return;
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
-
-            foreach (var order in AllCurrentOrders)
-            {
-                order.IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId);
-            }
-
-            if (IsGroupingByCategories)
-            {
-                Categories = GroupOrdersByCategories(AllCurrentOrders);
-            }
-            else
-            {
-                Categories = GroupOrdersbySuppliers(AllCurrentOrders);
-
-            }
-
-
-            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-            Device.BeginInvokeOnMainThread(() => ProceedRequestCommand.ChangeCanExecute());
-
-            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-            foreach (var cat in Categories)
-            {
-                cat.PropertyChanged += (s, a) =>
-                {
-                    if (a.PropertyName == "IsSelected" && AllCurrentOrders != null)
-                    {
-                        foreach (var product in (CategoryForRequestView)s)
-                        {
-                            foreach (var order in product.Orders)
-                            {
-                                AllCurrentOrders.Where(o => o.OfferId == order.OfferId).FirstOrDefault().IsSelected = ((CategoryForRequestView)s).IsSelected;
-                            }
-                        }
-                    }
-                    OnPropertyChanged("SuppliersCount");
-                    OnPropertyChanged("ProductsNamesCount");
-                    OnPropertyChanged("ItemsCount");
-                    OnPropertyChanged("TotalSum");
-                    ProceedRequestCommand.ChangeCanExecute();
-                };
-            }
-            IsBusy = false;
-        }
-
-        public Command AddRemoveProductToFavouritesCommand { get; }
-        public Command ShowProductCommand { get; }
-        public Command SwitchGroupingCommand { get; }
-        public Command ProceedRequestCommand { get; }
-
-        public Command RemoveProductCommand { get; }
-        public Command RemoveProductsCategoryCommand { get; }
-
-
-        public CurrentRequestSubPageVM()
-        {
-            User = UserService.CurrentUser;
-            ContractedSuppliersIds = UserService.CurrentUser.Client.ContractedSuppliersIDs;
-
-            AddRemoveProductToFavouritesCommand = new Command<ProductForRequestView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
-            ShowProductCommand = new Command(p => ShellPageService.GotoProductPage(GetProductByOfferId(p is OrderForRequestView order ? order.OfferId : ((ProductForRequestView)p).Orders.FirstOrDefault().OfferId)));
-
-            SwitchGroupingCommand = new Command(_ => Task.Run(() => { IsGroupingByCategories = !IsGroupingByCategories; QueryDb(); }));
-            ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()), _ => CheckIfRequestIsReadyToProceed());
-            RemoveProductCommand = new Command(p => RemoveProduct((ProductForRequestView)p));
-            RemoveProductsCategoryCommand = new Command(c => RemoveProductsCategory((CategoryForRequestView)c));
-        }
     }
+
+
+
 
     class CategoryForRequestView : List<ProductForRequestView>, INotifyPropertyChanged
     {
@@ -672,29 +626,36 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public Guid ProductId { get; set; }
         public string ProductName { get; set; }
         public Uri ProductPictureUri { get; set; }
-        public string ProductTopCategoryName { get; set; }
         public string ProductCategoryName { get; set; }
-        public string SupplierProductCode { get; set; }
         public int ProductCode { get; set; }
         public string VolumeType { get; set; }
         public decimal Volume { get; set; }
         public string VolumeUnit { get; set; }
+        public bool IsFavoriteForUser { get; set; }
+
+        public Guid SupplierId { get; set; }
+        public string SupplierShortName { get; set; }
+        public string SupplierFullName { get; set; }
+        public string SupplierBin { get; set; }
+        public string SupplierCountry { get; set; }
+        public string SupplierCity { get; set; }
+        public string SupplierAddress { get; set; }
+        public string SupplierPhone { get; set; }
+        public string SupplierEmail { get; set; }
+        public bool IsSupplierActive { get; set; }
+
+        public Guid ProductTopCategoryId { get; set; }
+        public string ProductTopCategoryName { get; set; }
+
         public Guid OfferId { get; set; }
+        public string SupplierProductCode { get; set; }
         public decimal Remains { get; set; }
         public bool IsActive { get; set; }
-        public Guid SupplierId { get; set; }
-        public string SupplierName { get; set; }
-        public bool IsSupplierActive { get; set; }
-        public string SupplierAddress { get; set; }
-        public string SupplierBin { get; set; }
-        public string SupplierEmail { get; set; }
-        public string SupplierFullName { get; set; }
-        public string SupplierPhone { get; set; }
-        public bool IsOfContractedSupplier { get; set; }
-        public bool IsFavoriteForUser { get; set; }
         public decimal PriceForClient { get; set; }
         public decimal OrderQuantity { get; set; }
         public string QuantityUnit { get; set; }
+
+        public bool IsOfContractedSupplier { get; set; }
         public bool IsSelected { get; set; }
     }
 }

@@ -37,8 +37,8 @@ namespace Core.DBModels
             }
         }
 
-        private Guid? _midCategoryId;
-        public Guid? MidCategoryId
+        private Guid _midCategoryId;
+        public Guid MidCategoryId
         {
             get { return _midCategoryId; }
             set

@@ -36,8 +36,8 @@ namespace Core.DBModels
             }
         }
 
-        private Guid? _topCategoryId;
-        public Guid? TopCategoryId
+        private Guid _topCategoryId;
+        public Guid TopCategoryId
         {
             get { return _topCategoryId; }
             set

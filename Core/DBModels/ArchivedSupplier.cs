@@ -60,6 +60,29 @@ namespace Core.DBModels
             }
         }
 
+        private string _country;
+        public string Country
+        {
+            get { return _country; }
+            set
+            {
+                _country = value;
+                OnPropertyChanged("Country");
+            }
+        }
+
+        private string _city;
+        public string City
+        {
+            get { return _city; }
+            set
+            {
+                _city = value;
+                OnPropertyChanged("City");
+            }
+        }
+
+
         private string _address;
         public string Address
         {
