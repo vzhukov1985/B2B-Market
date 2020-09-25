@@ -3,7 +3,10 @@ using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +20,7 @@ using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
-    public class CurrentRequestSubPageVM : BaseVM
+    class CurrentRequestSubPageVM : BaseVM
     {
         private ClientUser _user;
         public ClientUser User
@@ -71,7 +74,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             get
             {
                 if (Categories != null)
-                    return Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).GroupBy(o => o.ProductId).Count();
+                    return Categories.Where(c => c.IsSelected).SelectMany(c => c).Count();
                 return 0;
             }
         }
@@ -107,82 +110,20 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             return false;
         }
 
-        private List<OfferWithOrder> Orders;
-        private List<Product> ProductsFromDb;
+        private List<Guid> ContractedSuppliersIds;
+        List<OrderFromDbView> AllCurrentOrders;
 
 
         private void ProceedRequest()
         {
             IsBusy = true;
+            int LastRequestCode;
             try
             {
-                int LastRequestCode;
                 using (MarketDbContext db = new MarketDbContext())
                 {
                     LastRequestCode = db.ArchivedRequests.Count() > 0 ? db.ArchivedRequests.Max(r => r.Code) : 0;
                 }
-
-                List<ArchivedRequest> requestsToAdd = Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).GroupBy(c => c.Supplier).Select(s => new ArchivedRequest
-                {
-                    Client = User.Client,
-                    ClientId = User.ClientId,
-                    SenderName = User.Name,
-                    SenderSurname = User.Surname,
-                    ItemsQuantity = (int)Orders.Where(o => o.SupplierId == s.Key.Id).Sum(o => o.OrderQuantity),
-                    ProductsQuantity = Orders.Where(o => o.SupplierId == s.Key.Id).GroupBy(o => o.ProductId).Count(),
-                    TotalPrice = Orders.Where(o => o.SupplierId == s.Key.Id).Sum(o => o.PriceForClient * o.OrderQuantity),
-                    ArchivedSupplierId = s.Key.Id,
-                    DateTimeSent = DateTime.Now,
-                    DeliveryDateTime = DateTime.Today.AddDays(1) + new TimeSpan(10, 0, 0),
-                    Comments = "",
-                    ArchivedSupplier = new ArchivedSupplier
-                    {
-                        Id = s.Key.Id,
-                        Address = s.Key.Address,
-                        Bin = s.Key.Bin,
-                        Email = s.Key.Email,
-                        FullName = s.Key.FullName,
-                        Phone = s.Key.Phone,
-                        ShortName = s.Key.ShortName
-                    },
-                    ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>
-                {
-                        new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
-                        new ArchivedRequestsStatus { ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
-                },
-                    ArchivedOrders = new List<ArchivedOrder>(Orders.Where(o => o.SupplierId == s.Key.Id).Select(o => new ArchivedOrder
-                    {
-                        Id = Guid.NewGuid(),
-                        OfferId = o.Id,
-                        SupplierProductCode = o.SupplierProductCode,
-                        Price = o.PriceForClient,
-                        QuantityUnit = o.QuantityUnit.ShortName,
-                        Quantity = o.OrderQuantity,
-                        Remains = o.Remains,
-                        ProductName = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Name,
-                        ProductCategory = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Category.Name,
-                        ProductCode = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Code,
-                        ProductVolumeType = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().VolumeType.Name,
-                        ProductVolumeUnit = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().VolumeUnit.ShortName,
-                        ProductVolume = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault().Volume,
-                        ProductId = o.ProductId,
-                        Product = ProductsFromDb.Where(p => p.Id == o.ProductId).FirstOrDefault()
-                    }))
-                }).ToList();
-
-                foreach (ArchivedRequest request in requestsToAdd)
-                {
-                    request.Id = Guid.NewGuid();
-                    foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
-                        status.ArchivedRequestId = request.Id;
-                    foreach (ArchivedOrder order in request.ArchivedOrders)
-                        order.ArchivedRequestId = request.Id;
-                    request.Code = LastRequestCode + 1;
-                    LastRequestCode++;
-                }
-
-                IsBusy = false;
-                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestConfirmPage(requestsToAdd));
             }
             catch
             {
@@ -190,6 +131,76 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 IsBusy = false;
                 return;
             }
+
+            List<ArchivedRequest> requestsToAdd = AllCurrentOrders.Where(o => o.IsSelected == true).GroupBy(o => o.SupplierId).Select(so => new ArchivedRequest
+            {
+                Client = User.Client,
+                ClientId = User.ClientId,
+                SenderName = User.Name,
+                SenderSurname = User.Surname,
+                ItemsQuantity = (int)Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity),
+                ProductsQuantity = Categories.Where(c => c.IsSelected).SelectMany(c => c).Count(),
+                TotalPrice = Categories.Where(c => c.IsSelected).Sum(c => c.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity))),
+                ArchivedSupplierId = so.Key,
+                DateTimeSent = DateTime.Now,
+                DeliveryDateTime = DateTime.Today.AddDays(1) + new TimeSpan(10, 0, 0),
+                Comments = "",
+                ArchivedSupplier = new ArchivedSupplier
+                {
+                    Id = so.FirstOrDefault().SupplierId,
+                    Address = so.FirstOrDefault().SupplierAddress,
+                    Bin = so.FirstOrDefault().SupplierBin,
+                    Email = so.FirstOrDefault().SupplierEmail,
+                    FullName = so.FirstOrDefault().SupplierFullName,
+                    Phone = so.FirstOrDefault().SupplierPhone,
+                    ShortName = so.FirstOrDefault().SupplierName
+                },
+                ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>
+                {
+                    new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
+                    new ArchivedRequestsStatus { ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
+                },
+                ArchivedOrders = so.Select(o => new ArchivedOrder
+                {
+                    Id = Guid.NewGuid(),
+                    OfferId = o.OfferId,
+                    SupplierProductCode = o.SupplierProductCode,
+                    Price = o.PriceForClient,
+                    QuantityUnit = o.QuantityUnit,
+                    Quantity = o.OrderQuantity,
+                    Remains = o.Remains,
+                    ProductName = o.ProductName,
+                    ProductCategory = o.ProductCategoryName,
+                    ProductCode = o.ProductCode,
+                    ProductVolumeType = o.VolumeType,
+                    ProductVolumeUnit = o.VolumeUnit,
+                    ProductVolume = o.Volume,
+                    ProductId = o.ProductId,
+                    Product = new Product
+                    {
+                        Id = o.ProductId,
+                        Name = o.ProductName,
+                        Category = new ProductCategory { Name = o.ProductCategoryName},
+                        Code = o.ProductCode,
+                        VolumeType = new VolumeType { Name = o.VolumeType},
+                        VolumeUnit = new VolumeUnit { ShortName = o.VolumeUnit},
+                        Volume = o.Volume
+                    }
+                }).ToList()
+            }).ToList();
+
+            foreach (ArchivedRequest request in requestsToAdd)
+            {
+                request.Id = Guid.NewGuid();
+                foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                    status.ArchivedRequestId = request.Id;
+                foreach (ArchivedOrder order in request.ArchivedOrders)
+                    order.ArchivedRequestId = request.Id;
+                request.Code = LastRequestCode + 1;
+                LastRequestCode++;
+            }
+            Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestConfirmPage(requestsToAdd));
+            IsBusy = false;
         }
 
         private async void RemoveProduct(ProductForRequestView selectedProduct)
@@ -198,14 +209,14 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             if (IsGroupingByCategories)
                 dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от всех поставщиков?";
             else
-                dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от поставщика \"{selectedProduct.Orders[0].Supplier.ShortName}\"?";
+                dialogText = $"Вы действительно хотите удалить \"{selectedProduct.Name}\" от поставщика \"{selectedProduct.Orders[0].SupplierName}\"?";
 
             if (await DialogService.ShowOkCancelDialog(dialogText, "Внимание!") == false)
                 return;
 
             await Task.Run(() =>
             {
-                List<Guid> OffersToRemoveIds = selectedProduct.Orders.Select(od => od.Id).ToList();
+                List<Guid> OffersToRemoveIds = selectedProduct.Orders.Select(od => od.OfferId).ToList();
 
                 IsBusy = true;
                 try
@@ -218,7 +229,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                     User.Client.CurrentOrders.RemoveAll(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId);
 
-                    QueryDb(false);
+                    QueryDb();
                     IsBusy = false;
                 }
                 catch
@@ -247,7 +258,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 IsBusy = true;
                 try
                 {
-                    List<Guid> OffersToRemoveIds = selectedCategory.SelectMany(p => p.Orders.Select(o => o.Id)).ToList();
+                    List<Guid> OffersToRemoveIds = selectedCategory.SelectMany(p => p.Orders.Select(o => o.OfferId)).ToList();
 
                     using (MarketDbContext db = new MarketDbContext())
                     {
@@ -258,7 +269,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     User.Client.CurrentOrders.RemoveAll(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId);
 
 
-                    QueryDb(false);
+                    QueryDb();
                     IsBusy = false;
                 }
                 catch
@@ -270,130 +281,136 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             });
         }
 
-        public async void QueryDb(bool requeryProductsDB)
+        private List<CategoryForRequestView> GroupOrdersbySuppliers(IEnumerable<OrderFromDbView> orders)
+        {
+            return orders.GroupBy(o => o.SupplierId)
+                         .Select(gs => new CategoryForRequestView(gs.FirstOrDefault().SupplierName, false, gs.GroupBy(gp => gp.ProductId).Select(gp => new ProductForRequestView
+                         {
+                             CategoryName = gp.FirstOrDefault().ProductCategoryName,
+                             Id = gp.Key,
+                             IsFavoriteForUser = gp.FirstOrDefault().IsFavoriteForUser,
+                             IsOfContractedSupplier = ContractedSuppliersIds.Contains(gs.Key),
+                             Name = gp.FirstOrDefault().ProductName,
+                             PictureUri = gp.FirstOrDefault().ProductPictureUri,
+                             Volume = gp.FirstOrDefault().Volume,
+                             VolumeType = gp.FirstOrDefault().VolumeType,
+                             VolumeUnit = gp.FirstOrDefault().VolumeUnit,
+                             Orders = gp.Select(o => new OrderForRequestView
+                             {
+                                 IsActive = o.IsActive,
+                                 IsOfContractedSupplier = ContractedSuppliersIds.Contains(o.SupplierId),
+                                 IsSupplierActive = o.IsSupplierActive,
+                                 OfferId = o.OfferId,
+                                 OrderQuantity = o.OrderQuantity,
+                                 PriceForClient = o.PriceForClient,
+                                 QuantityUnit = o.QuantityUnit,
+                                 Remains = o.Remains,
+                                 SupplierId = o.SupplierId,
+                                 SupplierName = o.SupplierName,
+                                 SupplierAddress = o.SupplierAddress,
+                                 SupplierBin = o.SupplierBin,
+                                 SupplierEmail = o.SupplierEmail,
+                                 SupplierPhone = o.SupplierPhone,
+                                 SupplierFullName = o.SupplierFullName
+
+                             }).OrderByDescending(o => o.IsOfContractedSupplier).ThenBy(o => o.SupplierName).ToList()
+                         }).OrderBy(p => p.Name))).OrderBy(c => c.Name).ToList();
+
+        }
+
+        private List<CategoryForRequestView> GroupOrdersByCategories(IEnumerable<OrderFromDbView> orders)
+        {
+            return orders.GroupBy(o => o.ProductTopCategoryName)
+                             .Select(gtc => new CategoryForRequestView(gtc.Key, true, gtc.GroupBy(gp => gp.ProductId).Select(gp => new ProductForRequestView
+                             {
+                                 CategoryName = gp.FirstOrDefault().ProductCategoryName,
+                                 Id = gp.Key,
+                                 IsFavoriteForUser = gp.FirstOrDefault().IsFavoriteForUser,
+                                 IsOfContractedSupplier = ContractedSuppliersIds.Contains(gp.FirstOrDefault().SupplierId),
+                                 Name = gp.FirstOrDefault().ProductName,
+                                 PictureUri = gp.FirstOrDefault().ProductPictureUri,
+                                 Volume = gp.FirstOrDefault().Volume,
+                                 VolumeType = gp.FirstOrDefault().VolumeType,
+                                 VolumeUnit = gp.FirstOrDefault().VolumeUnit,
+                                 Orders = gp.Select(o => new OrderForRequestView
+                                 {
+                                     IsActive = o.IsActive,
+                                     IsOfContractedSupplier = ContractedSuppliersIds.Contains(o.SupplierId),
+                                     IsSupplierActive = o.IsSupplierActive,
+                                     OfferId = o.OfferId,
+                                     OrderQuantity = o.OrderQuantity,
+                                     PriceForClient = o.PriceForClient,
+                                     QuantityUnit = o.QuantityUnit,
+                                     Remains = o.Remains,
+                                     SupplierId = o.SupplierId,
+                                     SupplierName = o.SupplierName
+                                 }).OrderByDescending(o => o.IsOfContractedSupplier).ThenBy(o => o.SupplierName).ToList()
+                             }).OrderBy(p => p.Name))).OrderBy(c => c.Name).ToList();
+        }
+
+        private Product GetProductByOfferId(Guid offerId)
+        {
+            OrderFromDbView order = AllCurrentOrders.Where(o => o.OfferId == offerId).FirstOrDefault();
+            return new Product
+            {
+                Id = order.ProductId,
+                Name = order.ProductName,
+                Category = new ProductCategory { Name = order.ProductCategoryName },
+                Code = order.ProductCode,
+                IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId),
+                IsOfContractedSupplier = order.IsOfContractedSupplier,
+                Volume = order.Volume,
+                VolumeType = new VolumeType { Name = order.VolumeType },
+                VolumeUnit = new VolumeUnit { ShortName = order.VolumeUnit }
+            };
+        }
+
+        private void AddRemoveProductToFavorites(ProductForRequestView p)
+        {
+            MarketDbContext.AddRemoveProductToFavourites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, UserService.CurrentUser);
+            foreach(var product in Categories.SelectMany(c => c))
+            {
+                if (product.Id == p.Id)
+                    product.IsFavoriteForUser = !product.IsFavoriteForUser;
+            }
+        }
+
+        public async void QueryDb()
         {
             IsBusy = true;
+
             try
             {
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                List<Guid> ContractedSuppliersIds = User.Client.Contracts.Select(p => p.Supplier.Id).ToList();
-                List<Guid> FavoriteProductsIds = User.Favorites.Select(f => f.Product.Id).ToList();
-
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                List<Guid> ProductIds = User.Client.CurrentOrders.Select(o => o.Offer.ProductId).Distinct().ToList();
-
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                Orders = User.Client.CurrentOrders.Select(o => new OfferWithOrder
+                using (MarketDbContext db = new MarketDbContext())
                 {
-                    Id = o.OfferId,
-                    SupplierProductCode = o.Offer.SupplierProductCode,
-                    IsActive = o.Offer.IsActive,
-                    SupplierId = o.Offer.SupplierId,
-                    Supplier = o.Offer.Supplier,
-                    ProductId = o.Offer.ProductId,
-                    Product = o.Offer.Product,
-                    Remains = o.Offer.Remains,
-                    QuantityUnitId = o.Offer.QuantityUnitId,
-                    QuantityUnit = o.Offer.QuantityUnit,
-                    RetailPrice = o.Offer.RetailPrice,
-                    DiscountPrice = o.Offer.DiscountPrice,
-                    IsOfContractedSupplier = ContractedSuppliersIds.Contains(o.Offer.SupplierId),
-                    OrderQuantity = o.Quantity,
-                    OrderQuantityBeforeUserChanges = o.Quantity,
-                    PriceForClient = ContractedSuppliersIds.Contains(o.Offer.SupplierId) ? o.Offer.DiscountPrice : o.Offer.RetailPrice
-                }).ToList();
-
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                if (requeryProductsDB)
-                {
-                    using (MarketDbContext db = new MarketDbContext())
-                    {
-                        foreach (OfferWithOrder order in Orders)
-                        {
-                            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                            order.Remains = await db.Offers.Where(of => of.Id == order.Id).Select(of => of.Remains).FirstOrDefaultAsync(CTS.Token);
-
-                        }
-
-                        if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                        ProductsFromDb = await db.Products
-                             .Include(p => p.Offers)
-                             .ThenInclude(o => o.QuantityUnit)
-                             .Include(p => p.Offers)
-                             .ThenInclude(o => o.Supplier)
-                             .Include(p => p.ExtraProperties)
-                             .ThenInclude(pr => pr.PropertyType)
-                             .Include(p => p.VolumeUnit)
-                             .Include(p => p.VolumeType)
-                             .Include(p => p.Category)
-                             .ThenInclude(pc => pc.MidCategory)
-                             .ThenInclude(mc => mc.TopCategory)
-                             .Where(p => ProductIds.Contains(p.Id))
-                             .OrderBy(p => p.Category.MidCategory.TopCategory.Name)
-                             .ThenBy(p => p.Category.Name)
-                             .ThenBy(p => p.Name)
-                             .ToListAsync(CTS.Token);
-                    }
+                    AllCurrentOrders = await db.CurrentOrders
+                                         .Where(co => co.ClientId == UserService.CurrentUser.ClientId)
+                                         .Select(co => new OrderFromDbView
+                                         {
+                                             ProductId = co.Offer.Product.Id,
+                                             ProductName = co.Offer.Product.Name,
+                                             ProductPictureUri = co.Offer.Product.PictureUri,
+                                             ProductTopCategoryName = co.Offer.Product.Category.MidCategory.TopCategory.Name,
+                                             ProductCategoryName = co.Offer.Product.Category.Name,
+                                             VolumeType = co.Offer.Product.VolumeType.Name,
+                                             Volume = co.Offer.Product.Volume,
+                                             VolumeUnit = co.Offer.Product.VolumeUnit.ShortName,
+                                             OfferId = co.OfferId,
+                                             IsActive = co.Offer.IsActive,
+                                             IsSupplierActive = co.Offer.Supplier.IsActive,
+                                             OrderQuantity = co.Quantity,
+                                             PriceForClient = ContractedSuppliersIds.Contains(co.Offer.SupplierId) ? co.Offer.DiscountPrice : co.Offer.RetailPrice,
+                                             QuantityUnit = co.Offer.QuantityUnit.ShortName,
+                                             Remains = co.Offer.Remains,
+                                             SupplierId = co.Offer.SupplierId,
+                                             SupplierName = co.Offer.Supplier.ShortName,
+                                             SupplierAddress = co.Offer.Supplier.Address,
+                                             SupplierBin = co.Offer.Supplier.Bin,
+                                             SupplierEmail = co.Offer.Supplier.Email,
+                                             SupplierFullName = co.Offer.Supplier.FullName,
+                                             SupplierPhone = co.Offer.Supplier.Phone
+                                         }).ToListAsync(CTS.Token);
                 }
-                else
-                {
-                    if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                    ProductsFromDb = ProductsFromDb
-                             .Where(p => ProductIds.Contains(p.Id))
-                             .OrderBy(p => p.Category.MidCategory.TopCategory.Name)
-                             .ThenBy(p => p.Category.Name)
-                             .ThenBy(p => p.Name).ToList();
-                }
-
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                if (IsGroupingByCategories)
-                {
-
-                    Categories = ProductsFromDb
-                        .GroupBy(p => p.Category.MidCategory.TopCategory)
-                        .Select(c => new CategoryForRequestView(c.Key,
-                        ProductsFromDb.Where(p => p.Category.MidCategory.TopCategory.Id == c.Key.Id).Select(p => new ProductForRequestView(p)
-                        {
-                            Orders = new List<OfferWithOrder>(Orders.Where(o => o.ProductId == p.Id).OrderByDescending(o => ContractedSuppliersIds.Contains(o.SupplierId))),
-                            IsOfContractedSupplier = p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)),
-                            IsFavoriteForUser = FavoriteProductsIds.Contains(p.Id)
-                        }))
-
-                        {
-                            IsSelected = true,
-                        }).ToList();
-                }
-                else
-                {
-                    Categories = Orders
-                        .GroupBy(c => c.Supplier)
-                        .OrderByDescending(c => ContractedSuppliersIds.Contains(c.Key.Id))
-                        .ThenBy(c => c.Key.ShortName)
-                        .Select(c => new CategoryForRequestView(c.Key,
-                            ProductsFromDb.
-                            Where(p => p.Offers.Select(o => o.SupplierId).Contains(c.Key.Id) &&
-                            Orders.Where(oo => oo.SupplierId == c.Key.Id).Select(oo => oo.ProductId).Contains(p.Id))
-                            .Select(p => new ProductForRequestView(p)
-                            {
-                                Orders = new List<OfferWithOrder>(Orders.Where(o => (o.ProductId == p.Id) && (o.SupplierId == c.Key.Id))),
-                                IsOfContractedSupplier = p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)),
-                                IsFavoriteForUser = FavoriteProductsIds.Contains(p.Id)
-                            }))
-
-                        {
-                            IsSelected = true,
-
-                        }).ToList();
-                    if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                    Device.BeginInvokeOnMainThread(() => ProceedRequestCommand.ChangeCanExecute());
-                }
-
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                foreach (var cat in Categories)
-                {
-                    cat.PropertyChanged += (s, a) => { OnPropertyChanged("SuppliersCount"); OnPropertyChanged("ProductsNamesCount"); OnPropertyChanged("ItemsCount"); OnPropertyChanged("TotalSum"); ProceedRequestCommand.ChangeCanExecute(); };
-                }
-                IsBusy = false;
             }
             catch (OperationCanceledException)
             {
@@ -406,6 +423,49 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 IsBusy = false;
                 return;
             }
+
+            foreach (var order in AllCurrentOrders)
+            {
+                order.IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId);
+            }
+
+            if (IsGroupingByCategories)
+            {
+                Categories = GroupOrdersByCategories(AllCurrentOrders);
+            }
+            else
+            {
+                Categories = GroupOrdersbySuppliers(AllCurrentOrders);
+
+            }
+
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            Device.BeginInvokeOnMainThread(() => ProceedRequestCommand.ChangeCanExecute());
+
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            foreach (var cat in Categories)
+            {
+                cat.PropertyChanged += (s, a) =>
+                {
+                    if (a.PropertyName == "IsSelected" && AllCurrentOrders != null)
+                    {
+                        foreach (var product in (CategoryForRequestView)s)
+                        {
+                            foreach (var order in product.Orders)
+                            {
+                                AllCurrentOrders.Where(o => o.OfferId == order.OfferId).FirstOrDefault().IsSelected = ((CategoryForRequestView)s).IsSelected;
+                            }
+                        }
+                    }
+                    OnPropertyChanged("SuppliersCount");
+                    OnPropertyChanged("ProductsNamesCount");
+                    OnPropertyChanged("ItemsCount");
+                    OnPropertyChanged("TotalSum");
+                    ProceedRequestCommand.ChangeCanExecute();
+                };
+            }
+            IsBusy = false;
         }
 
         public Command AddRemoveProductToFavouritesCommand { get; }
@@ -420,14 +480,221 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public CurrentRequestSubPageVM()
         {
             User = UserService.CurrentUser;
+            ContractedSuppliersIds = UserService.CurrentUser.Client.ContractedSuppliersIDs;
 
-            AddRemoveProductToFavouritesCommand = new Command(p => Task.Run(() => MarketDbContext.AddRemoveProductToFavourites((Product)p, UserService.CurrentUser)));
-            ShowProductCommand = new Command(p => ShellPageService.GotoProductPage(p is OfferWithOrder order ? order.Product : ((Product)p)));
+            AddRemoveProductToFavouritesCommand = new Command<ProductForRequestView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
+            ShowProductCommand = new Command(p => ShellPageService.GotoProductPage(GetProductByOfferId(p is OrderForRequestView order ? order.OfferId : ((ProductForRequestView)p).Orders.FirstOrDefault().OfferId)));
 
-            SwitchGroupingCommand = new Command(_ => Task.Run(() => { IsGroupingByCategories = !IsGroupingByCategories; QueryDb(false); }));
+            SwitchGroupingCommand = new Command(_ => Task.Run(() => { IsGroupingByCategories = !IsGroupingByCategories; QueryDb(); }));
             ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()), _ => CheckIfRequestIsReadyToProceed());
             RemoveProductCommand = new Command(p => RemoveProduct((ProductForRequestView)p));
             RemoveProductsCategoryCommand = new Command(c => RemoveProductsCategory((CategoryForRequestView)c));
         }
+    }
+
+    class CategoryForRequestView : List<ProductForRequestView>, INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        private string _name;
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                OnPropertyChanged("Name");
+            }
+        }
+
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                _isSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
+
+
+        public decimal Subtotal
+        {
+            get
+            {
+                return this.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity));
+            }
+        }
+
+        public bool? IsContractedCategory
+        {
+            get
+            {
+                if (isGroupingeByCategories)
+                {
+                    return null;
+                }
+                else
+                {
+                    return this.All(p => p.IsOfContractedSupplier == true);
+                }
+            }
+        }
+
+        private readonly bool isGroupingeByCategories;
+        public CategoryForRequestView(string categoryName, bool isGroupingByCategories, IEnumerable<ProductForRequestView> products) : base(products)
+        {
+            Name = categoryName;
+            isGroupingeByCategories = isGroupingByCategories;
+            IsSelected = true;
+        }
+
+    }
+
+    class ProductForRequestView : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public Uri PictureUri { get; set; }
+        public bool IsOfContractedSupplier { get; set; }
+        private bool _isFavoriteForUser;
+        public bool IsFavoriteForUser
+        {
+            get { return _isFavoriteForUser; }
+            set
+            {
+                _isFavoriteForUser = value;
+                OnPropertyChanged("IsFavoriteForUser");
+            }
+        }
+        public string CategoryName { get; set; }
+        public string VolumeType { get; set; }
+        public decimal Volume { get; set; }
+        public string VolumeUnit { get; set; }
+
+        private List<OrderForRequestView> _orders;
+        public List<OrderForRequestView> Orders
+        {
+            get { return _orders; }
+            set
+            {
+                _orders = value;
+                OnPropertyChanged("Orders");
+            }
+        }
+
+        public ProductOrderAndRemainsState OrderAndRemainsState
+        {
+            get
+            {
+                if (Orders.All(o => o.Remains == 0 || o.IsSupplierActive == false || o.IsActive == false))
+                {
+                    if (Orders.Count == 1)
+                        return ProductOrderAndRemainsState.OneSupplierNullRemains;
+                    else
+                        return ProductOrderAndRemainsState.AllSuppliersNullRemains;
+                }
+
+                if (Orders.Any(o => o.OrderQuantity > o.Remains || o.IsSupplierActive == false || o.IsActive == false))
+                {
+                    if (Orders.Count == 1)
+                        return ProductOrderAndRemainsState.OneSupplierLessRemains;
+                    else
+                        return ProductOrderAndRemainsState.OneOfSuppliersLessRemains;
+                }
+                return ProductOrderAndRemainsState.Ok;
+            }
+        }
+    }
+    enum ProductOrderAndRemainsState
+    {
+        Ok,
+        OneSupplierNullRemains,
+        AllSuppliersNullRemains,
+        OneSupplierLessRemains,
+        OneOfSuppliersLessRemains
+    }
+
+    class OrderForRequestView
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public Guid OfferId { get; set; }
+
+        public decimal Remains { get; set; }
+
+        public bool IsActive { get; set; }
+        public Guid SupplierId { get; set; }
+        public string SupplierName { get; set; }
+        public bool IsSupplierActive { get; set; }
+        public string SupplierAddress { get; set; }
+        public string SupplierBin { get; set; }
+        public string SupplierEmail { get; set; }
+        public string SupplierFullName { get; set; }
+        public string SupplierPhone { get; set; }
+
+        public bool IsOfContractedSupplier { get; set; }
+
+        public decimal PriceForClient { get; set; }
+
+        private decimal _orderQuantity;
+        public decimal OrderQuantity
+        {
+            get { return _orderQuantity; }
+            set
+            {
+                _orderQuantity = value;
+                OnPropertyChanged("OrderQuantity");
+            }
+        }
+
+        public string QuantityUnit { get; set; }
+    }
+
+    class OrderFromDbView
+    {
+        public Guid ProductId { get; set; }
+        public string ProductName { get; set; }
+        public Uri ProductPictureUri { get; set; }
+        public string ProductTopCategoryName { get; set; }
+        public string ProductCategoryName { get; set; }
+        public string SupplierProductCode { get; set; }
+        public int ProductCode { get; set; }
+        public string VolumeType { get; set; }
+        public decimal Volume { get; set; }
+        public string VolumeUnit { get; set; }
+        public Guid OfferId { get; set; }
+        public decimal Remains { get; set; }
+        public bool IsActive { get; set; }
+        public Guid SupplierId { get; set; }
+        public string SupplierName { get; set; }
+        public bool IsSupplierActive { get; set; }
+        public string SupplierAddress { get; set; }
+        public string SupplierBin { get; set; }
+        public string SupplierEmail { get; set; }
+        public string SupplierFullName { get; set; }
+        public string SupplierPhone { get; set; }
+        public bool IsOfContractedSupplier { get; set; }
+        public bool IsFavoriteForUser { get; set; }
+        public decimal PriceForClient { get; set; }
+        public decimal OrderQuantity { get; set; }
+        public string QuantityUnit { get; set; }
+        public bool IsSelected { get; set; }
     }
 }

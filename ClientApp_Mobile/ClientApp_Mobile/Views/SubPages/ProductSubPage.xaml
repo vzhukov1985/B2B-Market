@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
-             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
              x:Class="ClientApp_Mobile.Views.SubPages.ProductSubPage"
+             x:Name="ProductSP"
              Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
@@ -47,8 +47,7 @@
                        Margin="10"
                        Source="{Binding Product.IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}">
                         <Image.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1"
-                                              Command="{Binding AddRemoveProductToFavouritesCommand}"/>
+                            <TapGestureRecognizer Command="{Binding AddRemoveProductToFavouritesCommand}"/>
                         </Image.GestureRecognizers>
                     </Image>
 
@@ -73,8 +72,7 @@
                            Margin="3"
                            Source="{Binding Product.PictureUri, Converter={StaticResource ImageConverter}}">
                         <Image.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1"
-                                              Command="{Binding ShowProductPictureCommand}"/>
+                            <TapGestureRecognizer Command="{Binding ShowProductPictureCommand}"/>
                         </Image.GestureRecognizers>
                     </Image>
 
@@ -141,14 +139,14 @@
                                         <Label Style="{StaticResource ProductSPOffers}"
                                            FontSize="12"
                                            TextColor="{Binding Path=IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
-                                           Text="{Binding Supplier.ShortName}"/>
+                                           Text="{Binding SupplierName}"/>
                                     </StackLayout>
 
                                     <StackLayout Grid.Column="1" Orientation="Horizontal" VerticalOptions="CenterAndExpand">
 
                                         <ImageButton Style="{StaticResource MinusButton}"
                                                  WidthRequest="45" HeightRequest="45"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=DecrementOrderCommand}"
+                                                 Command="{Binding Source={Reference ProductSP}, Path=BindingContext.DecrementOrderCommand}"
                                                  CommandParameter="{Binding .}"/>
 
                                         <controls:DecimalEntry WidthRequest="50"
@@ -157,12 +155,12 @@
                                                                Keyboard="Numeric"
                                                                Text="{Binding OrderQuantity,Mode=OneWay, StringFormat='{}{0:G20}'}"
                                                                Completed="DecimalEntry_Completed"
-                                                               ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=ChangesInOrderAreMadeCommand}"/>
+                                                               ReturnCommand="{Binding Source={Reference ProductSP}, Path=BindingContext.ChangesInOrderAreMadeCommand}"/>
 
 
                                         <ImageButton Style="{StaticResource PlusButton}" 
                                                  WidthRequest="45" HeightRequest="45"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:ProductSubPageVM}}, Path=IncrementOrderCommand}"
+                                                 Command="{Binding Source={Reference ProductSP}, Path=BindingContext.IncrementOrderCommand}"
                                                  CommandParameter="{Binding .}"/>
                                     </StackLayout>
 
@@ -206,8 +204,13 @@
 
             </StackLayout>
         </ScrollView>
+
         <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
         <ActivityIndicator IsVisible="{Binding IsBusy}"/>
+        <Grid.GestureRecognizers>
+            <SwipeGestureRecognizer Direction="Right"
+                                    Command="{Binding GoBackCommand}"/>
+        </Grid.GestureRecognizers>
     </Grid>
 
 </ContentPage>

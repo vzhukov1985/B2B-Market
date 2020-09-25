@@ -1,21 +1,14 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
-using Core.Services;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
-    public class ProductCategoriesSubPageVM : BaseVM
+    class ProductCategoriesSubPageVM : BaseVM
     {
         private string _title;
         public string Title

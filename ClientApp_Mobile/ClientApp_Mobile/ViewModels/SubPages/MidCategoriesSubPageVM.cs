@@ -1,21 +1,15 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
-using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
-    public class MidCategoriesSubPageVM : BaseVM
+    class MidCategoriesSubPageVM : BaseVM
     {
         private string _title;
         public string Title
@@ -63,7 +57,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 {
                     try
                     {
-                        filterGuids = await db.ProductCategories.AsNoTracking().Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync(CTS.Token);
+                        filterGuids = await db.ProductCategories.Where(c => AllMidCategoriesGuids.Contains((Guid)c.MidCategoryId)).Select(c => c.Id).ToListAsync(CTS.Token);
                     }
                     catch (OperationCanceledException)
                     {
@@ -145,10 +139,9 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 {
                     if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                     SubCategories = new List<MidCategory>(await db.MidCategories
-                                                                  .AsNoTracking()
                                                                   .Where(c => c.TopCategoryId == SelectedTopCategory.Id)
                                                                   .ToListAsync(CTS.Token))
-                                                            .OrderBy(c => c.Name).ToList();
+                                                                  .OrderBy(c => c.Name).ToList();
                 }
                 if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
                 SubCategories.Insert(0, new MidCategory { Name = "Все товары" });

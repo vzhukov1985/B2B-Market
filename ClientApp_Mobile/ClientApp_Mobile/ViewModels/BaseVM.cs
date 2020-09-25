@@ -65,7 +65,6 @@ namespace ClientApp_Mobile.ViewModels
 
         public BaseVM()
         {
-
         }
 
     }

@@ -50,7 +50,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     {
 
                         UserService.CurrentUser.Client.ArchivedRequests = await db.ArchivedRequests
-                            .AsNoTracking()
                             .Where(r => r.ClientId == User.ClientId)
                             .Include(r => r.ArchivedRequestsStatuses)
                             .ThenInclude(rs => rs.ArchivedRequestStatusType)

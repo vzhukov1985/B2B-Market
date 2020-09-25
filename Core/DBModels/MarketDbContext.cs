@@ -1841,25 +1841,17 @@ namespace Core.DBModels
                 {
                     if (selectedProduct.IsFavoriteForUser)
                     {
-                        selectedProduct.IsFavoriteForUser = false;
                         db.Favorites.Remove(new Favorite() { ClientUserId = User.Id, ProductId = selectedProduct.Id });
-                        User.Favorites.Remove(User.Favorites.Where(fp => fp.ClientUserId == User.Id && fp.ProductId == selectedProduct.Id).FirstOrDefault());
+                        User.Favorites.Remove(User.Favorites.Where(f => f.ProductId == selectedProduct.Id && f.ClientUserId == User.Id).FirstOrDefault());
                     }
                     else
                     {
-                        selectedProduct.IsFavoriteForUser = true;
                         db.Favorites.Add(new Favorite
                         {
                             ClientUserId = User.Id,
                             ProductId = selectedProduct.Id
                         });
-                        User.Favorites.Add(new Favorite
-                        {
-                            ClientUserId = User.Id,
-                            ProductId = selectedProduct.Id,
-                            ClientUser = User,
-                            Product = selectedProduct
-                        });
+                        User.Favorites.Add(new Favorite() { ProductId = selectedProduct.Id, ClientUserId = User.Id });
                     }
                     db.SaveChanges();
                 }

@@ -32,7 +32,7 @@ namespace ClientApp_Mobile.Views.SubPages
                     isGoing = true;
             }
             typeof(Color).GetProperty("Accent", BindingFlags.Public | BindingFlags.Static).SetValue(null, Color.Transparent); //Remove Line under listview group header
-            Task.Run(() => ((CurrentRequestSubPageVM)BindingContext).QueryDb(true));
+            Task.Run(() => ((CurrentRequestSubPageVM)BindingContext).QueryDb());
             isGoing = false;
         }
 

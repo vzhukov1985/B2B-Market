@@ -9,7 +9,6 @@
 
     <ContentPage.Resources>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
-        <conv:NullableBoolToContractedColorConverter x:Key="NullableBoolToContractedColorConverter"/>
         <conv:BoolToFavoriteImageConverter x:Key="BoolToFavoriteImageConverter"/>
         <conv:BoolToGroupingButtonContentConverter x:Key="BoolToGroupingButtonContentConverter"/>
         <conv:ProductOrderAndRemainsStateToTextConverter x:Key="ProductOrderAndRemainsStateToTextConverter"/>
@@ -101,7 +100,7 @@
                                        VerticalOptions="Center"
                                        FontAttributes="Bold"
                                    FontSize="15"
-                                   TextColor="{Binding IsContractedCategory, Converter={StaticResource NullableBoolToContractedColorConverter}}"
+                                   TextColor="{Binding IsContractedCategory, Converter={StaticResource BoolToContractedColorConverter}}"
                                    Text="{Binding Name}"/>
 
                                 <Label Grid.Column="2"
@@ -194,7 +193,7 @@
 
                                         <Label Grid.Column="0"
                                            Style="{StaticResource ProductInfoLabel}" 
-                                           Text="{Binding Category.Name}"/>
+                                           Text="{Binding CategoryName}"/>
 
                                         <Label Grid.Column="1"
                                            Style="{StaticResource ProductInfoLabel}">
@@ -224,7 +223,7 @@
                                                         <Label Grid.Column="0"
                                                            Style="{StaticResource ProductPriceLabel}"
                                                            TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
-                                                           Text="{Binding Supplier.ShortName}"/>
+                                                           Text="{Binding SupplierName}"/>
 
                                                         <Label Grid.Column="1" 
                                                            Style="{StaticResource ProductPriceLabel}"

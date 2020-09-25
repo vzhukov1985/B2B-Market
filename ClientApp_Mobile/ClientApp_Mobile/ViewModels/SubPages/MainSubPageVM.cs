@@ -4,18 +4,13 @@ using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
-    public class MainSubPageVM : BaseVM
+    class MainSubPageVM : BaseVM
     {
         private ClientUser _user;
         public ClientUser User
@@ -28,90 +23,71 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private List<TopCategory> _topCategories;
-        public List<TopCategory> TopCategories
+        private List<MainListItems> _mainListItems;
+        public List<MainListItems> MainListItems
         {
-            get { return _topCategories; }
+            get { return _mainListItems; }
             set
             {
-                _topCategories = value;
-                if (_topCategories != null)
-                    HeightCategories = (_topCategories.Count * 65) + (_topCategories.Count * 1);
-                OnPropertyChanged("TopCategories");
+                _mainListItems = value;
+                OnPropertyChanged("MainListItems");
             }
         }
 
-        private List<Supplier> _suppliers;
-        public List<Supplier> Suppliers
+        private void ShowItem(MainListItem item)
         {
-            get { return _suppliers; }
-            set
+            switch (item.Type)
             {
-                _suppliers = value;
-                if (_suppliers != null)
-                    HeightSuppliers = ((_suppliers.Count + 1) * 65) + ((_suppliers.Count + 1) * 1);
-                OnPropertyChanged("Suppliers");
+                case MainListItemType.Category:
+                    ShellPageService.GotoMidCategoriesPage(new TopCategory { Id = item.Id, Name = item.Name });
+                    break;
+                case MainListItemType.AllContractedSuppliers:
+                    ShellPageService.GotoOffersPage("Наши поставщики", null, UserService.CurrentUser.Client.ContractedSuppliersIDs);
+                    break;
+                case MainListItemType.Supplier:
+                    ShellPageService.GotoOffersPage(item.Name, null, new List<Guid>() { item.Id });
+                    break;
             }
         }
 
-        private double _heightCategories;
-        public double HeightCategories
-        {
-            get { return _heightCategories; }
-            set
-            {
-                _heightCategories = value;
-                OnPropertyChanged("HeightCategories");
-            }
-        }
-
-        private double _heightSuppliers;
-        public double HeightSuppliers
-        {
-            get { return _heightSuppliers; }
-            set
-            {
-                _heightSuppliers = value;
-                OnPropertyChanged("HeightSuppliers");
-            }
-        }
-
-
-        private void ShowSupplierProducts(Supplier selectedSupplier)
-        {
-            if (selectedSupplier.ShortName == "Наши поставщики")
-            {
-                ShellPageService.GotoOffersPage("Наши поставщики", null, UserService.CurrentUser.Client.ContractedSuppliersIDs);
-            }
-            else
-            {
-                ShellPageService.GotoOffersPage(selectedSupplier.ShortName, null, new List<Guid>() { selectedSupplier.Id });
-            }
-        }
-
-        private async void QueryDb()
+        private void QueryDb()
         {
             IsBusy = true;
             try
             {
-                List<Supplier> unsortedSuppliersList;
-
+                MainListItems categories, suppliers;
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    TopCategories = await db.TopCategories.AsNoTracking().ToListAsync();
+                    categories = new MainListItems("КАТЕГОРИИ", (db.TopCategories
+                                                                   .Select(tc => new MainListItem
+                                                                   {
+                                                                       Id = tc.Id,
+                                                                       Name = tc.Name,
+                                                                       Type = MainListItemType.Category,
+                                                                       IsContracted = null
+                                                                   })
+                                                                   .ToList())
+                                                                   .OrderBy(tc => tc.Name));
 
-                    unsortedSuppliersList = await db.Suppliers
-                        .AsNoTracking()
-                        .Select(s => new Supplier { Id = s.Id, ShortName = s.ShortName, IsActive = s.IsActive })
-                        .Where(s => s.IsActive == true)
-                        .ToListAsync();
+                    suppliers = new MainListItems("", db.Suppliers
+                                                        .Where(s => s.IsActive == true)
+                                                        .Select(s => new MainListItem
+                                                        {
+                                                            Id = s.Id,
+                                                            Name = s.ShortName,
+                                                            Type = MainListItemType.Supplier
+                                                        })
+                                                        .ToList());
                 }
 
-                foreach (Supplier supplier in unsortedSuppliersList)
-                    supplier.IsContractedWithClient = UserService.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
 
-                Suppliers = unsortedSuppliersList.OrderByDescending(s => s.IsContractedWithClient).ThenBy(s => s.ShortName).ToList(); ;
-                Suppliers.Insert(0, new Supplier { IsContractedWithClient = true, ShortName = "Наши поставщики", Id = Guid.Empty });
+                foreach (var supplier in suppliers)
+                    supplier.IsContracted = UserService.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
+
+                suppliers = new MainListItems("ПОСТАВЩИКИ", suppliers.OrderByDescending(s => s.IsContracted).ThenBy(s => s.Name));
+                suppliers.Insert(0, new MainListItem { Id = Guid.Empty, Name = "Наши поставщики", IsContracted = true, Type = MainListItemType.AllContractedSuppliers });
+
+                MainListItems = new List<MainListItems> { categories, suppliers };
                 IsBusy = false;
             }
             catch
@@ -123,19 +99,61 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         }
 
 
-        public Command ShowMidCategoriesCommand { get; }
-        public Command ShowSupplierProductsCommand { get; }
+        public Command ShowItemCommand { get; }
 
 
         public MainSubPageVM()
         {
             User = UserService.CurrentUser;
+            MainListItems = new List<MainListItems>();
 
-            ShowMidCategoriesCommand = new Command<TopCategory>(c => ShellPageService.GotoMidCategoriesPage(c));
-            ShowSupplierProductsCommand = new Command(s => ShowSupplierProducts((Supplier)s));
+            ShowItemCommand = new Command<MainListItem>(i => ShowItem(i));
 
             Task.Run(() => QueryDb());
         }
+    }
 
+
+
+
+    enum MainListItemType
+    {
+        Category,
+        AllContractedSuppliers,
+        Supplier
+    }
+    class MainListItem
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public MainListItemType Type { get; set; }
+        public bool? IsContracted { get; set; }
+        public Uri PictureUri
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case MainListItemType.Category:
+                        return HTTPManager.GetTopCategoryPictureUri(Id);
+                    case MainListItemType.AllContractedSuppliers:
+                        return HTTPManager.GetSupplierPictureUri(Guid.Empty);
+                    case MainListItemType.Supplier:
+                        return HTTPManager.GetSupplierPictureUri(Id);
+                    default:
+                        return null;
+                }
+            }
+        }
+    }
+
+    class MainListItems : List<MainListItem>
+    {
+        public string SectionName { get; set; }
+
+        public MainListItems(string sectionName, IEnumerable<MainListItem> items) : base(items)
+        {
+            SectionName = sectionName;
+        }
     }
 }

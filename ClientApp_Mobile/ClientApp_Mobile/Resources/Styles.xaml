@@ -174,10 +174,10 @@
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
-    <Style x:Key="TopCategorySuppliersImage" TargetType="Image">
+    <Style x:Key="MainItemImage" TargetType="Image">
         <Setter Property="Margin" Value="8,8,8,8"/>
     </Style>
-    <Style x:Key="TopCategorySuppliersLabel" TargetType="Label">
+    <Style x:Key="MainItemLabel" TargetType="Label">
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="VerticalOptions" Value="CenterAndExpand"/>
@@ -202,7 +202,7 @@
         <Setter Property="HeightRequest" Value="28"/>
         <Setter Property="HorizontalOptions" Value="End"/>
         <Setter Property="VerticalOptions" Value="Start"/>
-        <Setter Property="Margin" Value="5,5"/>
+        <Setter Property="Margin" Value="10,5"/>
     </Style>
     <Style x:Key="ProductNameLabel" TargetType="Label">
         <Setter Property="HorizontalOptions" Value="StartAndExpand"/>

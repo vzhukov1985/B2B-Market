@@ -1,6 +1,7 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -169,7 +170,7 @@ namespace ClientApp_Mobile.ViewModels
                 }
                 UserService.CurrentUser.Login = Login;
                 existingLogins[existingLogins.FindIndex(el => el == oldLogin)] = Login;
-                UpdateLoginCommand.ChangeCanExecute();
+                IsLoginValid = false;
                 UserService.AppLocalUsers.UpdateCurrentUserPreferences();
                 Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Логин был успешно изменен", "Сохранено"));
             }
@@ -295,21 +296,24 @@ namespace ClientApp_Mobile.ViewModels
             UserService.AppLocalUsers.UpdateCurrentUserPreferences();
         }
 
-        private void QueryDb()
+        private async void QueryDb()
         {
+            IsBusy = true;
             try
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    existingLogins = db.ClientsUsers.Select(cu => cu.Login).ToList();
-                    Login = Login;
+                    existingLogins = await db.ClientsUsers.Select(cu => cu.Login).ToListAsync();
                 }
             }
             catch
             {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                IsBusy = false;
+                DialogService.ShowConnectionErrorDlg();
                 return;
             }
+            IsLoginValid = false;
+            IsBusy = false;
         }
 
         private List<string> existingLogins;
@@ -344,7 +348,7 @@ namespace ClientApp_Mobile.ViewModels
             ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
 
             CheckBiometricAccess();
-            Task.Run(() => QueryDb());
+            QueryDb();
         }
 
     }

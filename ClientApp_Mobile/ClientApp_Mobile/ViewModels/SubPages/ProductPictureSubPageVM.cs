@@ -8,7 +8,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 {
     [QueryProperty("ProductId","id")]
     [QueryProperty("ProductName","name")]
-    public class ProductPictureSubPageVM: BaseVM
+    class ProductPictureSubPageVM: BaseVM
     {
         private string _productName;
         public string ProductName

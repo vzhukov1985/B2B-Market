@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
-    public class SearchSubPageVM : BaseVM
+    class SearchSubPageVM : BaseVM
     {
         private string _searchText;
         public string SearchText

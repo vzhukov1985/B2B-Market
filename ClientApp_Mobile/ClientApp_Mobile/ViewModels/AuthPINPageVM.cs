@@ -303,11 +303,15 @@ namespace ClientApp_Mobile.ViewModels
             Users = new ObservableCollection<AppLocalUser>(UserService.AppLocalUsers);
             var userFromSettings = Users[UserService.AppLocalUsers.LastEnterUserIndex];
             Users.RemoveAll(u => u.UsePINAccess == false);
-            if (!Users.Contains(userFromSettings))
+            if (Users.Contains(userFromSettings))
             {
-                UserService.AppLocalUsers.LastEnterUserIndex = 0;
+                SelectedUser = Users.Where(u => u.Id == userFromSettings.Id).FirstOrDefault();
             }
-            SelectedUser = Users[UserService.AppLocalUsers.LastEnterUserIndex];
+            else
+            {
+                SelectedUser = Users[0];
+            }
+            
             PINIsWrong = false;
 
              PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));

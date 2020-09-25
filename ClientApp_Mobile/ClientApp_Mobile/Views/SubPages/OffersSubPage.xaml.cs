@@ -3,6 +3,7 @@ using ClientApp_Mobile.ViewModels;
 using ClientApp_Mobile.ViewModels.SubPages;
 using Core.DBModels;
 using Core.Models;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,6 @@ namespace ClientApp_Mobile.Views.SubPages
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OffersSubPage : ContentPage
     {
-        static bool FirstTimeLoad;
         public static object locker = new object();
         public static bool isGoing = false;
 
@@ -36,7 +36,6 @@ namespace ClientApp_Mobile.Views.SubPages
         {
             InitializeComponent();
             BindingContext = new OffersSubPageVM();
-            FirstTimeLoad = true;
         }
 
         private async void ContentPage_Appearing(object sender, EventArgs e)
@@ -51,7 +50,7 @@ namespace ClientApp_Mobile.Views.SubPages
             if (ShowFavoritesOnly)
             {
                 OffersSubPageVM bc = (OffersSubPageVM)BindingContext;
-                FirstTimeLoad = !await Task.Run(() => bc.QueryFavoritesOnly(FirstTimeLoad));
+                await Task.Run(() => bc.QueryDb(null, null, "", true));
             }
             isGoing = false;
         }

@@ -137,10 +137,9 @@
         <ShellContent Route="UserSettings" ContentTemplate="{DataTemplate local:UserSettingsPage}"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Сменить пользователя">
-        <ShellContent Route="ChangeUser" Shell.FlyoutBehavior="Disabled" Shell.NavBarIsVisible="False"/>
-    </FlyoutItem>
-    
+    <MenuItem Text="Сменить пользователя" Command="{Binding ChangeUserCommand}"/>
+
+
     <MenuItem>
         <Shell.MenuItemTemplate>
             <DataTemplate>

@@ -38,19 +38,10 @@ namespace ClientApp_Mobile.Views.SubPages
         private void DecimalEntry_Completed(object sender, EventArgs e)
         {
             var entry = (DecimalEntry)sender;
-            OfferWithOrder data = (OfferWithOrder)entry.BindingContext;
+            OfferWithOrderView data = (OfferWithOrderView)entry.BindingContext;
             var strValue = entry.Text;
             if (!string.IsNullOrEmpty(strValue))
             {
-                /*               if (strValue.Last() == '.' || strValue.Last() == ',')
-                                    strValue += "0";
-                               if (decimal.TryParse(strValue, NumberStyles.Number, CultureInfo.CurrentUICulture, out decimal res))
-                               {
-                                    data.OrderQuantity = res;
-                                    return;
-                               }
-
-                */
                 var cultureInfo = CultureInfo.InvariantCulture;
                 // if the first regex matches, the number string is in us culture
                 if (Regex.IsMatch(strValue, @"^(:?[\d,]+\.)*\d+$"))

@@ -11,7 +11,9 @@ namespace ClientApp_Mobile.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value is bool)
                 return (bool)value ? Application.Current.Resources["Contracted_Color"] : Application.Current.Resources["NotContracted_Color"];
+            return Color.Black;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
              xmlns:controls="clr-namespace:ClientApp_Mobile.Controls"
-             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
-             x:Class="ClientApp_Mobile.Views.SubPages.OffersSubPage" Appearing="ContentPage_Appearing" Disappearing="ContentPage_Disappearing">
+             x:Class="ClientApp_Mobile.Views.SubPages.OffersSubPage" Appearing="ContentPage_Appearing" Disappearing="ContentPage_Disappearing"
+             x:Name="OffersSP">
 
     <ContentPage.Resources>
         <conv:BoolToContractedColorConverter x:Key="BoolToContractedColorConverter"/>
@@ -37,119 +37,95 @@
                     <DataTemplate>
                         <ViewCell>
                             <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="135"/>
+                                    <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <Image Grid.Column="0"
-                                   Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"
-                                   Style="{StaticResource ProductImage}"/>
+                                <Image Grid.Row="0" Grid.RowSpan="4" Grid.Column="0"
+                                       Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"
+                                       Style="{StaticResource ProductImage}"/>
 
-                                <Image Grid.Column="0"
-                                   Source="Contracted.png"
-                                   Style="{StaticResource ContractedIconImage}"
-                                   IsVisible="{Binding IsOfContractedSupplier}"/>
+                                <Image Grid.Row="0" Grid.RowSpan="4" Grid.Column="0"
+                                       Source="Contracted.png"
+                                       Style="{StaticResource ContractedIconImage}"
+                                       IsVisible="{Binding IsOfContractedSupplier}"/>
 
-                                <Image Grid.Column="0"
-                                   Style="{StaticResource ProductFavoriteIconImage}"
-                                   Source="{Binding IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}">
+                                <Image Grid.Row="0" Grid.RowSpan="4" Grid.Column="0"
+                                       Style="{StaticResource ProductFavoriteIconImage}"
+                                       Source="{Binding IsFavoriteForUser, Converter={StaticResource BoolToFavoriteImageConverter}}">
+
                                     <Image.GestureRecognizers>
-                                        <TapGestureRecognizer 
-                                        NumberOfTapsRequired="1"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:OffersSubPageVM}}, Path=AddRemoveProductToFavouritesCommand}"		
-                                        CommandParameter="{Binding .}">
-                                        </TapGestureRecognizer>
+                                        <TapGestureRecognizer Command="{Binding Source={Reference OffersSP}, Path=BindingContext.AddRemoveProductToFavouritesCommand}"		
+                                                              CommandParameter="{Binding .}"/>
                                     </Image.GestureRecognizers>
                                 </Image>
 
-                                <Grid Grid.Column="1" Margin="5,5,0,0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition />
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <Label Grid.Row="0"
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                                       Margin="0,5,7,0"
                                        Style="{StaticResource ProductNameLabel}"
                                        Text="{Binding Name}"/>
 
-                                    <Grid Grid.Row="1" 
-                                             Margin="0,5,0,0"
-                                             VerticalOptions="CenterAndExpand">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
+                                <Label Grid.Row="1" Grid.Column="1"
+                                       VerticalOptions="Center"
+                                       Style="{StaticResource ProductInfoLabel}" 
+                                       Text="{Binding CategoryName}"/>
 
-                                        <Label Grid.Column="0"
-                                           Style="{StaticResource ProductInfoLabel}" 
-                                           Text="{Binding Category.Name}"/>
-
-                                        <Label Grid.Column="1"
-                                           Style="{StaticResource ProductInfoLabel}">
-                                            <Label.Text>
-                                                <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
-                                                    <Binding Path="VolumeType"/>
-                                                    <Binding Path="Volume"/>
-                                                    <Binding Path="VolumeUnit"/>
-                                                </MultiBinding>
-                                            </Label.Text>
-                                        </Label>
-                                    </Grid>
-
-                                    <Grid Grid.Row="2">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label Grid.Row="0" Grid.Column="0"
+                                <Label Grid.Row="1" Grid.Column="2"
+                                       VerticalOptions="Center"
+                                       Style="{StaticResource ProductInfoLabel}">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0}: {1:G20} {2}">
+                                            <Binding Path="VolumeType"/>
+                                            <Binding Path="Volume"/>
+                                            <Binding Path="VolumeUnit"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                
+                                <Label Grid.Row="2" Grid.Column="1"
                                        Style="{StaticResource ProductPriceLabel}">
-                                            <Label.Text>
-                                                <MultiBinding StringFormat="{}{0:G20} тг/{1}">
-                                                    <Binding Path="BestRetailPriceOffer.RetailPrice"/>
-                                                    <Binding Path="BestRetailPriceOffer.QuantityUnit"/>
-                                                </MultiBinding>
-                                            </Label.Text>
-                                        </Label>
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                            <Binding Path="BestRetailOffer.Price"/>
+                                            <Binding Path="BestRetailOffer.QuantityUnit"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
 
-                                        <Label Grid.Row="1" Grid.Column="0"
-                                           Style="{StaticResource ProductSupplierLabel}"
-                                           TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
-                                           Text="{Binding BestRetailPriceOffer.Supplier.ShortName}"/>
+                                <Label Grid.Row="2" Grid.Column="2"
+                                       Style="{StaticResource ProductPriceLabel}"
+                                       TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0:G20} тг/{1}">
+                                            <Binding Path="BestDiscountOffer.Price"/>
+                                            <Binding Path="BestDiscountOffer.QuantityUnit"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
 
-                                        <Label Grid.Row="0" Grid.Column="1"
-                                           Style="{StaticResource ProductPriceLabel}"
-                                           TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}">
-                                            <Label.Text>
-                                                <MultiBinding StringFormat="{}{0:G20} тг/{1}">
-                                                    <Binding Path="BestDiscountPriceOffer.DiscountPrice"/>
-                                                    <Binding Path="BestDiscountPriceOffer.QuantityUnit"/>
-                                                </MultiBinding>
-                                            </Label.Text>
-                                        </Label>
+                                <Label Grid.Row="3" Grid.Column="1"
+                                       Style="{StaticResource ProductSupplierLabel}"
+                                       TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
+                                       Text="{Binding BestRetailOffer.SupplierName}"/>
 
-                                        <Label Grid.Row="1" Grid.Column="1"
-                                           Style="{StaticResource ProductSupplierLabel}"
-                                           TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
-                                           Text="{Binding BestDiscountPriceOffer.Supplier.ShortName}"/>
-                                    </Grid>
 
-                                </Grid>
+                                <Label Grid.Row="3" Grid.Column="2"
+                                       Style="{StaticResource ProductSupplierLabel}"
+                                       TextColor="{Binding IsOfContractedSupplier, Converter={StaticResource BoolToContractedColorConverter}}"
+                                       Text="{Binding BestDiscountOffer.SupplierName}"/>
 
                                 <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                    NumberOfTapsRequired="1"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vmsp:OffersSubPageVM}}, Path=ShowProductCommand}"		
-                                    CommandParameter="{Binding .}">
-                                    </TapGestureRecognizer>
+                                    <TapGestureRecognizer Command="{Binding Source={Reference OffersSP}, Path=BindingContext.ShowProductCommand}"
+                                                          CommandParameter="{Binding .}"/>
                                 </Grid.GestureRecognizers>
-
                             </Grid>
                         </ViewCell>
                     </DataTemplate>

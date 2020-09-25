@@ -20,10 +20,13 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
+        public Command ChangeUserCommand { get; }
 
         public MainPageVM()
         {
             User = UserService.CurrentUser;
+
+            ChangeUserCommand = new Command(_ => AppPageService.GoToAuthorizationPage());
         }
 
     }
