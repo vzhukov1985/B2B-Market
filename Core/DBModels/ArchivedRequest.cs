@@ -11,7 +11,7 @@ using Core.Resources;
 
 namespace Core.DBModels
 {
-    public class ArchivedRequest: INotifyPropertyChanged
+    public class ArchivedRequest : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -51,6 +51,8 @@ namespace Core.DBModels
                 OnPropertyChanged("ClientId");
             }
         }
+
+        public Guid ArchivedClientId { get; set; }
 
         private string _senderName;
         public string SenderName
@@ -95,6 +97,8 @@ namespace Core.DBModels
                 OnPropertyChanged("ProductsQuantity");
             }
         }
+
+        public Guid SupplierId { get; set; }
 
         private Guid _archivedSupplierId;
         public Guid ArchivedSupplierId
@@ -151,6 +155,17 @@ namespace Core.DBModels
             }
         }
 
+        private Supplier _supplier;
+        public Supplier Supplier
+        {
+            get { return _supplier; }
+            set
+            {
+                _supplier = value;
+                OnPropertyChanged("Supplier");
+            }
+        }
+
         private ArchivedSupplier _archivedSupplier;
         public ArchivedSupplier ArchivedSupplier
         {
@@ -176,6 +191,19 @@ namespace Core.DBModels
                 OnPropertyChanged("Client");
             }
         }
+
+        private ArchivedClient _archivedClient;
+        public ArchivedClient ArchivedClient
+        {
+            get { return _archivedClient; }
+            set
+            {
+                _archivedClient = value;
+                OnPropertyChanged("ArchivedClient");
+            }
+        }
+
+
 
         private List<ArchivedOrder> _archivedOrders;
         public List<ArchivedOrder> ArchivedOrders
@@ -235,7 +263,7 @@ namespace Core.DBModels
         {
             get
             {
-                    return ArchivedRequestsStatuses == null ? "Нет данных" : ArchivedRequestsStatuses.OrderBy(st => st.DateTime).Last().ArchivedRequestStatusType.Description;
+                return ArchivedRequestsStatuses == null ? "Нет данных" : ArchivedRequestsStatuses.OrderBy(st => st.DateTime).Last().ArchivedRequestStatusType.Description;
             }
         }
 
@@ -275,10 +303,12 @@ namespace Core.DBModels
                 Id = request.Id,
                 Code = request.Code,
                 ClientId = request.ClientId,
+                ArchivedClientId = request.ArchivedClientId,
                 SenderName = request.SenderName,
                 SenderSurname = request.SenderSurname,
                 ItemsQuantity = request.ItemsQuantity,
                 ProductsQuantity = request.ProductsQuantity,
+                SupplierId = request.SupplierId,
                 ArchivedSupplierId = request.ArchivedSupplierId,
                 TotalPrice = request.TotalPrice,
                 DateTimeSent = request.DateTimeSent,

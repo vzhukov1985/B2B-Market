@@ -231,6 +231,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 Client = User.Client,
                 ClientId = User.ClientId,
+                SupplierId = so.Key,
                 SenderName = User.Name,
                 SenderSurname = User.Surname,
                 ItemsQuantity = (int)Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity),
@@ -251,6 +252,18 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     Address = so.FirstOrDefault().SupplierAddress,
                     Phone = so.FirstOrDefault().SupplierPhone,
                     Email = so.FirstOrDefault().SupplierEmail,
+                },
+                ArchivedClient = new ArchivedClient
+                {
+                    Id = User.Client.Id,
+                    ShortName = User.Client.ShortName,
+                    FullName = User.Client.FullName,
+                    Bin = User.Client.Bin,
+                    Country = User.Client.Country,
+                    City = User.Client.City,
+                    Address = User.Client.Address,
+                    Phone = User.Client.Phone,
+                    Email = User.Client.Email
                 },
                 ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>
                 {

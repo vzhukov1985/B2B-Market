@@ -33,6 +33,64 @@ namespace Core.DBModels
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ArchivedClient>(entity =>
+            {
+                entity.ToTable("archivedclients");
+
+                entity.HasKey(e => e.Id)
+                    .HasName("Primary");
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.ShortName)
+                     .IsRequired()
+                     .HasColumnType("varchar(100)")
+                     .HasCharSet("utf8mb4")
+                     .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.FullName)
+                    .IsRequired()
+                    .HasColumnType("varchar(200)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Bin)
+                    .IsRequired()
+                    .HasColumnName("BIN")
+                    .HasColumnType("char(12)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Country)
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.City)
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Address)
+                    .HasColumnType("varchar(200)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Phone)
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.Email)
+                    .HasColumnType("varchar(320)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+            });
+
             modelBuilder.Entity<ArchivedOrder>(entity =>
             {
                 entity.ToTable("archivedorders");
@@ -125,14 +183,20 @@ namespace Core.DBModels
                 entity.HasKey(e => e.Id)
                     .HasName("PRIMARY");
 
-                entity.HasIndex(e => e.ArchivedSupplierId)
-                    .HasName("FK_ArchivedRequests_To_ArchivedSuppliers");
-
                 entity.HasIndex(e => e.ClientId)
                     .HasName("FK_ArchivedRequests_To_Clients");
 
+                entity.HasIndex(e => e.ArchivedClientId)
+                    .HasName("FK_ArhivedRequests_To_ArchivedClients");
 
-                
+                entity.HasIndex(e => e.SupplierId)
+                    .HasName("FK_ArchivedRequests_To_Suppliers");
+
+                entity.HasIndex(e => e.ArchivedSupplierId)
+                    .HasName("FK_ArchivedRequests_To_ArchivedSuppliers");
+
+
+
                 entity.Property(e => e.Id)
                     .IsRequired()
                     .HasColumnType("char(36)")
@@ -195,6 +259,12 @@ namespace Core.DBModels
 
 
 
+                entity.HasOne(d => d.Supplier)
+                    .WithMany(p => p.ArchivedRequests)
+                    .HasForeignKey(d => d.SupplierId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_ArchivedRequests_To_Suppliers");
+
                 entity.HasOne(d => d.ArchivedSupplier)
                     .WithMany()
                     .HasForeignKey(d => d.ArchivedSupplierId)
@@ -206,6 +276,13 @@ namespace Core.DBModels
                     .HasForeignKey(d => d.ClientId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_ArchivedRequests_To_Clients");
+
+                entity.HasOne(d => d.ArchivedClient)
+                    .WithMany()
+                    .HasForeignKey(d => d.ArchivedClientId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_ArchivedRequests_To_ArchivedClients");
+
             });
 
             modelBuilder.Entity<ArchivedRequestsStatus>(entity =>
@@ -322,7 +399,7 @@ namespace Core.DBModels
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.Address)
-                    .HasColumnType("varchar(350)")
+                    .HasColumnType("varchar(200)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 

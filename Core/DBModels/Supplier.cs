@@ -14,7 +14,7 @@ namespace Core.DBModels
     public class Supplier : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string prop = "")
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
@@ -173,6 +173,18 @@ namespace Core.DBModels
             }
         }
 
+
+
+        private List<ArchivedRequest> _archivedRequests;
+        public List<ArchivedRequest> ArchivedRequests
+        {
+            get { return _archivedRequests; }
+            set
+            {
+                _archivedRequests = value;
+                OnPropertyChanged("ArchivedRequests");
+            }
+        }
 
         private ObservableCollection<Contract> _contracts;
         public ObservableCollection<Contract> Contracts
