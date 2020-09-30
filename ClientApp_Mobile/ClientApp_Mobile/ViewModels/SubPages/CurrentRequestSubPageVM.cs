@@ -112,8 +112,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    db.GetService<ILoggerFactory>().AddProvider(new DbLoggerProvider());
-
                     AllCurrentOrders = await db.CurrentOrders
                                          .Where(co => co.ClientId == UserService.CurrentUser.ClientId)
                                          .Select(co => new OrderFromDbView
@@ -136,11 +134,15 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                                              Remains = co.Offer.Remains,
                                              SupplierId = co.Offer.SupplierId,
                                              SupplierShortName = co.Offer.Supplier.ShortName,
+                                             SupplierCountry = co.Offer.Supplier.Country,
+                                             SupplierCity = co.Offer.Supplier.City,
                                              SupplierAddress = co.Offer.Supplier.Address,
                                              SupplierBin = co.Offer.Supplier.Bin,
                                              SupplierEmail = co.Offer.Supplier.Email,
                                              SupplierFullName = co.Offer.Supplier.FullName,
-                                             SupplierPhone = co.Offer.Supplier.Phone
+                                             SupplierPhone = co.Offer.Supplier.Phone,
+                                             ProductCode = co.Offer.Product.Code,
+                                             SupplierProductCode = co.Offer.SupplierProductCode
                                          }).ToListAsync(CTS.Token);
                 }
             }
@@ -227,8 +229,9 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 return;
             }
 
-            List<ArchivedRequest> requestsToAdd = AllCurrentOrders.Where(o => o.IsSelected == true).GroupBy(o => o.SupplierId).Select(so => new ArchivedRequest
+            List<RequestForConfirmation> requestsToAdd = AllCurrentOrders.Where(o => o.IsSelected == true).GroupBy(o => o.SupplierId).Select(so => new RequestForConfirmation
             {
+                ArchivedClientId = UserService.CurrentUser.ClientId,
                 Client = User.Client,
                 ClientId = User.ClientId,
                 SupplierId = so.Key,
@@ -270,41 +273,30 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
                     new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
                 },
-                ArchivedOrders = so.Select(o => new ArchivedOrder
+                OrdersToConfirm = so.Select(o => new OrderOfRequestForConfirmation
                 {
-                    Id = Guid.NewGuid(),
                     OfferId = o.OfferId,
+                    Remains = o.Remains,
+                    Id = Guid.NewGuid(),
                     SupplierProductCode = o.SupplierProductCode,
                     Price = o.PriceForClient,
                     QuantityUnit = o.QuantityUnit,
                     Quantity = o.OrderQuantity,
-                    Remains = o.Remains,
                     ProductName = o.ProductName,
                     ProductCategory = o.ProductCategoryName,
                     ProductCode = o.ProductCode,
                     ProductVolumeType = o.VolumeType,
                     ProductVolumeUnit = o.VolumeUnit,
-                    ProductVolume = o.Volume,
-                    ProductId = o.ProductId,
-                    Product = new Product
-                    {
-                        Id = o.ProductId,
-                        Name = o.ProductName,
-                        Category = new ProductCategory { Name = o.ProductCategoryName },
-                        Code = o.ProductCode,
-                        VolumeType = new VolumeType { Name = o.VolumeType },
-                        VolumeUnit = new VolumeUnit { ShortName = o.VolumeUnit },
-                        Volume = o.Volume
-                    }
+                    ProductVolume = o.Volume
                 }).ToList()
             }).ToList();
 
-            foreach (ArchivedRequest request in requestsToAdd)
+            foreach (var request in requestsToAdd)
             {
                 request.Id = Guid.NewGuid();
-                foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                foreach (var status in request.ArchivedRequestsStatuses)
                     status.ArchivedRequestId = request.Id;
-                foreach (ArchivedOrder order in request.ArchivedOrders)
+                foreach (var order in request.OrdersToConfirm)
                     order.ArchivedRequestId = request.Id;
                 request.Code = LastRequestCode + 1;
                 LastRequestCode++;
@@ -426,12 +418,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     Remains = o.Remains,
                     SupplierId = o.SupplierId,
                     SupplierName = o.SupplierShortName,
-                    SupplierAddress = o.SupplierAddress,
-                    SupplierBin = o.SupplierBin,
-                    SupplierEmail = o.SupplierEmail,
-                    SupplierPhone = o.SupplierPhone,
-                    SupplierFullName = o.SupplierFullName
-
                 }).OrderByDescending(o => o.IsOfContractedSupplier).ThenBy(o => o.SupplierName).ToList()
             });
         }
@@ -610,11 +596,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public Guid SupplierId { get; set; }
         public string SupplierName { get; set; }
         public bool IsSupplierActive { get; set; }
-        public string SupplierAddress { get; set; }
-        public string SupplierBin { get; set; }
-        public string SupplierEmail { get; set; }
-        public string SupplierFullName { get; set; }
-        public string SupplierPhone { get; set; }
 
         public bool IsOfContractedSupplier { get; set; }
 

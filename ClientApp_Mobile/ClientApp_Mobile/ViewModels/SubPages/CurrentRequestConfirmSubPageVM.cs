@@ -2,6 +2,8 @@
 using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,10 +15,10 @@ using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
-    public class CurrentRequestConfirmSubPageVM : BaseVM
+    class CurrentRequestConfirmSubPageVM : BaseVM
     {
-        private List<ArchivedRequest> _requests;
-        public List<ArchivedRequest> Requests
+        private List<RequestForConfirmation> _requests;
+        public List<RequestForConfirmation> Requests
         {
             get { return _requests; }
             set
@@ -49,7 +51,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             get
             {
-                return Requests.SelectMany(r => r.ArchivedOrders.Select(o => o.ProductId)).Distinct().Count();
+                return Requests.SelectMany(r => r.ArchivedOrders.Select(o => o.ProductCode)).Distinct().Count();
             }
         }
 
@@ -69,84 +71,139 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
+        public Command ProceedRequestCommand { get; }
+        public Command ChangeCommentsCommand { get; }
+        public Command CommentsAvailableChangeCommand { get; }
+
+        public CurrentRequestConfirmSubPageVM(List<RequestForConfirmation> requests)
+        {
+            User = UserService.CurrentUser;
+            Requests = requests;
+
+            ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()));
+            ChangeCommentsCommand = new Command<ArchivedRequest>(ar => ChangeComments(ar));
+            CommentsAvailableChangeCommand = new Command<ArchivedRequest>(ar => CommentsAvailableChange(ar));
+        }
+
+        public CurrentRequestConfirmSubPageVM()
+        {
+
+        }
+
         private async void ProceedRequest()
         {
             IsBusy = true;
-            try
+            using (MarketDbContext db = new MarketDbContext())
             {
-                int UnProcessedRequestsCount = 0;
-                using (MarketDbContext db = new MarketDbContext())
+                db.GetService<ILoggerFactory>().AddProvider(new DbLoggerProvider());
+                foreach (var request in Requests)
                 {
-                    var AvailableArchivedSuppliersIds = db.ArchivedSuppliers.AsNoTracking().Select(s => s.Id);
-                    var Suppliers = db.Suppliers.AsNoTracking().Where(s => Requests.Select(r => r.ArchivedSupplierId).Contains(s.Id));
-
-                    foreach (ArchivedRequest request in Requests)
+                    if (!db.ArchivedSuppliers.Any(s => s.Id == request.SupplierId))
                     {
-                        Supplier sup = Suppliers.Where(s => s.Id == request.ArchivedSupplierId).FirstOrDefault();
-                        if (FTPManager.UploadRequestToSupplierFTP(sup.FTPUser, sup.FTPPassword, request))
-                        {
-                            if (!AvailableArchivedSuppliersIds.Contains(request.ArchivedSupplierId))
-                            {
-                                await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
-                            }
-
-                            await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
-
-                            foreach (ArchivedOrder order in request.ArchivedOrders)
-                            {
-                                await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
-
-                                Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
-                                db.Offers.Attach(ofRemainsToUpdate);
-                                db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
-                            }
-
-                            foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
-                            {
-                                await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
-                            }
-
-                            db.CurrentOrders.RemoveRange(User.Client.CurrentOrders.Where(o => o.ClientId == User.ClientId && request.ArchivedOrders.Select(oo => oo.OfferId).Contains(o.OfferId)).Select(co => CurrentOrder.CloneForDB(co)));
-                            UserService.CurrentUser.Client.ArchivedRequests?.Add(request);
-                           
-                        }
-                        else
-                        {
-                            UnProcessedRequestsCount++;
-                        }
+                        await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
                     }
 
+                    if (!db.ArchivedClients.Any(c => c.Id == request.ClientId))
+                    {
+                        await db.ArchivedClients.AddAsync(ArchivedClient.CloneForDb(request.ArchivedClient));
+                    }
+
+                    await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
+
+                    foreach (var order in request.OrdersToConfirm)
+                    {
+                        await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
+
+                        Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
+                        db.Offers.Attach(ofRemainsToUpdate);
+                        db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
+                    }
+                    foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                    {
+                        await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
+                    }
                     await db.SaveChangesAsync();
-
-                    User.Client.CurrentOrders = new List<CurrentOrder>(db.CurrentOrders
-                        .Where(o => o.ClientId == User.ClientId)
-                        .Include(o => o.Offer)
-                        .ThenInclude(o => o.QuantityUnit)
-                        .Include(o => o.Offer)
-                        .ThenInclude(o => o.Supplier));
                 }
-
-                if (UnProcessedRequestsCount > 0)
-                {
-                    if (UnProcessedRequestsCount == Requests.Count)
-                        Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
-                    else
-                        Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
-                }
-
-                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
-                IsBusy = false;
             }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
+
+            IsBusy = false;
+
+            /*            IsBusy = true;
+                        try
+                        {
+                            int UnProcessedRequestsCount = 0;
+                            using (MarketDbContext db = new MarketDbContext())
+                            {
+                                var AvailableArchivedSuppliersIds = db.ArchivedSuppliers.AsNoTracking().Select(s => s.Id);
+                                var Suppliers = db.Suppliers.AsNoTracking().Where(s => Requests.Select(r => r.ArchivedSupplierId).Contains(s.Id));
+
+                                foreach (var request in Requests)
+                                {
+                                    Supplier sup = Suppliers.Where(s => s.Id == request.ArchivedSupplierId).FirstOrDefault();
+                                    if (FTPManager.UploadRequestToSupplierFTP(sup.FTPUser, sup.FTPPassword, request))
+                                    {
+                                        if (!AvailableArchivedSuppliersIds.Contains(request.ArchivedSupplierId))
+                                        {
+                                            await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
+                                        }
+
+                                        await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
+
+                                        foreach (var order in request.OrdersToConfirm)
+                                        {
+                                            await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
+
+                                            Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
+                                            db.Offers.Attach(ofRemainsToUpdate);
+                                            db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
+                                        }
+
+                                        foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                                        {
+                                            await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
+                                        }
+
+                                        db.CurrentOrders.RemoveRange(User.Client.CurrentOrders.Where(o => o.ClientId == User.ClientId && request.ArchivedOrders.Select(oo => oo.OfferId).Contains(o.OfferId)).Select(co => CurrentOrder.CloneForDB(co)));
+                                        UserService.CurrentUser.Client.ArchivedRequests?.Add(request);
+
+                                    }
+                                    else
+                                    {
+                                        UnProcessedRequestsCount++;
+                                    }
+                                }
+
+                                await db.SaveChangesAsync();
+
+                                User.Client.CurrentOrders = new List<CurrentOrder>(db.CurrentOrders
+                                    .Where(o => o.ClientId == User.ClientId)
+                                    .Include(o => o.Offer)
+                                    .ThenInclude(o => o.QuantityUnit)
+                                    .Include(o => o.Offer)
+                                    .ThenInclude(o => o.Supplier));
+                            }
+
+                            if (UnProcessedRequestsCount > 0)
+                            {
+                                if (UnProcessedRequestsCount == Requests.Count)
+                                    Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
+                                else
+                                    Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
+                            }
+                            else
+                            {
+                                Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
+                            }
+
+                            Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
+                            IsBusy = false;
+                        }
+                        catch
+                        {
+                            Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                            IsBusy = false;
+                            return;
+                        }*/
         }
 
         public async void ChangeComments(ArchivedRequest request)
@@ -168,23 +225,39 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        public Command ProceedRequestCommand { get; }
-        public Command ChangeCommentsCommand { get; }
-        public Command CommentsAvailableChangeCommand { get; }
+    }
 
-        public CurrentRequestConfirmSubPageVM(List<ArchivedRequest> requests)
+
+
+
+    class RequestForConfirmation : ArchivedRequest
+    {
+        public DateTime DeliveryDate
         {
-            User = UserService.CurrentUser;
-            Requests = requests;
-
-            ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()));
-            ChangeCommentsCommand = new Command<ArchivedRequest>(ar => ChangeComments(ar));
-            CommentsAvailableChangeCommand = new Command<ArchivedRequest>(ar => CommentsAvailableChange(ar));
+            get { return DeliveryDateTime.Date; }
+            set
+            {
+                DeliveryDateTime = new DateTime(value.Year, value.Month, value.Day, DeliveryDateTime.Hour, DeliveryDateTime.Minute, DeliveryDateTime.Second);
+                OnPropertyChanged("DeliveryDate");
+            }
         }
 
-        public CurrentRequestConfirmSubPageVM()
+        public TimeSpan DeliveryTime
         {
-
+            get { return DeliveryDateTime.TimeOfDay; }
+            set
+            {
+                DeliveryDateTime = new DateTime(DeliveryDateTime.Year, DeliveryDateTime.Month, DeliveryDateTime.Day, value.Hours, value.Minutes, value.Seconds);
+                OnPropertyChanged("DeliveryTime");
+            }
         }
+
+        public List<OrderOfRequestForConfirmation> OrdersToConfirm { get; set; }
+    }
+
+    class OrderOfRequestForConfirmation : ArchivedOrder
+    {
+        public Guid OfferId { get; set; }
+        public decimal Remains { get; set; }
     }
 }

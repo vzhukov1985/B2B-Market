@@ -163,55 +163,6 @@ namespace Core.DBModels
             }
         }
 
-        private Guid _offerId;
-        [NotMapped]
-        public Guid OfferId
-        {
-            get { return _offerId; }
-            set
-            {
-                _offerId = value;
-                OnPropertyChanged("OfferId");
-            }
-        }
-
-        private Guid _productId;
-        [NotMapped]
-        public Guid ProductId
-        {
-            get { return _productId; }
-            set
-            {
-                _productId = value;
-                OnPropertyChanged("ProductId");
-            }
-        }
-
-        private Product _product;
-        [NotMapped]
-        public Product Product
-        {
-            get { return _product; }
-            set
-            {
-                _product = value;
-                OnPropertyChanged("Product");
-            }
-        }
-
-        private decimal _remains;
-        [NotMapped]
-        public decimal Remains
-        {
-            get { return _remains; }
-            set
-            {
-                _remains = value;
-                OnPropertyChanged("Remains");
-            }
-        }
-
-
         public static ArchivedOrder CloneForDB(ArchivedOrder order)
         {
             return new ArchivedOrder

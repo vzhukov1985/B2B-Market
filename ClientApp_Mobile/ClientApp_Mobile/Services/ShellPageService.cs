@@ -112,7 +112,7 @@ namespace ClientApp_Mobile.Services
             await Shell.Current.GoToAsync("//Main/TabCurrentRequest");
         }
 
-        public static async void GotoCurrentRequestConfirmPage(List<ArchivedRequest> requestsToAdd)
+        internal static async void GotoCurrentRequestConfirmPage(List<RequestForConfirmation> requestsToAdd)
         {
             lock (locker)
             {

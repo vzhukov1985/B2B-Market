@@ -58,11 +58,14 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                     }
                 }
-                    var groupedlist = UserService.CurrentUser.Client.ArchivedRequests.GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy"))
-                                                                                                                 .Select(g =>
-                                                                                                                    new ArchivedRequestsByMonth(g.Key,
-                                                                                                                                                UserService.CurrentUser.Client.ArchivedRequests.Where(ar => ar.DateTimeSent.ToString("MMMM yyyy") == g.Key)
-                                                                                                                                                                              .OrderByDescending(ar => ar.DateTimeSent))).ToList();
+                    var groupedlist = UserService.CurrentUser
+                                                    .Client
+                                                    .ArchivedRequests
+                                                        .GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy"))
+                                                        .Select(g => 
+                                                            new ArchivedRequestsByMonth(g.Key,
+                                                                                        UserService.CurrentUser.Client.ArchivedRequests.Where(ar => ar.DateTimeSent.ToString("MMMM yyyy") == g.Key)
+                                                                                            .OrderByDescending(ar => ar.DateTimeSent))).ToList();
                     foreach (var month in groupedlist)
                     {
                         if (CTS.IsCancellationRequested) { IsBusy = false; return; }

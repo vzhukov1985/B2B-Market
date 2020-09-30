@@ -1903,6 +1903,7 @@ namespace Core.DBModels
         public virtual DbSet<ArchivedRequestStatusType> ArchivedRequestStatusTypes { get; set; }
         public virtual DbSet<ArchivedRequest> ArchivedRequests { get; set; }
         public virtual DbSet<ArchivedOrder> ArchivedOrders { get; set; }
+        public virtual DbSet<ArchivedClient> ArchivedClients { get; set; }
         public virtual DbSet<ArchivedSupplier> ArchivedSuppliers { get; set; }
         public virtual DbSet<ArchivedRequestsStatus> ArchivedRequestsStatuses { get; set; }
         public virtual DbSet<ProductDescription> ProductDescriptions { get; set; }

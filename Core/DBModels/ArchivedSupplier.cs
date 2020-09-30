@@ -120,6 +120,8 @@ namespace Core.DBModels
         {
             return new ArchivedSupplier
             {
+                City = archivedSupplier.City,
+                Country = archivedSupplier.Country,
                 Address = archivedSupplier.Address,
                 Bin = archivedSupplier.Bin,
                 Email = archivedSupplier.Email,

@@ -39,6 +39,22 @@ namespace Core.DBModels
 
         public string Email { get; set; }
 
+        public static ArchivedClient CloneForDb(ArchivedClient archivedClient)
+        {
+            return new ArchivedClient
+            {
+                Address = archivedClient.Address,
+                Bin = archivedClient.Bin,
+                City = archivedClient.City,
+                Country = archivedClient.Country,
+                Email = archivedClient.Email,
+                FullName = archivedClient.FullName,
+                Id = archivedClient.Id,
+                Phone = archivedClient.Phone,
+                ShortName = archivedClient.ShortName
+            };
+        }
+
         public ArchivedClient()
         {
 
