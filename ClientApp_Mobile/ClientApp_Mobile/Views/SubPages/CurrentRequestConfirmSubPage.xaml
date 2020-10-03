@@ -22,10 +22,11 @@
                    Style="{StaticResource TitleBarLabel}"
                    Text="Подтверждение заявок"/>
 
-            <Image Grid.Column="1"
+            <!-- TODO: Share Requests Image -->
+            <!--<Image Grid.Column="1"
                    HorizontalOptions="End"
                    Margin="9"
-                   Source="Share_White.png" />
+                   Source="Share_White.png" /> -->
         </Grid>
     </Shell.TitleView>
     
@@ -51,7 +52,7 @@
                                    Style="{StaticResource GroupLabel}"
                                    Text="{Binding ArchivedSupplier.ShortName}"/>
 
-                            <CollectionView Grid.Row="1" ItemsSource="{Binding ArchivedOrders}" SelectionMode="None" HeightRequest="{Binding ArchivedOrders.Count, Converter={StaticResource LVHeightCurrentRequestConfirm}}">
+                            <CollectionView Grid.Row="1" ItemsSource="{Binding OrdersToConfirm}" SelectionMode="None" HeightRequest="{Binding OrdersToConfirm.Count, Converter={StaticResource LVHeightCurrentRequestConfirm}}">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <StackLayout>
@@ -74,7 +75,7 @@
                                                     <Label Style="{StaticResource ProductInfoLabel}"
                                                            FontAttributes="Bold"
                                                            Margin="0,10,0,0"
-                                                           Text="{Binding Product.Category.Name}"/>
+                                                           Text="{Binding Product.CategoryName}"/>
 
                                                     <Label Style="{StaticResource ProductInfoLabel}">
                                                         <Label.Text>

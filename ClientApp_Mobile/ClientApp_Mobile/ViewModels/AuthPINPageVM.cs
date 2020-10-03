@@ -1,5 +1,4 @@
-﻿using ClientApp_Mobile.Models;
-using ClientApp_Mobile.Services;
+﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
 using System;
@@ -125,7 +124,7 @@ namespace ClientApp_Mobile.ViewModels
                 {
                     Device.BeginInvokeOnMainThread(() =>
                     {
-                        UserService.AppLocalUsers.RemoveAppUser(SelectedUser);
+                        AppSettings.AppLocalUsers.RemoveAppUser(SelectedUser);
                         Users.Remove(SelectedUser);
                         if (Users.Count > 0)
                         {
@@ -163,7 +162,7 @@ namespace ClientApp_Mobile.ViewModels
                 string authType = DependencyService.Get<IBiometricAuthenticateService>().GetAuthenticationType();
                 if (authType.Equals("None") || authType.Equals("PassCode"))
                 {
-                    UserService.AppLocalUsers.DisableAllUsersBiometricAccess();
+                    AppSettings.AppLocalUsers.DisableAllUsersBiometricAccess();
                     BiometricImage = ImageSource.FromFile("Fingerprint_Inactive.png");
                     return;
                 }
@@ -239,7 +238,7 @@ namespace ClientApp_Mobile.ViewModels
                 }
                 else
                 {
-                    UserService.AppLocalUsers.DisableAllUsersBiometricAccess();
+                    AppSettings.AppLocalUsers.DisableAllUsersBiometricAccess();
                     BiometricImage = ImageSource.FromFile("Fingerprint_Inactive.png");
                 }
             }
@@ -249,8 +248,8 @@ namespace ClientApp_Mobile.ViewModels
         {
             IsBusy = true;
             MessagingCenter.Send<string>("AndroidAuth", "Cancel");
-            UserService.GetUserInfoFromDb(SelectedUser.Id);
-            UserService.AppLocalUsers.RegisterExistingUser();
+            AppSettings.GetUserInfoFromDb(SelectedUser.Id);
+            AppSettings.AppLocalUsers.RegisterExistingUser();
             Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
             IsBusy = false;
         }
@@ -275,7 +274,7 @@ namespace ClientApp_Mobile.ViewModels
         {
             if (await DialogService.ShowOkCancelDialog($"Пользователь \"{SelectedUser.DisplayName}\" будет удален из списка быстрого доступа для этого устройства. Вы хотите продолжить?", "ВНИМАНИЕ!") == true)
             {
-                UserService.AppLocalUsers.RemoveAppUser(SelectedUser);
+                AppSettings.AppLocalUsers.RemoveAppUser(SelectedUser);
                 Users.Remove(SelectedUser);
                 Device.BeginInvokeOnMainThread(() =>
                 {
@@ -285,7 +284,7 @@ namespace ClientApp_Mobile.ViewModels
                     }
                     else
                     {
-                        SelectedUser = UserService.AppLocalUsers[0];
+                        SelectedUser = AppSettings.AppLocalUsers[0];
                     }
                 });
             }
@@ -300,8 +299,8 @@ namespace ClientApp_Mobile.ViewModels
 
         public AuthPINPageVM()
         {
-            Users = new ObservableCollection<AppLocalUser>(UserService.AppLocalUsers);
-            var userFromSettings = Users[UserService.AppLocalUsers.LastEnterUserIndex];
+            Users = new ObservableCollection<AppLocalUser>(AppSettings.AppLocalUsers);
+            var userFromSettings = Users[AppSettings.AppLocalUsers.LastEnterUserIndex];
             Users.RemoveAll(u => u.UsePINAccess == false);
             if (Users.Contains(userFromSettings))
             {

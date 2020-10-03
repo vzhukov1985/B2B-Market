@@ -80,7 +80,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     {
                         Title = "Избранное";
                         queryPart = db.Favorites
-                                      .Where(f => f.ClientUserId == UserService.CurrentUser.Id)
+                                      .Where(f => f.ClientUserId == AppSettings.CurrentUser.Id)
                                       .Select(f => f.Product);
                     }
                     else
@@ -144,7 +144,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             foreach (var product in productsFromDb)
             {
                 if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
-                product.IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(product.Id);
+                product.IsFavoriteForUser = AppSettings.CurrentUser.Favorites.Select(f => f.ProductId).Contains(product.Id);
             }
             Device.BeginInvokeOnMainThread(() => Products = new ObservableCollection<ProductWithOffersView>(productsFromDb));
             IsBusy = false;
@@ -155,7 +155,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             try
             {
-                MarketDbContext.AddRemoveProductToFavourites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, UserService.CurrentUser);
+                MarketDbContext.AddRemoveProductToFavourites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, AppSettings.CurrentUser);
                 product.IsFavoriteForUser = !product.IsFavoriteForUser;
             }
             catch
@@ -171,7 +171,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public OffersSubPageVM()
         {
-            ContractedSuppliersIds = UserService.CurrentUser.Client.ContractedSuppliersIDs;
+            ContractedSuppliersIds = AppSettings.CurrentUser.Client.ContractedSuppliersIDs;
 
             AddRemoveProductToFavouritesCommand = new Command<ProductWithOffersView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
             ShowProductCommand = new Command<ProductWithOffersView>(p => ShellPageService.GotoProductPage(new Product

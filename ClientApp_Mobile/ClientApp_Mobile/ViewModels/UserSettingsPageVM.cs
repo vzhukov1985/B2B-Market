@@ -135,15 +135,15 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    var clientUserRecord = ClientUser.CloneForDb(UserService.CurrentUser);
+                    var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     clientUserRecord.Name = Name;
                     clientUserRecord.Surname = Surname;
                     db.ClientsUsers.Update(clientUserRecord);
                     await db.SaveChangesAsync();
                 }
-                UserService.CurrentUser.Name = Name;
-                UserService.CurrentUser.Surname = Surname;
-                UserService.AppLocalUsers.UpdateCurrentUserPreferences();
+                AppSettings.CurrentUser.Name = Name;
+                AppSettings.CurrentUser.Surname = Surname;
+                AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
                 Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Имя и фамилия пользователя успешно обновлены", "Сохранено"));
                 UpdateNameSurnameCommand.ChangeCanExecute();
             }
@@ -159,19 +159,19 @@ namespace ClientApp_Mobile.ViewModels
         {
             try
             {
-                var oldLogin = UserService.CurrentUser.Login;
+                var oldLogin = AppSettings.CurrentUser.Login;
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    var clientUserRecord = ClientUser.CloneForDb(UserService.CurrentUser);
+                    var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     clientUserRecord.Login = Login;
                     db.ClientsUsers.Update(clientUserRecord);
                     await db.SaveChangesAsync();
 
                 }
-                UserService.CurrentUser.Login = Login;
+                AppSettings.CurrentUser.Login = Login;
                 existingLogins[existingLogins.FindIndex(el => el == oldLogin)] = Login;
                 IsLoginValid = false;
-                UserService.AppLocalUsers.UpdateCurrentUserPreferences();
+                AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
                 Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Логин был успешно изменен", "Сохранено"));
             }
             catch
@@ -199,16 +199,16 @@ namespace ClientApp_Mobile.ViewModels
                     {
                         using (MarketDbContext db = new MarketDbContext())
                         {
-                            var clientUserRecord = ClientUser.CloneForDb(UserService.CurrentUser);
+                            var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                             clientUserRecord.PinHash = PINHash;
                             db.ClientsUsers.Update(clientUserRecord);
                             await db.SaveChangesAsync();
 
                         }
-                        UserService.CurrentUser.PinHash = PINHash;
+                        AppSettings.CurrentUser.PinHash = PINHash;
                         UsePINAccess = true;
-                        UserService.AppLocalUsers.CurrentUser.UsePINAccess = true;
-                        UserService.AppLocalUsers.UpdateCurrentUserPreferences();
+                        AppSettings.AppLocalUsers.CurrentUser.UsePINAccess = true;
+                        AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
                     }
                     catch
                     {
@@ -227,15 +227,15 @@ namespace ClientApp_Mobile.ViewModels
                 {
                     using (MarketDbContext db = new MarketDbContext())
                     {
-                        var clientUserRecord = ClientUser.CloneForDb(UserService.CurrentUser);
+                        var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                         clientUserRecord.PinHash = null;
                         db.ClientsUsers.Update(clientUserRecord);
                         await db.SaveChangesAsync();
 
                     }
-                    UserService.CurrentUser.PinHash = null;
+                    AppSettings.CurrentUser.PinHash = null;
                     UsePINAccess = false;
-                    UserService.AppLocalUsers.UpdateCurrentUserPreferences();
+                    AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
                 }
                 catch
                 {
@@ -292,8 +292,8 @@ namespace ClientApp_Mobile.ViewModels
                 UseBiometricAccess = false;
             }
 
-            UserService.CurrentUser.UseBiometricAccess = UseBiometricAccess;
-            UserService.AppLocalUsers.UpdateCurrentUserPreferences();
+            AppSettings.CurrentUser.UseBiometricAccess = UseBiometricAccess;
+            AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
         }
 
         private async void QueryDb()
@@ -328,7 +328,7 @@ namespace ClientApp_Mobile.ViewModels
 
         public UserSettingsPageVM()
         {
-            var user = UserService.CurrentUser;
+            var user = AppSettings.CurrentUser;
             ClientName = user.Client.ShortName;
             Status = user.IsAdmin ? "Администратор" : "Пользователь";
             Name = user.Name;
@@ -337,10 +337,10 @@ namespace ClientApp_Mobile.ViewModels
             PasswordHash = user.PasswordHash;
             UsePINAccess = !string.IsNullOrEmpty(user.PinHash);
             PINHash = user.PinHash;
-            UseBiometricAccess = UserService.AppLocalUsers.CurrentUser.UseBiometricAccess;
+            UseBiometricAccess = AppSettings.AppLocalUsers.CurrentUser.UseBiometricAccess;
             existingLogins = new List<string>();
 
-            UpdateNameSurnameCommand = new Command(_ => UpdateNameSurname(), _ => !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Surname) && !(Name == UserService.CurrentUser.Name && Surname == UserService.CurrentUser.Surname));
+            UpdateNameSurnameCommand = new Command(_ => UpdateNameSurname(), _ => !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Surname) && !(Name == AppSettings.CurrentUser.Name && Surname == AppSettings.CurrentUser.Surname));
             UpdateLoginCommand = new Command(_ => UpdateLogin(), _ => IsLoginValid);
             ChangePasswordCommand = new Command(_ => ShellPageService.GotoChangePasswordPage());
             ChangePINAccessCommand = new Command(_ => ChangePINAccess());

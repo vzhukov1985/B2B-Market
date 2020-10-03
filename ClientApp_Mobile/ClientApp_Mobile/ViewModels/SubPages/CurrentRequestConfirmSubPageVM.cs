@@ -51,7 +51,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             get
             {
-                return Requests.SelectMany(r => r.ArchivedOrders.Select(o => o.ProductCode)).Distinct().Count();
+                return Requests.Sum(r => r.ProductsQuantity);
             }
         }
 
@@ -77,7 +77,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public CurrentRequestConfirmSubPageVM(List<RequestForConfirmation> requests)
         {
-            User = UserService.CurrentUser;
+            User = AppSettings.CurrentUser;
             Requests = requests;
 
             ProceedRequestCommand = new Command(_ => Task.Run(() => ProceedRequest()));
@@ -93,117 +93,79 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         private async void ProceedRequest()
         {
             IsBusy = true;
-            using (MarketDbContext db = new MarketDbContext())
+            int UnprocessedRequestsCount = 0;
+            try
             {
-                db.GetService<ILoggerFactory>().AddProvider(new DbLoggerProvider());
-                foreach (var request in Requests)
-                {
-                    if (!db.ArchivedSuppliers.Any(s => s.Id == request.SupplierId))
+
+                using (MarketDbContext db = new MarketDbContext())
+                {                  
+                    foreach (var request in Requests)
                     {
-                        await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
+                        if (/*FTPManager.UploadRequestToSupplierFTP(request, request.FTPSupplierFolder)*/true)
+                        {
+                            if (!db.ArchivedSuppliers.Any(s => s.Id == request.SupplierId))
+                            {
+                                await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
+                            }
+
+                            await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
+
+                            request.ArchivedOrders = new List<ArchivedOrder>();
+
+                            foreach (var order in request.OrdersToConfirm)
+                            {
+                                request.ArchivedOrders.Add(order);
+
+                                await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
+
+                                Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
+                                db.Offers.Attach(ofRemainsToUpdate);
+                                db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
+
+                                db.CurrentOrders.Remove(new CurrentOrder { ClientId = AppSettings.CurrentUser.ClientId, OfferId = order.OfferId });
+                                AppSettings.CurrentUser.Client.CurrentOrders.Remove(AppSettings.CurrentUser.Client.CurrentOrders.Where(co => co.OfferId == order.OfferId).FirstOrDefault());
+                            }
+                            foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
+                            {
+                                await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
+                            }
+                        }
+                        else
+                        {
+                            UnprocessedRequestsCount++;
+                        }
+                        await db.SaveChangesAsync();
                     }
-
-                    if (!db.ArchivedClients.Any(c => c.Id == request.ClientId))
+                    if (!db.ArchivedClients.Any(c => c.Id == Requests.FirstOrDefault().ClientId))
                     {
-                        await db.ArchivedClients.AddAsync(ArchivedClient.CloneForDb(request.ArchivedClient));
-                    }
-
-                    await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
-
-                    foreach (var order in request.OrdersToConfirm)
-                    {
-                        await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
-
-                        Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
-                        db.Offers.Attach(ofRemainsToUpdate);
-                        db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
-                    }
-                    foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
-                    {
-                        await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
+                        await db.ArchivedClients.AddAsync(ArchivedClient.CloneForDb(Requests.FirstOrDefault().ArchivedClient));
                     }
                     await db.SaveChangesAsync();
+
+                    if (UnprocessedRequestsCount > 0)
+                    {
+                        if (UnprocessedRequestsCount == Requests.Count)
+                            Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
+                        else
+                            Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnprocessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
+                    }
+                    else
+                    {
+                        Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
+                    }
+
+                    Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
+                    IsBusy = false;
+
                 }
             }
-
+            catch
+            {
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                IsBusy = false;
+                return;
+            }
             IsBusy = false;
-
-            /*            IsBusy = true;
-                        try
-                        {
-                            int UnProcessedRequestsCount = 0;
-                            using (MarketDbContext db = new MarketDbContext())
-                            {
-                                var AvailableArchivedSuppliersIds = db.ArchivedSuppliers.AsNoTracking().Select(s => s.Id);
-                                var Suppliers = db.Suppliers.AsNoTracking().Where(s => Requests.Select(r => r.ArchivedSupplierId).Contains(s.Id));
-
-                                foreach (var request in Requests)
-                                {
-                                    Supplier sup = Suppliers.Where(s => s.Id == request.ArchivedSupplierId).FirstOrDefault();
-                                    if (FTPManager.UploadRequestToSupplierFTP(sup.FTPUser, sup.FTPPassword, request))
-                                    {
-                                        if (!AvailableArchivedSuppliersIds.Contains(request.ArchivedSupplierId))
-                                        {
-                                            await db.ArchivedSuppliers.AddAsync(ArchivedSupplier.CloneForDB(request.ArchivedSupplier));
-                                        }
-
-                                        await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
-
-                                        foreach (var order in request.OrdersToConfirm)
-                                        {
-                                            await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
-
-                                            Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };
-                                            db.Offers.Attach(ofRemainsToUpdate);
-                                            db.Entry(ofRemainsToUpdate).Property(o => o.Remains).IsModified = true;
-                                        }
-
-                                        foreach (ArchivedRequestsStatus status in request.ArchivedRequestsStatuses)
-                                        {
-                                            await db.ArchivedRequestsStatuses.AddAsync(ArchivedRequestsStatus.CloneForDb(status));
-                                        }
-
-                                        db.CurrentOrders.RemoveRange(User.Client.CurrentOrders.Where(o => o.ClientId == User.ClientId && request.ArchivedOrders.Select(oo => oo.OfferId).Contains(o.OfferId)).Select(co => CurrentOrder.CloneForDB(co)));
-                                        UserService.CurrentUser.Client.ArchivedRequests?.Add(request);
-
-                                    }
-                                    else
-                                    {
-                                        UnProcessedRequestsCount++;
-                                    }
-                                }
-
-                                await db.SaveChangesAsync();
-
-                                User.Client.CurrentOrders = new List<CurrentOrder>(db.CurrentOrders
-                                    .Where(o => o.ClientId == User.ClientId)
-                                    .Include(o => o.Offer)
-                                    .ThenInclude(o => o.QuantityUnit)
-                                    .Include(o => o.Offer)
-                                    .ThenInclude(o => o.Supplier));
-                            }
-
-                            if (UnProcessedRequestsCount > 0)
-                            {
-                                if (UnProcessedRequestsCount == Requests.Count)
-                                    Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Заявки не обработаны. Попробуйте позже."));
-                                else
-                                    Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Проблемы с соединением. Не обработано " + UnProcessedRequestsCount.ToString() + "заявок. Попробуйте позже."));
-                            }
-                            else
-                            {
-                                Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Все заявки были отправлены поставщикам", "Заявки отправлены"));
-                            }
-
-                            Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
-                            IsBusy = false;
-                        }
-                        catch
-                        {
-                            Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                            IsBusy = false;
-                            return;
-                        }*/
         }
 
         public async void ChangeComments(ArchivedRequest request)
@@ -232,6 +194,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
     class RequestForConfirmation : ArchivedRequest
     {
+        public string FTPSupplierFolder { get; set; }
+
         public DateTime DeliveryDate
         {
             get { return DeliveryDateTime.Date; }
@@ -255,9 +219,20 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public List<OrderOfRequestForConfirmation> OrdersToConfirm { get; set; }
     }
 
+    class ProductForConfirmRequestView
+    {
+        public string Name { get; set; }
+        public Uri PictureUri { get; set; }
+        public string CategoryName { get; set; }
+        public string VolumeType { get; set; }
+        public decimal Volume { get; set; }
+        public string VolumeUnit { get; set; }
+    }
+
     class OrderOfRequestForConfirmation : ArchivedOrder
     {
         public Guid OfferId { get; set; }
         public decimal Remains { get; set; }
+        public ProductForConfirmRequestView Product { get; set; }
     }
 }

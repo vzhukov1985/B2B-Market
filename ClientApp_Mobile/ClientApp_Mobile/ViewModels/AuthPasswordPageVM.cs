@@ -56,7 +56,7 @@ namespace ClientApp_Mobile.ViewModels
                     if ((user != null) && (Authentication.CheckPassword(Password, user.PasswordHash)))
                     {
 
-                        UserService.GetUserInfoFromDb(user.Id);
+                        AppSettings.GetUserInfoFromDb(user.Id);
 
 
                         if (Password == user.InitialPassword)
@@ -66,9 +66,9 @@ namespace ClientApp_Mobile.ViewModels
                         }
                         else
                         {
-                            if (UserService.AppLocalUsers.UserExistsInApp())
+                            if (AppSettings.AppLocalUsers.UserExistsInApp())
                             {
-                                UserService.AppLocalUsers.RegisterExistingUser();
+                                AppSettings.AppLocalUsers.RegisterExistingUser();
                                 IsBusy = false;
                                 Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
                             }
@@ -100,8 +100,8 @@ namespace ClientApp_Mobile.ViewModels
                                 }
                                 else
                                 {
-                                    UserService.CurrentUser.UseBiometricAccess = false;
-                                    UserService.AppLocalUsers.RegisterNewUser();
+                                    AppSettings.CurrentUser.UseBiometricAccess = false;
+                                    AppSettings.AppLocalUsers.RegisterNewUser();
                                     Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
                                 }
                             }

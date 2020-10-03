@@ -42,13 +42,13 @@ namespace ClientApp_Mobile.ViewModels
                 DialogService.ShowErrorDlg("Введенные пароли не совпадают.");
                 return;
             }
-            if (Password1.SequenceEqual(UserService.CurrentUser.InitialPassword))
+            if (Password1.SequenceEqual(AppSettings.CurrentUser.InitialPassword))
             {
                 DialogService.ShowErrorDlg("Пароль не должен совпадать с выданным. Придумайте новый пароль.");
                 return;
             }
 
-            UserService.CurrentUser.PasswordHash = Authentication.HashPassword(Password1);
+            AppSettings.CurrentUser.PasswordHash = Authentication.HashPassword(Password1);
             AppPageService.GoToFirstTimeSettingsPage("");
         }
 

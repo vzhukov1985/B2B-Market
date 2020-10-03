@@ -62,10 +62,10 @@
                                Text="{Binding IsGroupingByCategories, Converter={StaticResource BoolToGroupingButtonContentConverter}}"
                                Command="{Binding SwitchGroupingCommand}"/>
                     </StackLayout>
-
-                    <Image Grid.Column="1"
+                    <!-- TODO: Share Requests Image-->
+                    <!--<Image Grid.Column="1"
                            Margin="0,12,15,12"
-                           Source="Share_White.png" />
+                           Source="Share_White.png" />-->
                 </Grid>
             </Frame>
 

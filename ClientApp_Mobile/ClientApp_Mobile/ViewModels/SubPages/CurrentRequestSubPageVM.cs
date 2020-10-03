@@ -1,5 +1,4 @@
-﻿using ClientApp_Mobile.Models;
-using ClientApp_Mobile.Services;
+﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -92,8 +91,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public CurrentRequestSubPageVM()
         {
-            User = UserService.CurrentUser;
-            ContractedSuppliersIds = UserService.CurrentUser.Client.ContractedSuppliersIDs;
+            User = AppSettings.CurrentUser;
+            ContractedSuppliersIds = AppSettings.CurrentUser.Client.ContractedSuppliersIDs;
 
             AddRemoveProductToFavouritesCommand = new Command<ProductForRequestView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
             ShowProductCommand = new Command(p => ShellPageService.GotoProductPage(GetProductByOfferId(p is OrderForRequestView order ? order.OfferId : ((ProductForRequestView)p).Orders.FirstOrDefault().OfferId)));
@@ -113,7 +112,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 using (MarketDbContext db = new MarketDbContext())
                 {
                     AllCurrentOrders = await db.CurrentOrders
-                                         .Where(co => co.ClientId == UserService.CurrentUser.ClientId)
+                                         .Where(co => co.ClientId == AppSettings.CurrentUser.ClientId)
                                          .Select(co => new OrderFromDbView
                                          {
                                              ProductId = co.Offer.Product.Id,
@@ -142,7 +141,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                                              SupplierFullName = co.Offer.Supplier.FullName,
                                              SupplierPhone = co.Offer.Supplier.Phone,
                                              ProductCode = co.Offer.Product.Code,
-                                             SupplierProductCode = co.Offer.SupplierProductCode
+                                             SupplierProductCode = co.Offer.SupplierProductCode,
+                                             SupplierFTPUser = co.Offer.Supplier.FTPUser
                                          }).ToListAsync(CTS.Token);
                 }
             }
@@ -160,7 +160,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
             foreach (var order in AllCurrentOrders)
             {
-                order.IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId);
+                order.IsFavoriteForUser = AppSettings.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId);
             }
 
             if (IsGroupingByCategories)
@@ -231,19 +231,20 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
             List<RequestForConfirmation> requestsToAdd = AllCurrentOrders.Where(o => o.IsSelected == true).GroupBy(o => o.SupplierId).Select(so => new RequestForConfirmation
             {
-                ArchivedClientId = UserService.CurrentUser.ClientId,
+                ArchivedClientId = AppSettings.CurrentUser.ClientId,
                 Client = User.Client,
                 ClientId = User.ClientId,
                 SupplierId = so.Key,
                 SenderName = User.Name,
                 SenderSurname = User.Surname,
-                ItemsQuantity = (int)Categories.Where(c => c.IsSelected).SelectMany(c => c.SelectMany(p => p.Orders)).Sum(o => o.OrderQuantity),
-                ProductsQuantity = Categories.Where(c => c.IsSelected).SelectMany(c => c).Count(),
+                ItemsQuantity = (int) so.Select(o => o.OrderQuantity).Sum(),
+                ProductsQuantity = so.Select(o => o.ProductId).Distinct().Count(),
                 TotalPrice = Categories.Where(c => c.IsSelected).Sum(c => c.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity))),
                 ArchivedSupplierId = so.Key,
                 DateTimeSent = DateTime.Now,
                 DeliveryDateTime = DateTime.Today.AddDays(1) + new TimeSpan(10, 0, 0),
                 Comments = "",
+                FTPSupplierFolder = so.FirstOrDefault().SupplierFTPUser,
                 ArchivedSupplier = new ArchivedSupplier
                 {
                     Id = so.FirstOrDefault().SupplierId,
@@ -270,8 +271,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 },
                 ArchivedRequestsStatuses = new List<ArchivedRequestsStatus>
                 {
-                    new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("ceff6b71-a27c-468b-b9f6-fd0ccc8d6024"), DateTime = DateTime.Now }, //SENT
-                    new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = new Guid("3df59a9b-4874-4aa4-83de-545fd0d0e6ec"), DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
+                    new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = AppSettings.ArchivedOrderStatuses["SENT"], DateTime = DateTime.Now }, //SENT
+                    new ArchivedRequestsStatus {ArchivedRequestStatusTypeId = AppSettings.ArchivedOrderStatuses["PENDING"], DateTime = DateTime.Now.AddSeconds(1) }  //PENDING
                 },
                 OrdersToConfirm = so.Select(o => new OrderOfRequestForConfirmation
                 {
@@ -287,7 +288,16 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     ProductCode = o.ProductCode,
                     ProductVolumeType = o.VolumeType,
                     ProductVolumeUnit = o.VolumeUnit,
-                    ProductVolume = o.Volume
+                    ProductVolume = o.Volume,
+                    Product = new ProductForConfirmRequestView
+                    {
+                        Name = o.ProductName,
+                        VolumeType = o.VolumeType,
+                        Volume = o.Volume,
+                        VolumeUnit = o.VolumeUnit,
+                        CategoryName = o.ProductCategoryName,
+                        PictureUri = o.ProductPictureUri
+                    },
                 }).ToList()
             }).ToList();
 
@@ -385,7 +395,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         private void AddRemoveProductToFavorites(ProductForRequestView p)
         {
-            MarketDbContext.AddRemoveProductToFavourites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, UserService.CurrentUser);
+            MarketDbContext.AddRemoveProductToFavourites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, AppSettings.CurrentUser);
             foreach (var product in Categories.SelectMany(c => c))
             {
                 if (product.Id == p.Id)
@@ -432,7 +442,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 Name = order.ProductName,
                 Category = new ProductCategory { Name = order.ProductCategoryName },
                 Code = order.ProductCode,
-                IsFavoriteForUser = UserService.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId),
+                IsFavoriteForUser = AppSettings.CurrentUser.Favorites.Select(f => f.ProductId).Contains(order.ProductId),
                 IsOfContractedSupplier = order.IsOfContractedSupplier,
                 Volume = order.Volume,
                 VolumeType = new VolumeType { Name = order.VolumeType },
@@ -636,6 +646,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public string SupplierAddress { get; set; }
         public string SupplierPhone { get; set; }
         public string SupplierEmail { get; set; }
+        public string SupplierFTPUser { get; set; }
         public bool IsSupplierActive { get; set; }
 
         public Guid ProductTopCategoryId { get; set; }

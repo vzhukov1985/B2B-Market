@@ -24,13 +24,15 @@ namespace Core.Services
         public static readonly string ClientUserPINSalt = "!kj8__dsf%Z";
 
         //Local Asus cable
-        public readonly static string ServerIP = "192.168.1.3";
+        //public readonly static string ServerIP = "192.168.1.3";
         //Local Asus wifi
         //public readonly static string ServerIP = "192.168.1.100";
         //Local Phone hotspot
         //public readonly static string ServerIP = "192.168.43.100";
         //Local MacOs
         //public readonly static string ServerIP = "localhost";
+        //Remote server
+        public readonly static string ServerIP = "45.150.64.30";
         public readonly static string b2bDataLocalDir = @"D:/B2B FTP Server Mirror";
 
         public readonly static string HTTPServerUrl = "http://"+ ServerIP;
@@ -78,8 +80,9 @@ namespace Core.Services
 
         static CoreSettings()
         {
-            DbConnectionString = StringCipher.Decrypt(EncryptedDbConnectionString, DbConnectionSalt);
+            //DbConnectionString = StringCipher.Decrypt(EncryptedDbConnectionString, DbConnectionSalt);
             //DbConnectionString = "server=localhost;UserId=root;Password=MySQLPassword;database=b2bmarket;";
+            DbConnectionString = "server=45.150.64.30;port=3310;UserId=b2buser;Password=12345qwe;database=b2bmarket_test";
         }
     }
 }

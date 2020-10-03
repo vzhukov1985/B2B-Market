@@ -103,7 +103,7 @@ namespace ClientApp_Mobile.ViewModels
                 if (PIN1.Equals(PIN2))
                 {
                     PINCode = PIN1;
-                    UserService.CurrentUser.PinHash = Authentication.HashPIN(PINCode);
+                    AppSettings.CurrentUser.PinHash = Authentication.HashPIN(PINCode);
                     if (CanBiometricAccessBeSet)
                         IsBiometricAccessVisible = true;
                 }
@@ -115,7 +115,7 @@ namespace ClientApp_Mobile.ViewModels
             else
             {
                 PINCode = "";
-                UserService.CurrentUser.PinHash = null;
+                AppSettings.CurrentUser.PinHash = null;
                 IsBiometricAccessVisible = false;
             }
         }
@@ -130,7 +130,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 IsBiometricAccessActivated = false;
             }
-            UserService.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
+            AppSettings.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
         }
 
         private void CheckBiometricAccess()
@@ -181,13 +181,13 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    ClientUser userToUpdate = ClientUser.CloneForDb(UserService.CurrentUser);
+                    ClientUser userToUpdate = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     db.ClientsUsers.Attach(userToUpdate);
                     db.Entry(userToUpdate).Property(e => e.PasswordHash).IsModified = true;
                     db.Entry(userToUpdate).Property(e => e.PinHash).IsModified = true;
                     await db.SaveChangesAsync();
                 }
-                UserService.AppLocalUsers.RegisterNewUser();
+                AppSettings.AppLocalUsers.RegisterNewUser();
                 IsBusy = false;
                 AppPageService.GoToFirstTimeReadyPage();
             }

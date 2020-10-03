@@ -49,7 +49,7 @@ namespace ClientApp_Mobile.ViewModels
 
         private async void Proceed()
         {
-            if (!Authentication.CheckPassword(OldPassword, UserService.CurrentUser.PasswordHash))
+            if (!Authentication.CheckPassword(OldPassword, AppSettings.CurrentUser.PasswordHash))
             {
                 DialogService.ShowErrorDlg("Старый пароль введен неверно");
                 return;
@@ -59,7 +59,7 @@ namespace ClientApp_Mobile.ViewModels
                 DialogService.ShowErrorDlg("Введенные пароли не совпадают.");
                 return;
             }
-            if (NewPassword1.Equals(UserService.CurrentUser.InitialPassword))
+            if (NewPassword1.Equals(AppSettings.CurrentUser.InitialPassword))
             {
                 DialogService.ShowErrorDlg("Пароль не должен совпадать с начальным. Придумайте новый пароль.");
                 return;
@@ -71,7 +71,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
-                    var clientUserRecord = ClientUser.CloneForDb(UserService.CurrentUser);
+                    var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     clientUserRecord.PasswordHash = newPasswordHash;
                     db.Update(clientUserRecord);
                     await db.SaveChangesAsync();
@@ -82,7 +82,7 @@ namespace ClientApp_Mobile.ViewModels
                 Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
                 return;
             }
-            UserService.CurrentUser.PasswordHash = newPasswordHash;
+            AppSettings.CurrentUser.PasswordHash = newPasswordHash;
             Device.BeginInvokeOnMainThread(() => { DialogService.ShowMessageDlg("Пароль был успешно изменен", "Сохранено"); ShellPageService.GoBack(); });
         }
 

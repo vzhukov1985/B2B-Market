@@ -1,13 +1,88 @@
-﻿using ClientApp_Mobile.Services;
-using Core.DBModels;
+﻿using Core.DBModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-namespace ClientApp_Mobile.Models
+namespace ClientApp_Mobile.Services
 {
+    public class AppSettings
+    {
+        public static ClientUser CurrentUser;
+
+        public static AppLocalUsers AppLocalUsers = new AppLocalUsers();
+        public static int CurrentUserAppLocalUsersIndex;
+
+        public static Dictionary<string, Guid> ArchivedOrderStatuses;
+
+        public static void GetArchivedOrderStatusesFromDb()
+        {
+            try
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    ArchivedOrderStatuses = db.ArchivedRequestStatusTypes.ToDictionary(arst => arst.Name, arst => arst.Id);
+                }
+
+            }
+            catch
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    DialogService.ShowConnectionErrorDlg();
+                });
+                return;
+            }
+        }
+
+        public static void GetUserInfoFromDb(Guid id)
+        {
+            try
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    CurrentUser = db.ClientsUsers
+                                    .Where(u => u.Id == id)
+                                    .Include(u => u.Favorites)
+                                    .ThenInclude(f => f.Product)
+                                    .Include(u => u.Client)
+                                    .ThenInclude(c => c.Contracts)
+                                    .ThenInclude(ct => ct.Supplier)
+                                    .Include(u => u.Client)
+                                    .ThenInclude(c => c.CurrentOrders)
+                                    .ThenInclude(o => o.Offer)
+                                    .ThenInclude(of => of.QuantityUnit)
+                                    .Include(u => u.Client)
+                                    .ThenInclude(c => c.CurrentOrders)
+                                    .ThenInclude(o => o.Offer)
+                                    .ThenInclude(of => of.Supplier)
+                                    .FirstOrDefault();
+                }
+
+                CurrentUser.Client.ContractedSuppliersIDs = new List<Guid>(CurrentUser.Client.Contracts.Select(c => c.Supplier.Id));
+
+            }
+            catch
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    DialogService.ShowConnectionErrorDlg();
+                });
+                return;
+            }
+        }
+    }
+
+
+
     public class AppLocalUser
     {
         public int Index { get; set; }
@@ -34,7 +109,7 @@ namespace ClientApp_Mobile.Models
         public void UpdateCurrentUserPreferences(int index)
         {
             Index = index;
-            var user = UserService.CurrentUser;
+            var user = AppSettings.CurrentUser;
             Id = user.Id;
             Name = user.Name;
             Surname = user.Surname;
@@ -76,7 +151,7 @@ namespace ClientApp_Mobile.Models
         {
             for (int i = 0; i < Count; i++)
             {
-                if (this[i].Id == UserService.CurrentUser.Id)
+                if (this[i].Id == AppSettings.CurrentUser.Id)
                 {
                     return true;
                 }
@@ -98,11 +173,11 @@ namespace ClientApp_Mobile.Models
         {
             for (int i = 0; i < Count; i++)
             {
-                if (this[i].Id == UserService.CurrentUser.Id)
+                if (this[i].Id == AppSettings.CurrentUser.Id)
                 {
                     CurrentUserIndex = i;
                     LastEnterUserIndex = CurrentUserIndex;
-                    UserService.CurrentUser.UseBiometricAccess = this[CurrentUserIndex].UseBiometricAccess;
+                    AppSettings.CurrentUser.UseBiometricAccess = this[CurrentUserIndex].UseBiometricAccess;
                     UpdateCurrentUserPreferences();
                     Preferences.Set("LastEnterUserIndex", CurrentUserIndex);
                     break;
@@ -159,3 +234,4 @@ namespace ClientApp_Mobile.Models
         }
     }
 }
+

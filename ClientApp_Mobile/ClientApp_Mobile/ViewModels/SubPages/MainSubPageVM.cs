@@ -42,7 +42,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     ShellPageService.GotoMidCategoriesPage(new TopCategory { Id = item.Id, Name = item.Name });
                     break;
                 case MainListItemType.AllContractedSuppliers:
-                    ShellPageService.GotoOffersPage("Наши поставщики", null, UserService.CurrentUser.Client.ContractedSuppliersIDs);
+                    ShellPageService.GotoOffersPage("Наши поставщики", null, AppSettings.CurrentUser.Client.ContractedSuppliersIDs);
                     break;
                 case MainListItemType.Supplier:
                     ShellPageService.GotoOffersPage(item.Name, null, new List<Guid>() { item.Id });
@@ -82,7 +82,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
 
                 foreach (var supplier in suppliers)
-                    supplier.IsContracted = UserService.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
+                    supplier.IsContracted = AppSettings.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
 
                 suppliers = new MainListItems("ПОСТАВЩИКИ", suppliers.OrderByDescending(s => s.IsContracted).ThenBy(s => s.Name));
                 suppliers.Insert(0, new MainListItem { Id = Guid.Empty, Name = "Наши поставщики", IsContracted = true, Type = MainListItemType.AllContractedSuppliers });
@@ -104,7 +104,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public MainSubPageVM()
         {
-            User = UserService.CurrentUser;
+            User = AppSettings.CurrentUser;
             MainListItems = new List<MainListItems>();
 
             ShowItemCommand = new Command<MainListItem>(i => ShowItem(i));

@@ -53,7 +53,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 IsBiometricAccessActivated = false;
             }
-            UserService.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
+            AppSettings.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
         }
 
         private void CheckBiometricAccess()
@@ -82,7 +82,7 @@ namespace ClientApp_Mobile.ViewModels
 
         private void Proceed()
         {
-            UserService.AppLocalUsers.RegisterNewUser();
+            AppSettings.AppLocalUsers.RegisterNewUser();
             AppPageService.GoToMainMage();
         }
 

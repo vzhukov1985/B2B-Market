@@ -24,7 +24,8 @@ namespace ClientApp_Mobile.ViewModels
 
         public MainPageVM()
         {
-            User = UserService.CurrentUser;
+            User = AppSettings.CurrentUser;
+            AppSettings.GetArchivedOrderStatusesFromDb();
 
             ChangeUserCommand = new Command(_ => AppPageService.GoToAuthorizationPage());
         }

@@ -297,12 +297,12 @@ namespace Core.Services
         }
 
 
-        public static bool UploadRequestToSupplierFTP(string FTPUser, string FTPPassword, ArchivedRequest request)
+        public static bool UploadRequestToSupplierFTP(ArchivedRequest request, string FTPSupplierFolder)
         {
             FtpWebRequest ftpRequest;
             try
             {
-                ftpRequest = (FtpWebRequest)WebRequest.Create(GetFTPAccessString(FTPUser, FTPPassword) + CoreSettings.SupplierOrdersPath + "/order" + request.Code.ToString() + ".xml");
+                ftpRequest = (FtpWebRequest)WebRequest.Create(CoreSettings.FTPAdminAccessString + CoreSettings.SuppliersPath + "/"+ FTPSupplierFolder + CoreSettings.SupplierOrdersPath + "/order" + request.Code.ToString() + ".xml");
             }
             catch
             {

@@ -1,5 +1,4 @@
-﻿using ClientApp_Mobile.Models;
-using ClientApp_Mobile.Services;
+﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -226,7 +225,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 return;
             }
 
-            List<Guid> ContractedSupplierIds = UserService.CurrentUser.Client.Contracts.Select(c => c.SupplierId).ToList();
+            List<Guid> ContractedSupplierIds = AppSettings.CurrentUser.Client.Contracts.Select(c => c.SupplierId).ToList();
 
             OffersWithOrders = offersFromDb
                 .Where(odb => ((odb.Supplier.IsActive == true) && (odb.IsActive == true) && (odb.Remains > 0)) || (CurrentRequestOrders.Where(oo => oo.OfferId == odb.Id).Select(oo => oo.Quantity).FirstOrDefault() > 0))
@@ -261,7 +260,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             try
             {
-                MarketDbContext.AddRemoveProductToFavourites(new Product { Id = Product.Id, IsFavoriteForUser = Product.IsFavoriteForUser }, UserService.CurrentUser);
+                MarketDbContext.AddRemoveProductToFavourites(new Product { Id = Product.Id, IsFavoriteForUser = Product.IsFavoriteForUser }, AppSettings.CurrentUser);
                 Product.IsFavoriteForUser = !Product.IsFavoriteForUser;
             }
             catch
@@ -283,7 +282,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public ProductSubPageVM(Product product)
         {
-            User = UserService.CurrentUser;
+            User = AppSettings.CurrentUser;
             Product = product;
             CurrentRequestOrders = User.Client.CurrentOrders;
 

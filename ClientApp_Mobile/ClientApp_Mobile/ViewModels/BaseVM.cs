@@ -52,7 +52,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 var message = new EmailMessage
                 {
-                    Subject = $"Проблема c моб. прил. B2B Market HoReCa ({UserService.CurrentUser?.Login})",
+                    Subject = $"Проблема c моб. прил. B2B Market HoReCa ({AppSettings.CurrentUser?.Login})",
                     To = new List<string> { "support@b2bmarket.kz" }
                 };
                 await Email.ComposeAsync(message);

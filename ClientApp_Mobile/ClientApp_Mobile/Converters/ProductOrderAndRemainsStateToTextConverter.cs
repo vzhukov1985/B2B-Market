@@ -1,5 +1,4 @@
-﻿using ClientApp_Mobile.Models;
-using ClientApp_Mobile.ViewModels.SubPages;
+﻿using ClientApp_Mobile.ViewModels.SubPages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

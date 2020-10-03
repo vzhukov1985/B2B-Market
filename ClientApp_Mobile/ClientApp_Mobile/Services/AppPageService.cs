@@ -13,7 +13,7 @@ namespace ClientApp_Mobile.Services
     {
         public static void GoToAuthorizationPage()
         {
-            if (UserService.AppLocalUsers.Any(lu => lu.UsePINAccess == true))
+            if (AppSettings.AppLocalUsers.Any(lu => lu.UsePINAccess == true))
             {
                 GoToAuthPINPage();
             }
@@ -62,14 +62,6 @@ namespace ClientApp_Mobile.Services
         public static void GoToMainMage()
         {
             var page = new MainPage { BindingContext = new MainPageVM() };
-        /*    if (UserService.AppLocalUsers.Any(lu => lu.UsePINAccess == true))
-            {
-                page.Items[2].Items[0].Items[0].ContentTemplate = new DataTemplate(typeof(AuthPINPage));
-            }
-            else
-            {
-                page.Items[2].Items[0].Items[0].ContentTemplate = new DataTemplate(typeof(AuthPasswordPage));
-            }*/
             Application.Current.MainPage = page;
         }
 

@@ -22,7 +22,7 @@ namespace ClientApp_Mobile
         {
             InitializeComponent();
 
-            UserService.AppLocalUsers.ReadAppUserPreferences();
+            AppSettings.AppLocalUsers.ReadAppUserPreferences();
 
             AppPageService.GoToAuthorizationPage();
         }
