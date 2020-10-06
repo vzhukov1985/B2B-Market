@@ -248,6 +248,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 if (CTS.IsCancellationRequested) { IsBusy = false; return; }
                 order.PropertyChanged += (s, a) => { if (a.PropertyName == "OrderQuantity") ProcessChanges(); };
             }
+            ProcessChanges();
 
             ExtraPropsCVHeight = Product.ExtraProperties.Count * 18; //FontSize+5
             OffersCVHeight = OffersWithOrders.Count * 60 + 1;
