@@ -180,7 +180,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public async void QueryDb()
         {
-            IsBusy = true;
             List<Offer> offersFromDb;
 
             try
@@ -195,8 +194,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                                                                                                          PropertyType = new ProductExtraPropertyType { Name = pep.PropertyType.Name },
                                                                                                          Value = pep.Value
                                                                                                      })
-                                                                                                     .ToListAsync(CTS.Token));
-                    Product.Description = new ProductDescription { Text = await db.ProductDescriptions.Where(pd => pd.ProductId == Product.Id).Select(pd => pd.Text).FirstOrDefaultAsync(CTS.Token) };
+                                                                                                     .ToListAsync());
+                    Product.Description = new ProductDescription { Text = await db.ProductDescriptions.Where(pd => pd.ProductId == Product.Id).Select(pd => pd.Text).FirstOrDefaultAsync() };
 
                     offersFromDb = await db.Offers
                                                        .Where(o => o.ProductId == Product.Id)
@@ -210,18 +209,16 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                                                            Supplier = new Supplier { Id = o.Supplier.Id, ShortName = o.Supplier.ShortName, IsActive = o.Supplier.IsActive },
                                                            IsActive = o.IsActive
                                                        })
-                                                       .ToListAsync(CTS.Token);
+                                                       .ToListAsync();
                 }
             }
             catch (OperationCanceledException)
             {
-                IsBusy = false;
                 return;
             }
             catch
             {
                 Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
                 return;
             }
 
@@ -245,7 +242,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
             foreach (var order in OffersWithOrders)
             {
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+                //if (CTS.IsCancellationRequested) { IsBusy = false; return; }
                 order.PropertyChanged += (s, a) => { if (a.PropertyName == "OrderQuantity") ProcessChanges(); };
             }
             ProcessChanges();
@@ -253,8 +250,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             ExtraPropsCVHeight = Product.ExtraProperties.Count * 18; //FontSize+5
             OffersCVHeight = OffersWithOrders.Count * 60 + 1;
             AreChangesWereMade = false;
-
-            IsBusy = false;
         }
 
         public void AddRemoveProductToFavorites()

@@ -20,7 +20,7 @@ namespace Core.DBModels
     {
         public MarketDbContext()
         {
-            //  Database.EnsureCreated();
+          //    Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -233,6 +233,12 @@ namespace Core.DBModels
                     .IsRequired()
                     .HasColumnType("int");
 
+                entity.Property(e => e.SupplierId)
+                    .IsRequired(false)
+                    .HasColumnType("char(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
                 entity.Property(e => e.ArchivedSupplierId)
                     .IsRequired()
                     .HasColumnType("char(36)")
@@ -264,13 +270,13 @@ namespace Core.DBModels
                     .HasForeignKey(d => d.SupplierId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_ArchivedRequests_To_Suppliers");
-
+            
                 entity.HasOne(d => d.ArchivedSupplier)
                     .WithMany()
                     .HasForeignKey(d => d.ArchivedSupplierId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ArchivedRequests_To_ArchivedSuppliers");
-
+            
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.ArchivedRequests)
                     .HasForeignKey(d => d.ClientId)

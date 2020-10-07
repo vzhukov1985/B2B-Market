@@ -37,8 +37,8 @@ namespace Core.Services
 
         public readonly static string HTTPServerUrl = "http://"+ ServerIP;
 
-        public readonly static string FTPAdminUser = "B2BAdmin";
-        public readonly static string FTPAdminPassword = "B2BAdminPassword";
+        public readonly static string FTPAdminUser = "b2b-ftpadmin";
+        public readonly static string FTPAdminPassword = "yn7˜g8=i";
         public readonly static string FTPAdminAccessString = FTPManager.GetFTPAccessString(FTPAdminUser, FTPAdminPassword);
 
         public readonly static string LogFileName = "AgentLog.txt";
@@ -62,9 +62,9 @@ namespace Core.Services
         public readonly static string SuppliersPicturePath = PicturesPath + "/Suppliers";
 
         public readonly static string SuppliersPath = "/Suppliers";
-        public readonly static string SupplierOffersPath = "/offers";
-        public readonly static string SupplierOrdersPath = "/orders";
-        public readonly static string SupplierDescriptionsPath = "/descriptions";
+        public readonly static string SupplierOffersPath = "/Offers";
+        public readonly static string SupplierOrdersPath = "/Orders";
+        public readonly static string SupplierDescriptionsPath = "/Descriptions";
 
         public readonly static string ProductPicturesRequestFileName = "reqprodpics.xml";
         public readonly static string ProductPicturesExtractionFileName = "prodpics.xml";
@@ -82,7 +82,8 @@ namespace Core.Services
         {
             //DbConnectionString = StringCipher.Decrypt(EncryptedDbConnectionString, DbConnectionSalt);
             //DbConnectionString = "server=localhost;UserId=root;Password=MySQLPassword;database=b2bmarket;";
-            DbConnectionString = "server=45.150.64.30;port=3310;UserId=b2buser;Password=12345qwe;database=b2bmarket_test";
+            DbConnectionString = "server=45.150.64.30;port=3306;UserId=b2buser;Password=oD88x-2!Hq;database=b2bmarket_test";
+//            DbConnectionString = "server=45.150.64.30;port=3306;UserId=b2bdbadmin;Password=ght3!2_sq2;database=b2bmarket_test";
         }
     }
 }

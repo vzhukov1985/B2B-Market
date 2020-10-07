@@ -101,7 +101,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 {                  
                     foreach (var request in Requests)
                     {
-                        if (/*FTPManager.UploadRequestToSupplierFTP(request, request.FTPSupplierFolder)*/true)
+                        request.ArchivedOrders = request.OrdersToConfirm.Select(o => (ArchivedOrder)o).ToList();
+                        if (FTPManager.UploadRequestToSupplierFTP(request, request.FTPSupplierFolder))
                         {
                             if (!db.ArchivedSuppliers.Any(s => s.Id == request.SupplierId))
                             {
@@ -110,12 +111,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                             await db.ArchivedRequests.AddAsync(ArchivedRequest.CloneForDb(request));
 
-                            request.ArchivedOrders = new List<ArchivedOrder>();
-
                             foreach (var order in request.OrdersToConfirm)
                             {
-                                request.ArchivedOrders.Add(order);
-
                                 await db.ArchivedOrders.AddAsync(ArchivedOrder.CloneForDB(order));
 
                                 Offer ofRemainsToUpdate = new Offer() { Id = order.OfferId, Remains = order.Remains - order.Quantity };

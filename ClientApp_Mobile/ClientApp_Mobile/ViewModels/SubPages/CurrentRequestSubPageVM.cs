@@ -239,7 +239,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 SenderSurname = User.Surname,
                 ItemsQuantity = (int) so.Select(o => o.OrderQuantity).Sum(),
                 ProductsQuantity = so.Select(o => o.ProductId).Distinct().Count(),
-                TotalPrice = Categories.Where(c => c.IsSelected).Sum(c => c.Sum(p => p.Orders.Sum(o => o.PriceForClient * o.OrderQuantity))),
+                TotalPrice = so.Sum(o => o.PriceForClient * o.OrderQuantity),
                 ArchivedSupplierId = so.Key,
                 DateTimeSent = DateTime.Now,
                 DeliveryDateTime = DateTime.Today.AddDays(1) + new TimeSpan(10, 0, 0),

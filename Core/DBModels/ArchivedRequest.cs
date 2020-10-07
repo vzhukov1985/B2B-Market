@@ -98,7 +98,7 @@ namespace Core.DBModels
             }
         }
 
-        public Guid SupplierId { get; set; }
+        public Guid? SupplierId { get; set; }
 
         private Guid _archivedSupplierId;
         public Guid ArchivedSupplierId
