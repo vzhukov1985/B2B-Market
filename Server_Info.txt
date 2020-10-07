@@ -1,0 +1,11 @@
+IP: 45.150.64.30
+
+SSH: root - 31ssaq7kbcqF
+
+MYSQL:
+root - Jv59<pS20!=
+b2bdbadmin - ght3!2_sq2
+b2buser - oD88x-2!Hq
+
+FTP:
+b2b-ftpadmin - yn7+g8=i

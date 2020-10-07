@@ -21,12 +21,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApp_Mobile.Android", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApp_Mobile.iOS", "ClientApp_Mobile\ClientApp_Mobile.iOS\ClientApp_Mobile.iOS.csproj", "{357BA13C-1E65-4F11-8EEA-3BC10CBDB439}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApp_Mobile", "ClientApp_Mobile\ClientApp_Mobile\ClientApp_Mobile.csproj", "{F10DA07E-00C3-4806-9630-5C18FE3CC7C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp_Mobile", "ClientApp_Mobile\ClientApp_Mobile\ClientApp_Mobile.csproj", "{F10DA07E-00C3-4806-9630-5C18FE3CC7C2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Info", "!Info", "{9EDE6A37-0DDA-496F-BB24-23402571D9AE}"
 	ProjectSection(SolutionItems) = preProject
 		Db_Field_Lengths.txt = Db_Field_Lengths.txt
 		MySQL_Passwords.txt = MySQL_Passwords.txt
+		Server_Info.txt = Server_Info.txt
 		Telegram_Bots.txt = Telegram_Bots.txt
 		XML_Tags_To_Lowercase.xslt = XML_Tags_To_Lowercase.xslt
 	EndProjectSection

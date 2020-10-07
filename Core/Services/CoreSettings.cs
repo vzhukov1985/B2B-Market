@@ -16,7 +16,7 @@ namespace Core.Services
         //public static readonly string EncryptedDbConnectionString = "UKRgGGYSFpJVVACCNWIEHtdYUmebshbyqiWzyg6g2JuFYuF0FYd0BG9CFyzY48qpFiwwFJg6CKcZT0nTeKk7X998rH/txEPBscI4G7slwgc5CCOL4GUJNHGnDY+uXLkV9lnrL7865ui4pWNGCnTN1Q==";
 
 
-        public static readonly string DbConnectionString;
+        public static string DbConnectionString;
 
         public static readonly string DbConnectionSalt = "gy!34q2.gteas_";
 
@@ -33,15 +33,15 @@ namespace Core.Services
         //public readonly static string ServerIP = "localhost";
         //Remote server
         public readonly static string ServerIP = "45.150.64.30";
-        public readonly static string b2bDataLocalDir = @"D:/B2B FTP Server Mirror";
+        public readonly static string b2bDataLocalDir = @"/usr/local/lib/b2bmarket";
 
         public readonly static string HTTPServerUrl = "http://"+ ServerIP;
 
         public readonly static string FTPAdminUser = "b2b-ftpadmin";
-        public readonly static string FTPAdminPassword = "yn7˜g8=i";
+        public readonly static string FTPAdminPassword = "yn7+g8=i";
         public readonly static string FTPAdminAccessString = FTPManager.GetFTPAccessString(FTPAdminUser, FTPAdminPassword);
 
-        public readonly static string LogFileName = "AgentLog.txt";
+        public readonly static string LogFileName = "agent_log.txt";
 
         public readonly static string PictureExtension = ".jpg";
         public readonly static int ProductPictureWidth = 300;
@@ -51,32 +51,32 @@ namespace Core.Services
         public readonly static int TopCategoryPictureHeight = 300;
 
 
-        public readonly static string PicturesPath = "/Pictures";
-        public readonly static string ProductsPicturesPath = PicturesPath + "/Products";
-        public readonly static string MatchedProductsPicturesDir = "/Matched";
+        public readonly static string PicturesPath = "/pictures";
+        public readonly static string ProductsPicturesPath = PicturesPath + "/products";
+        public readonly static string MatchedProductsPicturesDir = "/matched";
         public readonly static string MatchedProductsPicturesPath = ProductsPicturesPath + MatchedProductsPicturesDir;
-        public readonly static string UnmatchedProductsPicturesPath = ProductsPicturesPath + "/Unmatched";
-        public readonly static string ConflictedProductsPictureDir = "/Conflicted";
+        public readonly static string UnmatchedProductsPicturesPath = ProductsPicturesPath + "/unmatched";
+        public readonly static string ConflictedProductsPictureDir = "/conflicted";
         public readonly static string ConflictedProductsPicturesPath = ProductsPicturesPath + ConflictedProductsPictureDir;
-        public readonly static string TopCategoriesPicturePath = PicturesPath + "/TopCategories";
-        public readonly static string SuppliersPicturePath = PicturesPath + "/Suppliers";
+        public readonly static string TopCategoriesPicturePath = PicturesPath + "/topcategories";
+        public readonly static string SuppliersPicturePath = PicturesPath + "/suppliers";
 
-        public readonly static string SuppliersPath = "/Suppliers";
-        public readonly static string SupplierOffersPath = "/Offers";
-        public readonly static string SupplierOrdersPath = "/Orders";
-        public readonly static string SupplierDescriptionsPath = "/Descriptions";
+        public readonly static string SuppliersPath = "/suppliers";
+        public readonly static string SupplierOffersPath = "/offers";
+        public readonly static string SupplierOrdersPath = "/orders";
+        public readonly static string SupplierDescriptionsPath = "/descriptions";
 
         public readonly static string ProductPicturesRequestFileName = "reqprodpics.xml";
         public readonly static string ProductPicturesExtractionFileName = "prodpics.xml";
         public readonly static string ProductDescriptionsRequestFileName = "reqproddesc.xml";
         public readonly static string ProductDescriptionsExtractionFileName = "proddesc.xml";
 
-        public readonly static string SettingsPath = "/Settings";
-        public readonly static string AgentSettingsFileName = "Agent.xml";
+        public readonly static string SettingsPath = "/settings";
+        public readonly static string AgentSettingsFileName = "agent.xml";
         
-        public readonly static string AdminTGBotSettingsFileName = "AdminTGBot.xml";
+        public readonly static string AdminTGBotSettingsFileName = "admintgbot.xml";
         public readonly static string SuperAdminTGBotPasswordHash = "$2b$10$KAhKW4/LGrdzVzUvFTyorOW058ZwE4DxnSOmJNf3q7gRLFnWridmC"; //ap~G3te!d_2G
-        public readonly static string OperatorTGBotSettingsFileName = "OperatorTGBot.xml";
+        public readonly static string OperatorTGBotSettingsFileName = "operatortgbot.xml";
 
         static CoreSettings()
         {

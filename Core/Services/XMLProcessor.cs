@@ -118,7 +118,7 @@ namespace Core.Services
         {
             XDocument xDoc = new XDocument();
 
-            XElement xRequests = new XElement("requestProductsPictures");
+            XElement xRequests = new XElement("requestproductspictures");
             xRequests.Add(new XAttribute("version", "1.0"));
             xRequests.Add(new XAttribute("supplierid", offer.Supplier.Id));
 

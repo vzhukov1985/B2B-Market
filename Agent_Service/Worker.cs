@@ -41,6 +41,7 @@ namespace UpdateDb_Service
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
+            CoreSettings.DbConnectionString = "server=localhost;protocol=SOCKET;UserId=b2buser;Password=oD88x-2!Hq;database=b2bmarket_test";
             LoadAgentSettings();
             AdminTGBot.StartBot();
             OperatorTGBot.StartBot();

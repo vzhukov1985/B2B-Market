@@ -110,12 +110,10 @@ namespace UpdateDb_Service.Models
                 IEnumerable<MatchVolumeUnit> matchVolumeUnits = db.MatchVolumeUnits.Where(mvu => mvu.SupplierId == supplier.Id);
                 IEnumerable<MatchOffer> matchOffers = db.MatchOffers.Where(mo => mo.SupplierId == supplier.Id);
 
-
                 foreach (XElement xOffer in xOffers)
                 {
                     try
                     {
-
                         XElement xProduct = xOffer.Element("product");
 
                         XElement xCategory = xProduct.Element("category");
@@ -232,14 +230,14 @@ namespace UpdateDb_Service.Models
                                 if (matchOfferExists.OfferId != null)
                                 {
                                     correspondingOffer = db.Offers.Where(o => o.Id == matchOfferExists.OfferId).FirstOrDefault();
-                                    correspondingOffer.Remains = Convert.ToDecimal(xOffer.Element("remains").Value);
+                                    correspondingOffer.Remains = Convert.ToDecimal(xOffer.Element("remains").Value, new CultureInfo("en-US"));
                                     correspondingOffer.RetailPrice = Convert.ToDecimal(xOffer.Element("retailprice").Value, new CultureInfo("en-US"));
                                     correspondingOffer.DiscountPrice = Convert.ToDecimal(xOffer.Element("discountprice").Value, new CultureInfo("en-US"));
                                     db.Offers.Update(correspondingOffer);
                                 }
                                 else
                                 {
-                                    matchOfferExists.Remains = Convert.ToInt32(xOffer.Element("remains").Value);
+                                    matchOfferExists.Remains = Convert.ToDecimal(xOffer.Element("remains").Value, new CultureInfo("en-US"));
                                     matchOfferExists.RetailPrice = Convert.ToDecimal(xOffer.Element("retailprice").Value, new CultureInfo("en-US"));
                                     matchOfferExists.DiscountPrice = Convert.ToDecimal(xOffer.Element("discountprice").Value, new CultureInfo("en-US"));
                                     db.MatchOffers.Update(matchOfferExists);
