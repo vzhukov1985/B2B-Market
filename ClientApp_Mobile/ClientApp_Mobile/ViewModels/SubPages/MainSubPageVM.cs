@@ -58,6 +58,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 MainListItems categories, suppliers;
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     categories = new MainListItems("КАТЕГОРИИ", (db.TopCategories
                                                                    .Select(tc => new MainListItem
                                                                    {

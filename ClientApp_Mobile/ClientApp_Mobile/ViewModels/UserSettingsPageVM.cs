@@ -135,6 +135,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     clientUserRecord.Name = Name;
                     clientUserRecord.Surname = Surname;
@@ -162,6 +163,7 @@ namespace ClientApp_Mobile.ViewModels
                 var oldLogin = AppSettings.CurrentUser.Login;
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     clientUserRecord.Login = Login;
                     db.ClientsUsers.Update(clientUserRecord);
@@ -199,6 +201,7 @@ namespace ClientApp_Mobile.ViewModels
                     {
                         using (MarketDbContext db = new MarketDbContext())
                         {
+                            db.Database.OpenConnection();
                             var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                             clientUserRecord.PinHash = PINHash;
                             db.ClientsUsers.Update(clientUserRecord);
@@ -227,6 +230,7 @@ namespace ClientApp_Mobile.ViewModels
                 {
                     using (MarketDbContext db = new MarketDbContext())
                     {
+                        db.Database.OpenConnection();
                         var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                         clientUserRecord.PinHash = null;
                         db.ClientsUsers.Update(clientUserRecord);
@@ -303,6 +307,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     existingLogins = await db.ClientsUsers.Select(cu => cu.Login).ToListAsync();
                 }
             }

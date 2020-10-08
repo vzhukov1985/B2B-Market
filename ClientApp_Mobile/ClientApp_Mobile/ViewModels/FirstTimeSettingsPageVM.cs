@@ -1,6 +1,7 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -181,6 +182,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     ClientUser userToUpdate = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     db.ClientsUsers.Attach(userToUpdate);
                     db.Entry(userToUpdate).Property(e => e.PasswordHash).IsModified = true;

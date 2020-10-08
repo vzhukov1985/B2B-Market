@@ -67,6 +67,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     Request.ArchivedOrders = await db.ArchivedOrders.Where(o => o.ArchivedRequestId == Request.Id).ToListAsync(CTS.Token);
                 }
 

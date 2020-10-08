@@ -7,7 +7,7 @@ using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
 {
-    public class PINSetPageVM:BaseVM
+    public class PINSetPageVM : BaseVM
     {
         public delegate Task GoBackFunction();
         private GoBackFunction goBack;

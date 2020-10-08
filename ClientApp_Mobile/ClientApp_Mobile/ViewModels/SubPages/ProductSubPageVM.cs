@@ -119,6 +119,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     foreach (var offer in OffersWithOrders)
                     {
                         if (offer.IsQuantityWasChanged)
@@ -186,6 +187,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     Product.ExtraProperties = new ObservableCollection<ProductExtraProperty>(await db.ProductExtraProperties
                                                                                                      .AsNoTracking()
                                                                                                      .Where(pep => pep.ProductId == Product.Id)

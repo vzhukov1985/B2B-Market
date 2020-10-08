@@ -2,6 +2,7 @@
 using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
+using Microsoft.EntityFrameworkCore;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
@@ -71,6 +72,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
                     clientUserRecord.PasswordHash = newPasswordHash;
                     db.Update(clientUserRecord);

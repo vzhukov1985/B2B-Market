@@ -98,7 +98,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
 
                 using (MarketDbContext db = new MarketDbContext())
-                {                  
+                {
+                    db.Database.OpenConnection();
                     foreach (var request in Requests)
                     {
                         request.ArchivedOrders = request.OrdersToConfirm.Select(o => (ArchivedOrder)o).ToList();

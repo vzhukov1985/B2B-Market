@@ -1,4 +1,5 @@
-﻿using ClientApp_Mobile.ViewModels.SubPages;
+﻿using ClientApp_Mobile.Controls;
+using ClientApp_Mobile.ViewModels.SubPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using Xamarin.Forms.Xaml;
 namespace ClientApp_Mobile.Views.SubPages
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ProductPictureSubPage : ContentPage
+    public partial class ProductPictureSubPage : SwipeBackContentPage
     {
         public ProductPictureSubPage()
         {

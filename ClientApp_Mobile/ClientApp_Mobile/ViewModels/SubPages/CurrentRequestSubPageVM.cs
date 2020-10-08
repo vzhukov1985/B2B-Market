@@ -111,6 +111,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     AllCurrentOrders = await db.CurrentOrders
                                          .Where(co => co.ClientId == AppSettings.CurrentUser.ClientId)
                                          .Select(co => new OrderFromDbView
@@ -219,6 +220,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     LastRequestCode = db.ArchivedRequests.Count() > 0 ? db.ArchivedRequests.Max(r => r.Code) : 0;
                 }
             }
@@ -335,6 +337,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 {
                     using (MarketDbContext db = new MarketDbContext())
                     {
+                        db.Database.OpenConnection();
                         db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId));
                         db.SaveChanges();
                     }
@@ -374,6 +377,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                     using (MarketDbContext db = new MarketDbContext())
                     {
+                        db.Database.OpenConnection();
                         db.CurrentOrders.RemoveRange(db.CurrentOrders.Where(o => OffersToRemoveIds.Contains(o.OfferId) && o.ClientId == User.ClientId));
                         db.SaveChanges();
                     }

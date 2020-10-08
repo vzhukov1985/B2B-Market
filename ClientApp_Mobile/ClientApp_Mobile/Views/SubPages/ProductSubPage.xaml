@@ -207,10 +207,6 @@
 
         <BoxView Style="{StaticResource BlockBoxView}" IsVisible="{Binding IsBusy}"/>
         <ActivityIndicator IsVisible="{Binding IsBusy}"/>
-        <Grid.GestureRecognizers>
-            <SwipeGestureRecognizer Direction="Right"
-                                    Command="{Binding GoBackCommand}"/>
-        </Grid.GestureRecognizers>
     </Grid>
 
 </ContentPage>

@@ -52,6 +52,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     ClientUser user = db.ClientsUsers.Where(o => o.Login == Login).FirstOrDefault();
                     if ((user != null) && (Authentication.CheckPassword(Password, user.PasswordHash)))
                     {

@@ -29,6 +29,7 @@ namespace ClientApp_Mobile.Services
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     ArchivedOrderStatuses = db.ArchivedRequestStatusTypes.ToDictionary(arst => arst.Name, arst => arst.Id);
                 }
 
@@ -49,6 +50,7 @@ namespace ClientApp_Mobile.Services
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     CurrentUser = db.ClientsUsers
                                     .Where(u => u.Id == id)
                                     .Include(u => u.Favorites)

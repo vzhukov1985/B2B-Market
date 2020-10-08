@@ -74,6 +74,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     IQueryable<Product> queryPart;
 
                     if (queryFavoritesOnly)

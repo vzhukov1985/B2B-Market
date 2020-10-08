@@ -1,6 +1,7 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -106,6 +107,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     pinHash = db.ClientsUsers.Where(cu => cu.Id == SelectedUser.Id).Select(cu => cu.PinHash).FirstOrDefault();
                 }
                 if (pinHash != null)

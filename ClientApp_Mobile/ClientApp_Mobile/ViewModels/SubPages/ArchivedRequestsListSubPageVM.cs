@@ -47,6 +47,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             {
                 using (MarketDbContext db = new MarketDbContext())
                 {
+                    db.Database.OpenConnection();
                     AppSettings.CurrentUser.Client.ArchivedRequests = await db.ArchivedRequests
                         .Where(r => r.ClientId == User.ClientId)
                         .Include(r => r.ArchivedRequestsStatuses)
