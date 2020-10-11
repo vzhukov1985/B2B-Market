@@ -23,19 +23,19 @@
 	<string>B2BM HoReCa</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.zhukovtech.b2bmhoreca</string>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
 	<key>CFBundleName</key>
 	<string>B2BMHoReCa</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Разрешите вход с помощью Face ID</string>
 	<key>UIMainStoryboardFile</key>
 	<string>LaunchScreen</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>0.1.0</string>
 </dict>
 </plist>

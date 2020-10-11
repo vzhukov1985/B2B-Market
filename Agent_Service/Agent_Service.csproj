@@ -11,6 +11,7 @@
     <Product>B2B Market Agent</Product>
     <Copyright>(c) Zhukov Technologies</Copyright>
     <StartupObject></StartupObject>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>

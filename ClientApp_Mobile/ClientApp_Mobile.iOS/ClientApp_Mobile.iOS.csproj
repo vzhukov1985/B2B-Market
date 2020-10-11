@@ -15,6 +15,7 @@
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <ProvisioningType>automatic</ProvisioningType>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +28,8 @@
     <MtouchArch>x86_64</MtouchArch>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>true</MtouchDebug>
+    <CodesignProvision>VS: WildCard Development</CodesignProvision>
+    <CodesignKey>Apple Development: v_zhukov1985@mail.ru (86MR24S7R8)</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -36,9 +39,10 @@
     <WarningLevel>4</WarningLevel>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>x86_64</MtouchArch>
-<CodesignKey>Apple Development: v_zhukov1985@mail.ru (86MR24S7R8)</CodesignKey>
+<CodesignKey>iPhone Distribution</CodesignKey>
 <MtouchUseLlvm>true</MtouchUseLlvm>
 <MtouchExtraArgs>--linkskip=mscorlib</MtouchExtraArgs>
+<CodesignProvision>B2B Market HoReCa Mobile Distribution Profile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,6 +58,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchLink>None</MtouchLink>
     <MtouchInterpreter>-all</MtouchInterpreter>
+    <CodesignProvision>VS: WildCard Development</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -62,9 +67,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>Apple Development: v_zhukov1985@mail.ru (86MR24S7R8)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchExtraArgs>--linkskip=mscorlib</MtouchExtraArgs>
+    <CodesignProvision>VS: WildCard Development</CodesignProvision>
+    <MtouchUseLlvm>true</MtouchUseLlvm>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CustomRenderers\DecimalEntryiOS.cs" />
@@ -78,7 +85,6 @@
     <Compile Include="CustomRenderers\NoLineSearchBariOS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
-    <Compile Include="CustomRenderers\PageRendereriOS.cs" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\LaunchLogo.imageset\1x.png">
@@ -96,7 +102,6 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Appstore-1.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Icon-120-1.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Icon-180-1.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Spotlight-120.png" />
@@ -105,6 +110,7 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Settings-58.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Notifications-60.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Notifications-40.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Appstore.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -240,6 +246,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets.xcassets\AppIcon.appiconset\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ITunesArtwork Include="iTunesArtwork%402x" />
+    <ITunesArtwork Include="iTunesArtwork" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

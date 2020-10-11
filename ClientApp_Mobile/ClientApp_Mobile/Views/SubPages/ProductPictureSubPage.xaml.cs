@@ -12,7 +12,7 @@ using Xamarin.Forms.Xaml;
 namespace ClientApp_Mobile.Views.SubPages
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ProductPictureSubPage : SwipeBackContentPage
+    public partial class ProductPictureSubPage : ContentPage
     {
         public ProductPictureSubPage()
         {
