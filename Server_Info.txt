@@ -9,3 +9,6 @@ b2buser - oD88x-2!Hq
 
 FTP:
 b2b-ftpadmin - yn7+g8=i
+
+Private WebAPI
+Port:
