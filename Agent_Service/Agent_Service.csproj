@@ -12,6 +12,16 @@
     <Copyright>(c) Zhukov Technologies</Copyright>
     <StartupObject></StartupObject>
     <ReleaseVersion>0.1.0</ReleaseVersion>
+    <AssemblyName>b2bmarket_agent</AssemblyName>
+    <Configurations>Debug;Release;Mac_HomeDebug;PC_HomeDebug</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PC_HomeDebug|AnyCPU'">
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_HomeDebug|AnyCPU'">
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Core.DBModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,19 +12,28 @@ namespace Core.Services
 {
     public class HTTPManager
     {
+        static HttpClient httpClient = new HttpClient();
+
+        //Private Api
+
         public static Uri GetMatchedProductPictureUri(Guid guid)
         {
-            return new Uri(CoreSettings.HTTPServerUrl + CoreSettings.MatchedProductsPicturesPath + "/"+ guid.ToString() + CoreSettings.PictureExtension);
+            return new Uri($"{CoreSettings.PrivateAPIUrl}/images/product/matched/{guid}");
         }
 
         public static Uri GetTopCategoryPictureUri(Guid guid)
         {
-            return new Uri(CoreSettings.HTTPServerUrl + CoreSettings.TopCategoriesPicturePath + "/" + guid.ToString() + CoreSettings.PictureExtension);
+            return new Uri($"{CoreSettings.PrivateAPIUrl}/images/topcategory/{guid}");
         }
 
         public static Uri GetSupplierPictureUri(Guid guid)
         {
-            return new Uri(CoreSettings.HTTPServerUrl + CoreSettings.SuppliersPicturePath + "/" + guid.ToString() + CoreSettings.PictureExtension);
+            return new Uri($"{CoreSettings.PrivateAPIUrl}/images/supplier/{guid}");
+        }
+
+        public static async void AddRemoveProductToFavorites(Product selectedProduct, ClientUser user)
+        {
+            await httpClient.PutAsJsonAsync($"{CoreSettings.PrivateAPIUrl}/changefavorites", new KeyValuePair<string, string>(user.Id.ToString(), selectedProduct.Id.ToString()));
         }
     }
 }

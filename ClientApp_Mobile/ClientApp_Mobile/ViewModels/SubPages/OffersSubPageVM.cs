@@ -154,10 +154,20 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         public void AddRemoveProductToFavorites(ProductWithOffersView product)
         {
+            var user = AppSettings.CurrentUser;
             try
             {
-                MarketDbContext.AddRemoveProductToFavourites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, AppSettings.CurrentUser);
-                product.IsFavoriteForUser = !product.IsFavoriteForUser;
+                HTTPManager.AddRemoveProductToFavorites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, user);
+                if (product.IsFavoriteForUser)
+                {
+                    user.Favorites.Remove(user.Favorites.Where(f => f.ProductId == product.Id && f.ClientUserId == user.Id).FirstOrDefault());
+                    product.IsFavoriteForUser = false;
+                }
+                else
+                {
+                    user.Favorites.Add(new Favorite() { ProductId = product.Id, ClientUserId = user.Id });
+                    product.IsFavoriteForUser = true;
+                }
             }
             catch
             {

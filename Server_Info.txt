@@ -1,14 +1,16 @@
-IP: 45.150.64.30
+IP: 185.121.81.212
 
-SSH: root - 31ssaq7kbcqF
+SSH: root - 93cX8vlYbCpo
+
 
 MYSQL:
-root - Jv59<pS20!=
+root - gUi3-gv3d!
 b2bdbadmin - ght3!2_sq2
 b2buser - oD88x-2!Hq
 
 FTP:
-b2b-ftpadmin - yn7+g8=i
+b2b-ftpadmindata - yn7+g8=i
+b2b-ftpadminsrv - gi2!vt0-
 
 Private WebAPI
-Port:
+HTTP Port: 47342

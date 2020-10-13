@@ -1926,32 +1926,6 @@ namespace Core.DBModels
         public virtual DbSet<ConflictedDescription> ConflictedDescriptions { get; set; }
 
 
-        private static readonly object locker = new object();
-        public static void AddRemoveProductToFavourites(Product selectedProduct, ClientUser User)
-        {
-            lock (locker)
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    if (selectedProduct.IsFavoriteForUser)
-                    {
-                        db.Favorites.Remove(new Favorite() { ClientUserId = User.Id, ProductId = selectedProduct.Id });
-                        User.Favorites.Remove(User.Favorites.Where(f => f.ProductId == selectedProduct.Id && f.ClientUserId == User.Id).FirstOrDefault());
-                    }
-                    else
-                    {
-                        db.Favorites.Add(new Favorite
-                        {
-                            ClientUserId = User.Id,
-                            ProductId = selectedProduct.Id
-                        });
-                        User.Favorites.Add(new Favorite() { ProductId = selectedProduct.Id, ClientUserId = User.Id });
-                    }
-                    db.SaveChanges();
-                }
-            }
-        }
-
         public static List<Guid> GetUnusedMatchQuantityUnitsIds()
         {
             using (MarketDbContext db = new MarketDbContext())

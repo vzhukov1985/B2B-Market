@@ -41,7 +41,7 @@ namespace UpdateDb_Service
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            CoreSettings.DbConnectionString = "server=localhost;protocol=SOCKET;UserId=b2buser;Password=oD88x-2!Hq;database=b2bmarket_test";
+            CoreSettings.DbConnectionString = CoreSettings.LocalDbConnectionString;
             LoadAgentSettings();
             AdminTGBot.StartBot();
             OperatorTGBot.StartBot();
@@ -53,11 +53,15 @@ namespace UpdateDb_Service
         {
              while (!stoppingToken.IsCancellationRequested)
              {
-                 UpdateDbProcessor.UpdateDb();
-                 DateTime scheduleTime = DateTime.Today.AddDays(1).AddHours(updateHour).AddMinutes(updateMinutes);
-                 TimeSpan interval = scheduleTime.Subtract(DateTime.Now);
-                 await Task.Delay(interval, stoppingToken);
-             }
+                DateTime scheduleTime = DateTime.Today.AddHours(updateHour).AddMinutes(updateMinutes);
+                if (DateTime.Compare(DateTime.Now, scheduleTime) > 0)
+                {
+                    scheduleTime = scheduleTime.AddDays(1);
+                }
+                TimeSpan interval = scheduleTime.Subtract(DateTime.Now);
+                await Task.Delay(interval, stoppingToken);
+                UpdateDbProcessor.UpdateDb();
+            }
         }
     }
 }

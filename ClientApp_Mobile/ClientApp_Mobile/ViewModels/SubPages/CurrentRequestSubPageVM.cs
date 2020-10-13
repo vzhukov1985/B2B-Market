@@ -399,11 +399,24 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         private void AddRemoveProductToFavorites(ProductForRequestView p)
         {
-            MarketDbContext.AddRemoveProductToFavourites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, AppSettings.CurrentUser);
+            var user = AppSettings.CurrentUser;
+            HTTPManager.AddRemoveProductToFavorites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, user);
             foreach (var product in Categories.SelectMany(c => c))
             {
                 if (product.Id == p.Id)
-                    product.IsFavoriteForUser = !product.IsFavoriteForUser;
+                {
+                    if (product.IsFavoriteForUser)
+                    {
+                        user.Favorites.Remove(user.Favorites.Where(f => f.ProductId == product.Id && f.ClientUserId == user.Id).FirstOrDefault());
+                        product.IsFavoriteForUser = false;
+                    }
+                    else
+                    {
+                        user.Favorites.Add(new Favorite() { ProductId = product.Id, ClientUserId = user.Id });
+                        product.IsFavoriteForUser = true;
+                    }
+                    return;
+                }
             }
         }
 

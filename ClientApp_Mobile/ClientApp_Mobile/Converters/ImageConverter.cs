@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ClientApp_Mobile.Converters
@@ -15,6 +19,5 @@ namespace ClientApp_Mobile.Converters
         {
             throw new NotImplementedException();
         }
-
     }
 }

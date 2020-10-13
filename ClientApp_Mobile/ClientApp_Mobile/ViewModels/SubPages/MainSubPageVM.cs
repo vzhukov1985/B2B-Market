@@ -89,6 +89,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 suppliers.Insert(0, new MainListItem { Id = Guid.Empty, Name = "Наши поставщики", IsContracted = true, Type = MainListItemType.AllContractedSuppliers });
 
                 MainListItems = new List<MainListItems> { categories, suppliers };
+
                 IsBusy = false;
             }
             catch
@@ -146,6 +147,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 }
             }
         }
+        public ImageSource Picture { get; set; }
     }
 
     class MainListItems : List<MainListItem>
