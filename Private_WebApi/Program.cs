@@ -15,23 +15,16 @@ namespace Private_WebApi
     {
         public static void Main(string[] args)
         {
-            CoreSettings.DbConnectionString = CoreSettings.LocalDbConnectionString; 
-            //CreateHostBuilder(args).Build().Run();
-            var host = new WebHostBuilder()
-            .UseKestrel()
-            .UseContentRoot(Directory.GetCurrentDirectory())
-            .UseStartup<Startup>()
-            .UseUrls("http://*:47342") // <-----
-            .Build();
+            CoreSettings.DbConnectionString = CoreSettings.LocalDbConnectionString;
 
-            host.Run();
+            new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseStartup<Startup>()
+                .UseUrls("http://*:47342") // <-----
+                .Build()
+                .Run();
+
         }
-
-/*        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });*/
     }
 }

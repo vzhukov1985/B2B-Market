@@ -157,7 +157,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             var user = AppSettings.CurrentUser;
             try
             {
-                HTTPManager.AddRemoveProductToFavorites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, user);
+                ApiConnect.AddRemoveProductToFavorites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, user);
                 if (product.IsFavoriteForUser)
                 {
                     user.Favorites.Remove(user.Favorites.Where(f => f.ProductId == product.Id && f.ClientUserId == user.Id).FirstOrDefault());
@@ -198,6 +198,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }));
         }
     }
+
+
     class ProductWithOffersView:INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

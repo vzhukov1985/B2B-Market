@@ -259,7 +259,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             var user = AppSettings.CurrentUser;
             try
             {
-                HTTPManager.AddRemoveProductToFavorites(new Product { Id = Product.Id, IsFavoriteForUser = Product.IsFavoriteForUser }, user);
+                ApiConnect.AddRemoveProductToFavorites(new Product { Id = Product.Id, IsFavoriteForUser = Product.IsFavoriteForUser }, user);
                 if (Product.IsFavoriteForUser)
                 {
                     user.Favorites.Remove(user.Favorites.Where(f => f.ProductId == Product.Id && f.ClientUserId == user.Id).FirstOrDefault());

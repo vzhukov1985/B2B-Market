@@ -9,7 +9,7 @@ namespace Core.Services
 #if HOMEDEBUG
         public static readonly string EncryptedDbConnectionString = "9ucmH/N6jVy9M9+laUnDs3x62+eernAe6yqDs/Fa/NlwXJuKNovM/GgAkVzrRii6rvCVKFIJd0dnwn3OVNAUYsI7U3MCSJCqVJf8MJOEAU78GEHA3LSSYwTgiFYXHa2NQZhQ/28SMCryMXMlI38PcA==";
 
-        public static readonly string LocalDbConnectionString = "server=localhost;protocol=SOCKET;UserId=b2buser;Password=oD88x-2!Hq;database=b2bmarket_test";
+        public static readonly string LocalDbConnectionString = "server=192.168.1.3;port=3306;UserId=b2buser;Password=oD88x-2!Hq;database=b2bmarket_test";
         public static readonly string RemoteDbConnectionString = "server=192.168.1.3;port=3306;UserId=b2buser;Password=oD88x-2!Hq;database=b2bmarket_test";
 
         public static string DbConnectionString;
@@ -20,11 +20,12 @@ namespace Core.Services
         public static readonly string ClientUserPINSalt = "!kj8__dsf%Z";
 
         public readonly static string ServerIP = "192.168.1.3";
-        public readonly static string b2bDataLocalDir = @"//ROUTER_MAIN/Media Server/B2B Market/FTP/Active";
 #if HOMEDEBUGMAC
         public readonly static string PrivateAPIUrl = "http://localhost:47342";
+        public readonly static string b2bDataLocalDir = @"/Volumes/Media Server/B2B Market/FTP/Active";
 #else
         public readonly static string PrivateAPIUrl = "http://192.168.1.3:47342";
+        public readonly static string b2bDataLocalDir = @"//ROUTER_MAIN/Media Server/B2B Market/FTP/Active";
 #endif
         public readonly static string FTPAdminUser = "b2b-ftpadmindata";
         public readonly static string FTPAdminPassword = "yn7+g8=i";

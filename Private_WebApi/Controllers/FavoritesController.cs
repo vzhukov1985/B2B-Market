@@ -5,10 +5,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Core.DBModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Private_WebApi.Controllers
 {
+    [Authorize(Roles = "ClientUser")]
     [Route("changefavorites")]
     [ApiController]
     public class FavoritesController : ControllerBase

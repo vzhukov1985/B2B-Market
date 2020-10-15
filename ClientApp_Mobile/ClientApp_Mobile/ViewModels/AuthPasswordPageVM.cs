@@ -13,10 +13,12 @@ using System.Threading.Tasks;
 using ClientApp_Mobile.Services;
 using ClientApp_Mobile.Views;
 using Core.DBModels;
+using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using CoreServices.Models;
 
 namespace ClientApp_Mobile.ViewModels
 {
@@ -48,6 +50,12 @@ namespace ClientApp_Mobile.ViewModels
         public void Authorize()
         {
             IsBusy = true;
+            bool LoginSuccessful = ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByPassword, Login = Login, PasswordOrPin = Password });
+            if (!LoginSuccessful)
+            {
+                IsBusy = false;
+                return;
+            }
             try
             {
                 using (MarketDbContext db = new MarketDbContext())
@@ -116,7 +124,7 @@ namespace ClientApp_Mobile.ViewModels
                 }
 
             }
-            catch/*(Exception e)*/
+            catch
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {

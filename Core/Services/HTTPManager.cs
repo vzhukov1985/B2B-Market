@@ -30,10 +30,5 @@ namespace Core.Services
         {
             return new Uri($"{CoreSettings.PrivateAPIUrl}/images/supplier/{guid}");
         }
-
-        public static async void AddRemoveProductToFavorites(Product selectedProduct, ClientUser user)
-        {
-            await httpClient.PutAsJsonAsync($"{CoreSettings.PrivateAPIUrl}/changefavorites", new KeyValuePair<string, string>(user.Id.ToString(), selectedProduct.Id.ToString()));
-        }
     }
 }

@@ -154,7 +154,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
                     Device.BeginInvokeOnMainThread(() => ShellPageService.GotoCurrentRequestPage());
                     IsBusy = false;
-
                 }
             }
             catch
@@ -217,6 +216,13 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public List<OrderOfRequestForConfirmation> OrdersToConfirm { get; set; }
     }
 
+    class OrderOfRequestForConfirmation : ArchivedOrder
+    {
+        public Guid OfferId { get; set; }
+        public decimal Remains { get; set; }
+        public ProductForConfirmRequestView Product { get; set; }
+    }
+
     class ProductForConfirmRequestView
     {
         public string Name { get; set; }
@@ -225,12 +231,5 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public string VolumeType { get; set; }
         public decimal Volume { get; set; }
         public string VolumeUnit { get; set; }
-    }
-
-    class OrderOfRequestForConfirmation : ArchivedOrder
-    {
-        public Guid OfferId { get; set; }
-        public decimal Remains { get; set; }
-        public ProductForConfirmRequestView Product { get; set; }
     }
 }

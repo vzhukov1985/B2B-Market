@@ -1,6 +1,7 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
+using CoreServices.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,14 @@ namespace ClientApp_Mobile.ViewModels
         private void AuthorizePIN()
         {
             IsBusy = true;
+            bool isLoginSuccessful = ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByPIN, Login = SelectedUser.Id.ToString(), PasswordOrPin =  PINCode});
+            if (!isLoginSuccessful)
+            {
+                IsBusy = false;
+                PINCode = "";
+                return;
+            }
+            
             string pinHash;
             try
             {
@@ -315,7 +324,7 @@ namespace ClientApp_Mobile.ViewModels
             
             PINIsWrong = false;
 
-             PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
+            PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
             AuthorizeByPasswordCommand = new Command(_ => { MessagingCenter.Send<string>("AndroidAuth", "Cancel"); AppPageService.GoToAuthPasswordPage(); });
             RemoveLocalUserCommand = new Command(_ => RemoveLocalUser());
             ForceBiometricCheckCommand = new Command(_ => CheckBiometricAccess());

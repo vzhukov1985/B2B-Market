@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Core.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Private_WebApi.Controllers
 {

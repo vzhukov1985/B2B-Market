@@ -400,7 +400,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         private void AddRemoveProductToFavorites(ProductForRequestView p)
         {
             var user = AppSettings.CurrentUser;
-            HTTPManager.AddRemoveProductToFavorites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, user);
+            ApiConnect.AddRemoveProductToFavorites(new Product { Id = p.Id, IsFavoriteForUser = p.IsFavoriteForUser }, user);
             foreach (var product in Categories.SelectMany(c => c))
             {
                 if (product.Id == p.Id)
