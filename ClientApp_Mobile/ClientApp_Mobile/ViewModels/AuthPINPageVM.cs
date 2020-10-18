@@ -1,7 +1,7 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
 using Core.Services;
-using CoreServices.Models;
+using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace ClientApp_Mobile.ViewModels
                 _selectedUser = value;
                 OnPropertyChanged("SelectedUser");
                 if (value != null && !IsBiometricCheckActive) CheckBiometricAccess();
-                if (Device.RuntimePlatform == Device.iOS) MessagingCenter.Send<string>("iOS_Picker", "Unfocus");
+                if (Device.RuntimePlatform == Device.iOS) MessagingCenter.Send("iOS_Picker", "Unfocus");
             }
         }
 
@@ -86,81 +86,88 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
-        private void AddPINNumber(string stringToAdd)
+        public Command PINButtonTapCommand { get; }
+        public Command AuthorizeByPasswordCommand { get; }
+        public Command RemoveLocalUserCommand { get; }
+        public Command ForceBiometricCheckCommand { get; }
+
+        private bool IsBiometricCheckActive;
+
+        public AuthPINPageVM()
         {
-            if (stringToAdd == "Backspace")
+            Users = new ObservableCollection<AppLocalUser>(AppSettings.AppLocalUsers);
+            var userFromSettings = Users[AppSettings.AppLocalUsers.LastEnterUserIndex];
+            Users.RemoveAll(u => u.UsePINAccess == false);
+            if (Users.Contains(userFromSettings))
             {
-                if (PINCode.Length > 0)
-                    PINCode = PINCode.Remove(PINCode.Length - 1);
+                SelectedUser = Users.Where(u => u.Login == userFromSettings.Login).FirstOrDefault();
             }
             else
             {
-                PINCode += stringToAdd;
+                SelectedUser = Users[0];
             }
-            if (PINCode.Length == 4) Task.Run(() => AuthorizePIN());
+
+            PINIsWrong = false;
+
+            PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
+            AuthorizeByPasswordCommand = new Command(_ => { MessagingCenter.Send("AndroidAuth", "Cancel"); AppPageService.GoToAuthPasswordPage(); });
+            RemoveLocalUserCommand = new Command(_ => RemoveLocalUser());
+            ForceBiometricCheckCommand = new Command(_ => CheckBiometricAccess());
         }
 
         private void AuthorizePIN()
         {
             IsBusy = true;
-            bool isLoginSuccessful = ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByPIN, Login = SelectedUser.Id.ToString(), PasswordOrPin =  PINCode});
-            if (!isLoginSuccessful)
+            var loginResult = ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByPIN, Login = SelectedUser.Login, PasswordOrPin =  PINCode});
+            if (loginResult == ApiConnect.LoginResult.Invalid)
             {
                 IsBusy = false;
-                PINCode = "";
+                Device.BeginInvokeOnMainThread(() => { PINIsWrong = true; PINIsWrong = false; });
                 return;
             }
-            
-            string pinHash;
-            try
+
+            if (loginResult == ApiConnect.LoginResult.PinAccessDenied)
             {
-                using (MarketDbContext db = new MarketDbContext())
+                Device.BeginInvokeOnMainThread(() =>
                 {
-                    db.Database.OpenConnection();
-                    pinHash = db.ClientsUsers.Where(cu => cu.Id == SelectedUser.Id).Select(cu => cu.PinHash).FirstOrDefault();
-                }
-                if (pinHash != null)
-                {
-                    if (Authentication.CheckPIN(PINCode, pinHash))
+                    AppSettings.AppLocalUsers.RemoveAppUser(SelectedUser);
+                    Users.Remove(SelectedUser);
+                    if (Users.Count > 0)
                     {
-                        ProceedAuth();
+                        SelectedUser = Users[0];
                     }
                     else
                     {
-                        Device.BeginInvokeOnMainThread(() => { PINIsWrong = true; PINIsWrong = false; });
+                        AppPageService.GoToAuthPasswordPage();
                     }
-                    IsBusy = false;
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        AppSettings.AppLocalUsers.RemoveAppUser(SelectedUser);
-                        Users.Remove(SelectedUser);
-                        if (Users.Count > 0)
-                        {
-                            SelectedUser = Users[0];
-                        }
-                        else
-                        {
-                            AppPageService.GoToAuthPasswordPage();
-                        }
-                        DialogService.ShowErrorDlg("Код быстрого доступа был сброшен на другом устройстве. Вход для этого пользователя возможен только по паролю");
-                    });
-                }
+                    DialogService.ShowErrorDlg("Код быстрого доступа был сброшен на другом устройстве. Вход для этого пользователя возможен только по паролю");
+                });
             }
-            catch
-            {
-                IsBusy = false;
-                PINCode = "";
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                return;
-            }
+
+            Task.Run(() => ProceedAuth());
+            
+        }
+
+        private void ProceedAuth()
+        {
+            IsBusy = true;
+            MessagingCenter.Send("AndroidAuth", "Cancel");
+            AppSettings.CurrentUser = ApiConnect.GetUserInfo().Result;
+            AppSettings.AppLocalUsers.RegisterExistingUser();
+            Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
+            IsBusy = false;
+        }
+
+        private void ProceedBiometricAuth()
+        {
+            IsBusy = true;
+            ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByBiometric, Login = SelectedUser.Login });
+            ProceedAuth();
         }
 
         private void CheckBiometricAccess()
         {
-            MessagingCenter.Send<string>("AndroidAuth", "Cancel");
+            MessagingCenter.Send("AndroidAuth", "Cancel");
             if (SelectedUser.UseBiometricAccess == false)
             {
                 InfoText = "Введите код:";
@@ -207,7 +214,7 @@ namespace ClientApp_Mobile.ViewModels
                             Device.BeginInvokeOnMainThread(() =>
                             {
                                 InfoText = "Отпечаток распознан. Выполняется вход...";
-                                Task.Run(() => ProceedAuth());
+                                Task.Run(() => ProceedBiometricAuth());
                             });
                         });
                         MessagingCenter.Unsubscribe<object>("AndroidAuth", "Fail");
@@ -233,7 +240,7 @@ namespace ClientApp_Mobile.ViewModels
                             {
 
                                 InfoText = "Отпечаток распознан. Выполняется вход...";
-                                Task.Run(() => ProceedAuth());
+                                Task.Run(() => ProceedBiometricAuth());
                             });
                         });
                         MessagingCenter.Unsubscribe<string>("AndroidAuth", "Fail");
@@ -255,16 +262,6 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
-        private void ProceedAuth()
-        {
-            IsBusy = true;
-            MessagingCenter.Send<string>("AndroidAuth", "Cancel");
-            AppSettings.GetUserInfoFromDb(SelectedUser.Id);
-            AppSettings.AppLocalUsers.RegisterExistingUser();
-            Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
-            IsBusy = false;
-        }
-
         private async void GetAuthResults(string authType)
         {
             var result = await DependencyService.Get<IBiometricAuthenticateService>().AuthenticateUserIDWithTouchID();
@@ -272,7 +269,7 @@ namespace ClientApp_Mobile.ViewModels
             if (result)
             {
                 InfoText = authType == "TouchId" ? "Отпечаток распознан. Выполняется вход..." : "Лицо распознано. Выполняется вход...";
-                await Task.Run(() => ProceedAuth());
+                await Task.Run(() => ProceedBiometricAuth());
             }
             else
             {
@@ -301,33 +298,18 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
-        public Command PINButtonTapCommand { get; }
-        public Command AuthorizeByPasswordCommand { get; }
-        public Command RemoveLocalUserCommand { get; }
-        public Command ForceBiometricCheckCommand { get; }
-
-        private bool IsBiometricCheckActive;
-
-        public AuthPINPageVM()
+        private void AddPINNumber(string stringToAdd)
         {
-            Users = new ObservableCollection<AppLocalUser>(AppSettings.AppLocalUsers);
-            var userFromSettings = Users[AppSettings.AppLocalUsers.LastEnterUserIndex];
-            Users.RemoveAll(u => u.UsePINAccess == false);
-            if (Users.Contains(userFromSettings))
+            if (stringToAdd == "Backspace")
             {
-                SelectedUser = Users.Where(u => u.Id == userFromSettings.Id).FirstOrDefault();
+                if (PINCode.Length > 0)
+                    PINCode = PINCode.Remove(PINCode.Length - 1);
             }
             else
             {
-                SelectedUser = Users[0];
+                PINCode += stringToAdd;
             }
-            
-            PINIsWrong = false;
-
-            PINButtonTapCommand = new Command<string>(s => AddPINNumber(s));
-            AuthorizeByPasswordCommand = new Command(_ => { MessagingCenter.Send<string>("AndroidAuth", "Cancel"); AppPageService.GoToAuthPasswordPage(); });
-            RemoveLocalUserCommand = new Command(_ => RemoveLocalUser());
-            ForceBiometricCheckCommand = new Command(_ => CheckBiometricAccess());
+            if (PINCode.Length == 4) Task.Run(() => AuthorizePIN());
         }
     }
 }

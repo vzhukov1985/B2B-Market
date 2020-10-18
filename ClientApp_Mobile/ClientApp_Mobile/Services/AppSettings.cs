@@ -1,4 +1,5 @@
 ﻿using Core.DBModels;
+using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
@@ -16,71 +17,12 @@ namespace ClientApp_Mobile.Services
 {
     public class AppSettings
     {
-        public static ClientUser CurrentUser;
+        public static CurrentUserInfo CurrentUser;
 
         public static AppLocalUsers AppLocalUsers = new AppLocalUsers();
         public static int CurrentUserAppLocalUsersIndex;
 
-        public static Dictionary<string, Guid> ArchivedOrderStatuses;
-
-        public static void GetArchivedOrderStatusesFromDb()
-        {
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    ArchivedOrderStatuses = db.ArchivedRequestStatusTypes.ToDictionary(arst => arst.Name, arst => arst.Id);
-                }
-
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    DialogService.ShowConnectionErrorDlg();
-                });
-                return;
-            }
-        }
-
-        public static void GetUserInfoFromDb(Guid id)
-        {
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    CurrentUser = db.ClientsUsers
-                                    .Where(u => u.Id == id)
-                                    .Include(u => u.Favorites)
-                                    .ThenInclude(f => f.Product)
-                                    .Include(u => u.Client)
-                                    .ThenInclude(c => c.Contracts)
-                                    .ThenInclude(ct => ct.Supplier)
-                                    .Include(u => u.Client)
-                                    .ThenInclude(c => c.CurrentOrders)
-                                    .ThenInclude(o => o.Offer)
-                                    .ThenInclude(of => of.QuantityUnit)
-                                    .Include(u => u.Client)
-                                    .ThenInclude(c => c.CurrentOrders)
-                                    .ThenInclude(o => o.Offer)
-                                    .ThenInclude(of => of.Supplier)
-                                    .FirstOrDefault();
-                }
-
-                CurrentUser.Client.ContractedSuppliersIDs = new List<Guid>(CurrentUser.Client.Contracts.Select(c => c.Supplier.Id));
-
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    DialogService.ShowConnectionErrorDlg();
-                });
-                return;
-            }
-        }
+        public static List<ArchivedRequestStatusType> ArchivedOrderStatusTypes;
     }
 
 
@@ -88,7 +30,7 @@ namespace ClientApp_Mobile.Services
     public class AppLocalUser
     {
         public int Index { get; set; }
-        public Guid Id { get; set; }
+        public string Login { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string CompanyName { get; set; }
@@ -100,7 +42,7 @@ namespace ClientApp_Mobile.Services
         public void ReadAppUserPreferences(int index)
         {
             Index = index;
-            Id = new Guid(Preferences.Get($"User{Index}Id", Guid.Empty.ToString()));
+            Login = Preferences.Get($"User{Index}Login", "");
             Name = Preferences.Get($"User{Index}Name", "");
             Surname = Preferences.Get($"User{Index}Surname", "");
             CompanyName = Preferences.Get($"User{Index}Company", "");
@@ -112,7 +54,7 @@ namespace ClientApp_Mobile.Services
         {
             Index = index;
             var user = AppSettings.CurrentUser;
-            Id = user.Id;
+            Login = user.Login;
             Name = user.Name;
             Surname = user.Surname;
             CompanyName = user.Client.ShortName;
@@ -123,7 +65,7 @@ namespace ClientApp_Mobile.Services
 
         public void UpdateAppUserPreferences()
         {
-            Preferences.Set($"User{Index}Id", Id.ToString());
+            Preferences.Set($"User{Index}Login", Login);
             Preferences.Set($"User{Index}Name", Name);
             Preferences.Set($"User{Index}Surname", Surname);
             Preferences.Set($"User{Index}Company", CompanyName);
@@ -153,7 +95,7 @@ namespace ClientApp_Mobile.Services
         {
             for (int i = 0; i < Count; i++)
             {
-                if (this[i].Id == AppSettings.CurrentUser.Id)
+                if (this[i].Login == AppSettings.CurrentUser.Login)
                 {
                     return true;
                 }
@@ -175,7 +117,7 @@ namespace ClientApp_Mobile.Services
         {
             for (int i = 0; i < Count; i++)
             {
-                if (this[i].Id == AppSettings.CurrentUser.Id)
+                if (this[i].Login == AppSettings.CurrentUser.Login)
                 {
                     CurrentUserIndex = i;
                     LastEnterUserIndex = CurrentUserIndex;

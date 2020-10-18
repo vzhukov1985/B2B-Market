@@ -39,6 +39,18 @@ namespace ClientApp_Mobile.ViewModels
 
         public bool Result { get; set; }
 
+        public Command CancelCommand { get; }
+
+        public BiometricTestPageVM(GoBackFunction goBackFunction)
+        {
+            CancelCommand = new Command(_ => Proceed(false));
+            goBack = goBackFunction;
+
+            CheckBiometricTypes();
+            StartBiometricCheck();
+        }
+
+
         private void CheckBiometricTypes()
         {
             if (Device.RuntimePlatform == Device.iOS)
@@ -69,6 +81,7 @@ namespace ClientApp_Mobile.ViewModels
             {
                 GetAuthResults();
             }
+
             if (Device.RuntimePlatform == Device.Android)
             {
                 if (DependencyService.Get<IBiometricPieAuthenticate>().CheckSDKGreater29())
@@ -131,15 +144,6 @@ namespace ClientApp_Mobile.ViewModels
             await goBack();
         }
 
-        public Command CancelCommand { get; }
 
-        public BiometricTestPageVM(GoBackFunction goBackFunction)
-        {
-            CancelCommand = new Command(_ => Proceed(false));
-            goBack = goBackFunction;
-
-            CheckBiometricTypes();
-            StartBiometricCheck();
-        }
     }
 }

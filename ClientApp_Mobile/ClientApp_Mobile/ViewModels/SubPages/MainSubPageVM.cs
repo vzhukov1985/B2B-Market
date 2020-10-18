@@ -1,5 +1,6 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
+using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,8 +13,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 {
     class MainSubPageVM : BaseVM
     {
-        private ClientUser _user;
-        public ClientUser User
+        private CurrentUserInfo _user;
+        public CurrentUserInfo User
         {
             get { return _user; }
             set
@@ -34,6 +35,56 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
+        public Command ShowItemCommand { get; }
+
+
+        public MainSubPageVM()
+        {
+            User = AppSettings.CurrentUser;
+            MainListItems = new List<MainListItems>();
+
+            ShowItemCommand = new Command<MainListItem>(i => ShowItem(i));
+
+            Task.Run(() => QueryDb());
+        }
+
+        private void QueryDb()
+        {
+            IsBusy = true;
+
+            MainListItems categories, suppliers;
+
+            categories = new MainListItems("КАТЕГОРИИ", ApiConnect.GetTopCategories().Result
+                                                           .Select(tc => new MainListItem
+                                                           {
+                                                               Id = tc.Id,
+                                                               Name = tc.Name,
+                                                               Type = MainListItemType.Category,
+                                                               IsContracted = null
+                                                           })
+                                                           .ToList()
+                                                           .OrderBy(tc => tc.Name));
+
+            suppliers = new MainListItems("", ApiConnect.GetActiveSuppliersIdNames().Result
+                                                .Select(s => new MainListItem
+                                                {
+                                                    Id = s.Id,
+                                                    Name = s.ShortName,
+                                                    Type = MainListItemType.Supplier
+                                                })
+                                                .ToList());
+
+            foreach (var supplier in suppliers)
+                supplier.IsContracted = AppSettings.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
+
+            suppliers = new MainListItems("ПОСТАВЩИКИ", suppliers.OrderByDescending(s => s.IsContracted).ThenBy(s => s.Name));
+            suppliers.Insert(0, new MainListItem { Id = Guid.Empty, Name = "Наши поставщики", IsContracted = true, Type = MainListItemType.AllContractedSuppliers });
+
+            MainListItems = new List<MainListItems> { categories, suppliers };
+
+            IsBusy = false;
+        }
+
         private void ShowItem(MainListItem item)
         {
             switch (item.Type)
@@ -48,70 +99,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                     ShellPageService.GotoOffersPage(item.Name, null, new List<Guid>() { item.Id });
                     break;
             }
-        }
-
-        private void QueryDb()
-        {
-            IsBusy = true;
-            try
-            {
-                MainListItems categories, suppliers;
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    categories = new MainListItems("КАТЕГОРИИ", (db.TopCategories
-                                                                   .Select(tc => new MainListItem
-                                                                   {
-                                                                       Id = tc.Id,
-                                                                       Name = tc.Name,
-                                                                       Type = MainListItemType.Category,
-                                                                       IsContracted = null
-                                                                   })
-                                                                   .ToList())
-                                                                   .OrderBy(tc => tc.Name));
-
-                    suppliers = new MainListItems("", db.Suppliers
-                                                        .Where(s => s.IsActive == true)
-                                                        .Select(s => new MainListItem
-                                                        {
-                                                            Id = s.Id,
-                                                            Name = s.ShortName,
-                                                            Type = MainListItemType.Supplier
-                                                        })
-                                                        .ToList());
-                }
-
-
-                foreach (var supplier in suppliers)
-                    supplier.IsContracted = AppSettings.CurrentUser.Client.ContractedSuppliersIDs.Contains(supplier.Id);
-
-                suppliers = new MainListItems("ПОСТАВЩИКИ", suppliers.OrderByDescending(s => s.IsContracted).ThenBy(s => s.Name));
-                suppliers.Insert(0, new MainListItem { Id = Guid.Empty, Name = "Наши поставщики", IsContracted = true, Type = MainListItemType.AllContractedSuppliers });
-
-                MainListItems = new List<MainListItems> { categories, suppliers };
-
-                IsBusy = false;
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
-        }
-
-
-        public Command ShowItemCommand { get; }
-
-
-        public MainSubPageVM()
-        {
-            User = AppSettings.CurrentUser;
-            MainListItems = new List<MainListItems>();
-
-            ShowItemCommand = new Command<MainListItem>(i => ShowItem(i));
-
-            Task.Run(() => QueryDb());
         }
     }
 

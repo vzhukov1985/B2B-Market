@@ -116,6 +116,10 @@ namespace Core.DBModels
             }
         }
 
+        public string ContactPersonName { get; set; }
+
+        public string ContactPersonPhone { get; set; }
+
         public static ArchivedSupplier CloneForDB(ArchivedSupplier archivedSupplier)
         {
             return new ArchivedSupplier

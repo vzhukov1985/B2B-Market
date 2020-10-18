@@ -54,7 +54,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Core.csproj" />
-    <ProjectReference Include="..\..\CoreServices\CoreServices.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,5 +66,8 @@
     <Compile Update="Views\SubPages\CategoriesSubPage.xaml.cs">
       <DependentUpon>CategoriesSubPage.xaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>

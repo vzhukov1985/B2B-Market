@@ -192,7 +192,7 @@ namespace Core.Services
             return resStream;
         }
 
-        public static void SaveRequestXMLToStream(ArchivedRequest request, Stream stream)
+        public static void SaveRequestXMLToStream(RequestForConfirmation request, Stream stream)
         {
             XDocument xDoc = new XDocument();
             XElement xRoot = new XElement("orderfromb2bmarket");
@@ -201,15 +201,15 @@ namespace Core.Services
                 xRoot.Add(new XAttribute("timeofcreation", request.DateTimeSent));
 
             XElement xClientInfo = new XElement("clientinformation");
-                xClientInfo.Add(new XElement("name", request.Client.FullName));
-                xClientInfo.Add(new XElement("bin", request.Client.Bin));
-                xClientInfo.Add(new XElement("country", request.Client.Country));
-                xClientInfo.Add(new XElement("city", request.Client.City));
-                xClientInfo.Add(new XElement("address", request.Client.Address));
-                xClientInfo.Add(new XElement("phone", request.Client.Phone));
-                xClientInfo.Add(new XElement("email", request.Client.Email));
-                xClientInfo.Add(new XElement("contactpersonname", request.Client.ContactPersonName));
-                xClientInfo.Add(new XElement("contactpersonphone", request.Client.ContactPersonPhone));
+                xClientInfo.Add(new XElement("name", request.ArchivedClient.FullName));
+                xClientInfo.Add(new XElement("bin", request.ArchivedClient.Bin));
+                xClientInfo.Add(new XElement("country", request.ArchivedClient.Country));
+                xClientInfo.Add(new XElement("city", request.ArchivedClient.City));
+                xClientInfo.Add(new XElement("address", request.ArchivedClient.Address));
+                xClientInfo.Add(new XElement("phone", request.ArchivedClient.Phone));
+                xClientInfo.Add(new XElement("email", request.ArchivedClient.Email));
+                xClientInfo.Add(new XElement("contactpersonname", request.ArchivedClient.ContactPersonName));
+                xClientInfo.Add(new XElement("contactpersonphone", request.ArchivedClient.ContactPersonPhone));
 
             XElement xDeliveryInfo = new XElement("deliveryinformation");
                 xDeliveryInfo.Add(new XElement("deliverytime", request.DeliveryDateTime));
@@ -220,7 +220,7 @@ namespace Core.Services
                 xOrders.Add(new XAttribute("productsquantity", request.ProductsQuantity));
                 xOrders.Add(new XAttribute("totalprice", request.TotalPrice));
 
-            foreach (ArchivedOrder order in request.ArchivedOrders)
+            foreach (ArchivedOrder order in request.OrdersToConfirm)
             {
                 XElement xOrder = new XElement("order");
 

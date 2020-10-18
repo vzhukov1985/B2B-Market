@@ -1,6 +1,7 @@
 ﻿using ClientApp_Mobile.Services;
 using ClientApp_Mobile.Views.SubPages;
 using Core.DBModels;
+using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -22,8 +23,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 {
     class OffersSubPageVM : BaseVM
     {
-        private ObservableCollection<ProductWithOffersView> _products;
-        public ObservableCollection<ProductWithOffersView> Products
+        private ObservableCollection<ProductWithOffersDbView> _products;
+        public ObservableCollection<ProductWithOffersDbView> Products
         {
             get { return _products; }
             set
@@ -66,117 +67,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        public async void QueryDb(List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "", bool queryFavoritesOnly = false)
-        {
-            IsBusy = true;
-            List<ProductWithOffersView> productsFromDb;
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    IQueryable<Product> queryPart;
-
-                    if (queryFavoritesOnly)
-                    {
-                        Title = "Избранное";
-                        queryPart = db.Favorites
-                                      .Where(f => f.ClientUserId == AppSettings.CurrentUser.Id)
-                                      .Select(f => f.Product);
-                    }
-                    else
-                    {
-                        queryPart = db.Products
-                                      .Where(p => p.Offers.Any(of => of.Supplier.IsActive == true && of.Remains > 0 && of.IsActive == true))
-                                      .Where(p => categoryFilter == null ? true : categoryFilter.Contains(p.CategoryId))
-                                      .Where(p => supplierFilter == null ? true : p.Offers.Select(of => new { of.SupplierId, of.Remains }).Any(of => supplierFilter.Contains(of.SupplierId) && of.Remains > 0))
-                                      .Where(p => string.IsNullOrEmpty(searchText) ? true : EF.Functions.Like(p.Name, $"%{searchText}%") || EF.Functions.Like(p.Category.Name, $"%{searchText}%"));
-                    }
-
-                    productsFromDb = await queryPart
-                                       .OrderBy(p => p.Category.Name)
-                                       .ThenBy(p => p.Name)
-                                       .Select(p => new ProductWithOffersView
-                                       {
-                                           Id = p.Id,
-                                           Name = p.Name,
-                                           CategoryName = p.Category.Name,
-                                           PictureUri = p.PictureUri,
-                                           VolumeType = p.VolumeType.Name,
-                                           Volume = p.Volume,
-                                           VolumeUnit = p.VolumeUnit.ShortName,
-                                           IsOfContractedSupplier = p.Offers.Any(o => ContractedSuppliersIds.Contains(o.Supplier.Id)),
-                                           BestRetailOffer = db.Offers
-                                                               .Where(o => o.ProductId == p.Id && o.IsActive == true && o.Supplier.IsActive == true)
-                                                               .OrderByDescending(o => ContractedSuppliersIds.Contains(o.SupplierId))
-                                                               .ThenBy(o => o.RetailPrice)
-                                                               .Select(o => new BestOffer
-                                                               {
-                                                                   Price = o.RetailPrice,
-                                                                   QuantityUnit = o.QuantityUnit.ShortName,
-                                                                   SupplierName = o.Supplier.ShortName
-                                                               }).FirstOrDefault(),
-                                           BestDiscountOffer = db.Offers
-                                                               .Where(o => o.ProductId == p.Id && o.IsActive == true && o.Supplier.IsActive == true)
-                                                               .OrderByDescending(o => ContractedSuppliersIds.Contains(o.SupplierId))
-                                                               .ThenBy(o => o.DiscountPrice)
-                                                               .Select(o => new BestOffer
-                                                               {
-                                                                   Price = o.DiscountPrice,
-                                                                   QuantityUnit = o.QuantityUnit.ShortName,
-                                                                   SupplierName = o.Supplier.ShortName
-                                                               }).FirstOrDefault(),
-                                       })
-                                       .ToListAsync(CTS.Token);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                IsBusy = false;
-                return;
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
-
-            foreach (var product in productsFromDb)
-            {
-                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
-                product.IsFavoriteForUser = AppSettings.CurrentUser.Favorites.Select(f => f.ProductId).Contains(product.Id);
-            }
-            Device.BeginInvokeOnMainThread(() => Products = new ObservableCollection<ProductWithOffersView>(productsFromDb));
-            IsBusy = false;
-        }
-
-
-        public void AddRemoveProductToFavorites(ProductWithOffersView product)
-        {
-            var user = AppSettings.CurrentUser;
-            try
-            {
-                ApiConnect.AddRemoveProductToFavorites(new Product { Id = product.Id, IsFavoriteForUser = product.IsFavoriteForUser }, user);
-                if (product.IsFavoriteForUser)
-                {
-                    user.Favorites.Remove(user.Favorites.Where(f => f.ProductId == product.Id && f.ClientUserId == user.Id).FirstOrDefault());
-                    product.IsFavoriteForUser = false;
-                }
-                else
-                {
-                    user.Favorites.Add(new Favorite() { ProductId = product.Id, ClientUserId = user.Id });
-                    product.IsFavoriteForUser = true;
-                }
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
-        }
-
         public Command AddRemoveProductToFavouritesCommand { get; }
         public Command ShowProductCommand { get; }
 
@@ -184,56 +74,52 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         {
             ContractedSuppliersIds = AppSettings.CurrentUser.Client.ContractedSuppliersIDs;
 
-            AddRemoveProductToFavouritesCommand = new Command<ProductWithOffersView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
-            ShowProductCommand = new Command<ProductWithOffersView>(p => ShellPageService.GotoProductPage(new Product
-            { 
+            AddRemoveProductToFavouritesCommand = new Command<ProductWithOffersDbView>(p => Task.Run(() => AddRemoveProductToFavorites(p)));
+            ShowProductCommand = new Command<ProductWithOffersDbView>(p => ShellPageService.GotoProductPage(new Product
+            {
                 Id = p.Id,
                 Name = p.Name,
                 IsOfContractedSupplier = p.IsOfContractedSupplier,
                 IsFavoriteForUser = p.IsFavoriteForUser,
-                Category = new ProductCategory { Name = p.CategoryName},
-                VolumeType = new VolumeType { Name = p.VolumeType},
+                Category = new ProductCategory { Name = p.CategoryName },
+                VolumeType = new VolumeType { Name = p.VolumeType },
                 Volume = p.Volume,
-                VolumeUnit = new VolumeUnit { ShortName = p.VolumeUnit}
+                VolumeUnit = new VolumeUnit { ShortName = p.VolumeUnit }
             }));
         }
-    }
 
-
-    class ProductWithOffersView:INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        public async void QueryDb(List<Guid> categoryFilter = null, List<Guid> supplierFilter = null, string searchText = "", bool queryFavoritesOnly = false)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+            IsBusy = true;
+            if (queryFavoritesOnly)
+                Title = "Избранное";
+
+            List<ProductWithOffersDbView> productsFromDb = await ApiConnect.GetOffers(categoryFilter, supplierFilter, searchText, queryFavoritesOnly, ContractedSuppliersIds, CTS.Token);
+
+            foreach (var product in productsFromDb)
+            {
+                if (CTS.Token.IsCancellationRequested) { IsBusy = false; return; }
+                product.IsFavoriteForUser = AppSettings.CurrentUser.FavoriteProductsIds.Contains(product.Id);
+            }
+            Device.BeginInvokeOnMainThread(() => Products = new ObservableCollection<ProductWithOffersDbView>(productsFromDb));
+            IsBusy = false;
         }
 
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public Uri PictureUri { get; set; }
-        public bool IsOfContractedSupplier { get; set; }
-        private bool _isFavoriteForUser;
-        public bool IsFavoriteForUser
+
+        public void AddRemoveProductToFavorites(ProductWithOffersDbView product)
         {
-            get { return _isFavoriteForUser; }
-            set
+            var user = AppSettings.CurrentUser;
+            ApiConnect.AddRemoveProductToFavorites(product.Id.ToString());
+            if (product.IsFavoriteForUser)
             {
-                _isFavoriteForUser = value;
-                OnPropertyChanged("IsFavoriteForUser");
+                user.FavoriteProductsIds.Remove(product.Id);
+                product.IsFavoriteForUser = false;
+            }
+            else
+            {
+                user.FavoriteProductsIds.Add(product.Id);
+                product.IsFavoriteForUser = true;
             }
         }
-        public string CategoryName { get; set; }
-        public string VolumeType { get; set; }
-        public decimal Volume { get; set; }
-        public string VolumeUnit { get; set; }
-        public BestOffer BestRetailOffer { get; set; }
-        public BestOffer BestDiscountOffer { get; set; }
-    }
-
-    class BestOffer
-    {
-        public decimal Price { get; set; }
-        public string QuantityUnit { get; set; }
-        public string SupplierName { get; set; }
     }
 }

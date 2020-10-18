@@ -43,17 +43,44 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
+        public Command ChangeBiometricAccessCommand { get; }
+        public Command ProceedCommand { get; }
+
+        public NewLocalUserBiometricSettingsPageVM()
+        {
+            IsBiometricAccessActivated = false;
+
+            ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
+            ProceedCommand = new Command(_ => Proceed());
+
+            CheckBiometricAccess();
+        }
+
         private async void ChangeBiometricAccess()
         {
             if (!IsBiometricAccessActivated)
             {
-                IsBiometricAccessActivated = await AppPageService.ShowBiometricTestPage();
+                if (Device.RuntimePlatform == Device.Android)
+                    IsBiometricAccessActivated = await AppPageService.ShowBiometricTestPage();
+
+                if (Device.RuntimePlatform == Device.iOS)
+                    GetAuthResults();
             }
             else
             {
                 IsBiometricAccessActivated = false;
             }
             AppSettings.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
+        }
+
+        private async void GetAuthResults()
+        {
+            var result = await DependencyService.Get<IBiometricAuthenticateService>().AuthenticateUserIDWithTouchID();
+            if (result)
+            {
+                IsBiometricAccessActivated = true;
+                AppSettings.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
+            }
         }
 
         private void CheckBiometricAccess()
@@ -84,19 +111,6 @@ namespace ClientApp_Mobile.ViewModels
         {
             AppSettings.AppLocalUsers.RegisterNewUser();
             AppPageService.GoToMainMage();
-        }
-
-        public Command ChangeBiometricAccessCommand { get; }
-        public Command ProceedCommand { get; }
-
-        public NewLocalUserBiometricSettingsPageVM()
-        {
-            IsBiometricAccessActivated = false;
-
-            ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
-            ProceedCommand = new Command(_ => Proceed());
-
-            CheckBiometricAccess();
         }
     }
 }

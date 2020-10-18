@@ -50,7 +50,6 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <MandroidI18n>
     </MandroidI18n>
-    <AndroidLinkSkip>mscorlib</AndroidLinkSkip>
     <AndroidKeyStore>false</AndroidKeyStore>
     <AndroidSupportedAbis />
     <AotAssemblies>true</AotAssemblies>
@@ -140,6 +139,18 @@
     <AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\drawable\Request_Completed.png">
+      <SubType></SubType>
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Request_Pending.png">
+      <SubType></SubType>
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\Request_Rejected.png">
+      <SubType></SubType>
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\Tab_Home.png" />

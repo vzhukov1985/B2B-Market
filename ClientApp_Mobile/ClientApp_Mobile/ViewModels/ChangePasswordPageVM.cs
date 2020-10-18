@@ -48,6 +48,16 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
+
+        public Command ProceedCommand { get; }
+        public Command GoBackCommand { get; }
+
+        public ChangePasswordPageVM()
+        {
+            ProceedCommand = new Command(_ => Proceed(), _ => !string.IsNullOrEmpty(NewPassword1) && !string.IsNullOrEmpty(NewPassword2) && !string.IsNullOrEmpty(OldPassword));
+            GoBackCommand = new Command(_ => ShellPageService.GoBack());
+        }
+
         private async void Proceed()
         {
             if (!Authentication.CheckPassword(OldPassword, AppSettings.CurrentUser.PasswordHash))
@@ -68,33 +78,15 @@ namespace ClientApp_Mobile.ViewModels
 
             var newPasswordHash = Authentication.HashPassword(NewPassword1);
 
-            try
+            if (!await ApiConnect.UpdateUserPinAndPassword(newPasswordHash, AppSettings.CurrentUser.PinHash))
             {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
-                    clientUserRecord.PasswordHash = newPasswordHash;
-                    db.Update(clientUserRecord);
-                    await db.SaveChangesAsync();
-                }
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Пароль не был изменен"));
                 return;
             }
+
             AppSettings.CurrentUser.PasswordHash = newPasswordHash;
             Device.BeginInvokeOnMainThread(() => { DialogService.ShowMessageDlg("Пароль был успешно изменен", "Сохранено"); ShellPageService.GoBack(); });
         }
 
-        public Command ProceedCommand { get; }
-        public Command GoBackCommand { get; }
-
-        public ChangePasswordPageVM()
-        {
-            ProceedCommand = new Command(_ => Proceed(), _ => !string.IsNullOrEmpty(NewPassword1) && !string.IsNullOrEmpty(NewPassword2) && !string.IsNullOrEmpty(OldPassword));
-            GoBackCommand = new Command(_ => ShellPageService.GoBack());
-        }
     }
 }

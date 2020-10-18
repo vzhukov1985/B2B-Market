@@ -39,6 +39,10 @@ namespace Core.DBModels
 
         public string Email { get; set; }
 
+        public string ContactPersonName { get; set; }
+
+        public string ContactPersonPhone { get; set; }
+
         public static ArchivedClient CloneForDb(ArchivedClient archivedClient)
         {
             return new ArchivedClient

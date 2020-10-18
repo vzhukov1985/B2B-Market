@@ -121,13 +121,4 @@
   <data name="Market_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Market_Logo.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Request_Accepted" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Order_Completed.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Request_Pending" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Order_Pending.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Request_Rejected" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Order_Rejected.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
 </root>

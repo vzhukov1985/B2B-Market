@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:ClientApp_Mobile.Converters"
-             xmlns:vmsp="clr-namespace:ClientApp_Mobile.ViewModels.SubPages"
              x:Class="ClientApp_Mobile.Views.SubPages.ArchivedRequestsListSubPage"
+             x:Name="SPArchivedRequestsList"
              Appearing="ContentPage_Appearing"
              Disappearing="ContentPage_Disappearing">
 
     <ContentPage.Resources>
-        <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"/>
+        <conv:ArchivedOrderStatusNameToImageConverter x:Key="ArchivedOrderStatusNameToImageConverter"/>
         <conv:RequestStatusToColorConverter x:Key="RequestStatusToColorConverter"/>
     </ContentPage.Resources>
 
@@ -58,7 +58,7 @@
                                        Text="{Binding Code, StringFormat='№ {0:0000000}'}"/>
                                 <Image HorizontalOptions="Center"
                                        WidthRequest="70"
-                                       Source="{Binding StatusPicture, Converter={StaticResource ByteArrayToImageConverter}}"/>
+                                       Source="{Binding StatusName, Converter={StaticResource ArchivedOrderStatusNameToImageConverter}}"/>
                                 <Label HorizontalTextAlignment="Center"
                                        FontSize="12"
                                        TextColor="{Binding StatusName, Converter={StaticResource RequestStatusToColorConverter}}"
@@ -71,7 +71,7 @@
                                 <Label.Text>
                                     <MultiBinding StringFormat="{}{0:d} - {1}">
                                         <Binding Path="DateTimeSent"/>
-                                        <Binding Path="ArchivedSupplier.ShortName"/>
+                                        <Binding Path="ArchivedSupplierName"/>
                                     </MultiBinding>
                                 </Label.Text>
                             </Label>
@@ -106,7 +106,7 @@
 
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer NumberOfTapsRequired="1"
-                                                      Command="{Binding ShowArchivedRequestSubPageCommand, Source={x:RelativeSource AncestorType={x:Type vmsp:ArchivedRequestsListSubPageVM}}}"
+                                                      Command="{Binding Source={Reference SPArchivedRequestsList}, Path=BindingContext.ShowArchivedRequestSubPageCommand}"
                                                       CommandParameter="{Binding .}"/>
                             </Grid.GestureRecognizers>
                         </Grid>

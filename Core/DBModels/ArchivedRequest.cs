@@ -226,8 +226,8 @@ namespace Core.DBModels
                 OnPropertyChanged("ArchivedRequestsStatuses");
             }
         }
-
-        [NotMapped]
+        //TODO: Remove when evrything is done
+/*        [NotMapped]
         public string StatusName
         {
             get
@@ -266,7 +266,7 @@ namespace Core.DBModels
                 }
                 return null;
             }
-        }
+        }*/
 
         public ArchivedRequest()
         {

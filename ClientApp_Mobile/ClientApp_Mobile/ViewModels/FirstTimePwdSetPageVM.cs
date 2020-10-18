@@ -35,6 +35,15 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
+        public Command ProceedCommand { get; }
+
+
+
+        public FirstTimePwdSetPageVM()
+        {
+            ProceedCommand = new Command(_ => Proceed(), _ => Password1?.Length > 0 && Password2?.Length > 0);
+        }
+
         private void Proceed()
         {
             if (!Password1.SequenceEqual(Password2))
@@ -51,13 +60,5 @@ namespace ClientApp_Mobile.ViewModels
             AppSettings.CurrentUser.PasswordHash = Authentication.HashPassword(Password1);
             AppPageService.GoToFirstTimeSettingsPage("");
         }
-
-        public Command ProceedCommand { get; }
-
-        public FirstTimePwdSetPageVM()
-        {
-            ProceedCommand = new Command(_ => Proceed(), _ => Password1?.Length > 0 && Password2?.Length > 0);
-        }
-
     }
 }

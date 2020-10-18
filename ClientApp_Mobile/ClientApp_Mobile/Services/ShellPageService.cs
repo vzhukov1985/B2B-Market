@@ -3,6 +3,7 @@ using ClientApp_Mobile.ViewModels.SubPages;
 using ClientApp_Mobile.Views;
 using ClientApp_Mobile.Views.SubPages;
 using Core.DBModels;
+using Core.Models;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 using System.Collections.Generic;
@@ -131,7 +132,7 @@ namespace ClientApp_Mobile.Services
             isGoing = false;
         }
 
-        public static async void GotoArchivedRequestPage(ArchivedRequest request)
+        public static async void GotoArchivedRequestPage(ArchivedRequestForClientDbView request)
         {
             lock (locker)
             {

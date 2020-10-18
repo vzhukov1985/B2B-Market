@@ -295,33 +295,5 @@ namespace Core.Services
                 }
             }
         }
-
-
-        public static bool UploadRequestToSupplierFTP(ArchivedRequest request, string FTPSupplierFolder)
-        {
-            FtpWebRequest ftpRequest;
-            try
-            {
-                ftpRequest = (FtpWebRequest)WebRequest.Create(CoreSettings.FTPAdminAccessString + CoreSettings.SuppliersPath + "/"+ FTPSupplierFolder + CoreSettings.SupplierOrdersPath + "/order" + request.Code.ToString() + ".xml");
-            }
-            catch
-            {
-                return false;
-            }
-
-            ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
-            try
-            {
-                using (Stream ftpStream = ftpRequest.GetRequestStream())
-                {
-                    XMLProcessor.SaveRequestXMLToStream(request, ftpStream);
-                }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
     }
 }

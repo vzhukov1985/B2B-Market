@@ -1,5 +1,6 @@
 ﻿using ClientApp_Mobile.Services;
 using Core.DBModels;
+using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -17,8 +18,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 {
     public class ArchivedRequestsListSubPageVM : BaseVM
     {
-        private ClientUser _user;
-        public ClientUser User
+        private CurrentUserInfo _user;
+        public CurrentUserInfo User
         {
             get { return _user; }
             set
@@ -40,31 +41,28 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
+        public Command ShowArchivedRequestSubPageCommand { get; }
+
+        public ArchivedRequestsListSubPageVM()
+        {
+            User = AppSettings.CurrentUser;
+
+            ShowArchivedRequestSubPageCommand = new Command<ArchivedRequestForClientDbView>(ar => ShellPageService.GotoArchivedRequestPage(ar));
+        }
+
         public async void QueryDb()
         {
             IsBusy = true;
             try
             {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    AppSettings.CurrentUser.Client.ArchivedRequests = await db.ArchivedRequests
-                        .Where(r => r.ClientId == User.ClientId)
-                        .Include(r => r.ArchivedRequestsStatuses)
-                        .ThenInclude(rs => rs.ArchivedRequestStatusType)
-                        .Include(r => r.ArchivedSupplier)
-                        .ToListAsync(CTS.Token);
+                var archivedRequestsFromDb = await ApiConnect.GetArchivedRequestsByClient(AppSettings.CurrentUser.Client.Id, CTS.Token);
 
-                }
-
-                var groupedlist = AppSettings.CurrentUser
-                                                .Client
-                                                .ArchivedRequests
-                                                    .GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy"))
-                                                    .Select(g =>
-                                                        new ArchivedRequestsByMonth(g.Key,
-                                                                                    AppSettings.CurrentUser.Client.ArchivedRequests.Where(ar => ar.DateTimeSent.ToString("MMMM yyyy") == g.Key)
-                                                                                        .OrderByDescending(ar => ar.Code))).ToList();
+                var groupedlist = archivedRequestsFromDb
+                                        .GroupBy(r => r.DateTimeSent.ToString("MMMM yyyy"))
+                                        .Select(g =>
+                                            new ArchivedRequestsByMonth(g.Key,
+                                                                        archivedRequestsFromDb.Where(ar => ar.DateTimeSent.ToString("MMMM yyyy") == g.Key)
+                                                                            .OrderByDescending(ar => ar.Code))).ToList();
                 foreach (var month in groupedlist)
                 {
                     if (CTS.IsCancellationRequested) { IsBusy = false; return; }
@@ -72,8 +70,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 }
 
                 Device.BeginInvokeOnMainThread(() => ArchivedRequestsByMonth = groupedlist);
-
-
                 IsBusy = false;
             }
             catch (OperationCanceledException)
@@ -81,28 +77,12 @@ namespace ClientApp_Mobile.ViewModels.SubPages
                 IsBusy = false;
                 return;
             }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
         }
-
-        public Command ShowArchivedRequestSubPageCommand { get; }
-
-        public ArchivedRequestsListSubPageVM()
-        {
-            User = AppSettings.CurrentUser;
-
-            ShowArchivedRequestSubPageCommand = new Command<ArchivedRequest>(ar => ShellPageService.GotoArchivedRequestPage(ar));
-        }
-
     }
 
 
 
-    public class ArchivedRequestsByMonth : List<ArchivedRequest>, INotifyPropertyChanged
+    public class ArchivedRequestsByMonth : List<ArchivedRequestForClientDbView>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -121,7 +101,7 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        public ArchivedRequestsByMonth(string month, IEnumerable<ArchivedRequest> archivedRequests) : base(archivedRequests)
+        public ArchivedRequestsByMonth(string month, IEnumerable<ArchivedRequestForClientDbView> archivedRequests) : base(archivedRequests)
         {
             Month = month;
         }

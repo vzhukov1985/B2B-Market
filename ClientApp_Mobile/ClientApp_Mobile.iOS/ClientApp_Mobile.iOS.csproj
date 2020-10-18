@@ -41,7 +41,6 @@
     <MtouchArch>x86_64</MtouchArch>
     <CodesignKey>iPhone Distribution</CodesignKey>
     <MtouchUseLlvm>true</MtouchUseLlvm>
-    <MtouchExtraArgs>--linkskip=mscorlib</MtouchExtraArgs>
     <CodesignProvision>B2B Market HoReCa Mobile Distribution Profile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
@@ -228,6 +227,9 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </BundleResource>
+    <BundleResource Include="Resources\Request_Completed.png" />
+    <BundleResource Include="Resources\Request_Pending.png" />
+    <BundleResource Include="Resources\Request_Rejected.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Navigation_Forward_Gray.png">

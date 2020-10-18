@@ -92,6 +92,22 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
+        public Command ChangePINAccessCommand { get; }
+        public Command ChangeBiometricAccessCommand { get; }
+        public Command ProceedCommand { get; }
+
+        public FirstTimeSettingsPageVM(string PINCode)
+        {
+            this.PINCode = PINCode;
+            IsBiometricAccessActivated = false;
+
+            ChangePINAccessCommand = new Command(_ => ChangePINAccess());
+            ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
+            ProceedCommand = new Command(_ => Proceed());
+
+            CheckBiometricAccess();
+        }
+
         private async void ChangePINAccess()
         {
             if (string.IsNullOrEmpty(PINCode))
@@ -125,13 +141,27 @@ namespace ClientApp_Mobile.ViewModels
         {
             if (!IsBiometricAccessActivated)
             {
-                IsBiometricAccessActivated = await AppPageService.ShowBiometricTestPage();
+                if (Device.RuntimePlatform == Device.Android)
+                    IsBiometricAccessActivated = await AppPageService.ShowBiometricTestPage();
+
+                if (Device.RuntimePlatform == Device.iOS)
+                    GetAuthResults();
             }
             else
             {
                 IsBiometricAccessActivated = false;
             }
             AppSettings.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
+        }
+
+        private async void GetAuthResults()
+        {
+            var result = await DependencyService.Get<IBiometricAuthenticateService>().AuthenticateUserIDWithTouchID();
+            if (result)
+            {
+                IsBiometricAccessActivated = true;
+                AppSettings.CurrentUser.UseBiometricAccess = IsBiometricAccessActivated;
+            }
         }
 
         private void CheckBiometricAccess()
@@ -178,43 +208,12 @@ namespace ClientApp_Mobile.ViewModels
         private async void Proceed()
         {
             IsBusy = true;
-            try
+            if (await ApiConnect.UpdateUserPinAndPassword(AppSettings.CurrentUser.PasswordHash, AppSettings.CurrentUser.PinHash))
             {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    ClientUser userToUpdate = ClientUser.CloneForDb(AppSettings.CurrentUser);
-                    db.ClientsUsers.Attach(userToUpdate);
-                    db.Entry(userToUpdate).Property(e => e.PasswordHash).IsModified = true;
-                    db.Entry(userToUpdate).Property(e => e.PinHash).IsModified = true;
-                    await db.SaveChangesAsync();
-                }
                 AppSettings.AppLocalUsers.RegisterNewUser();
-                IsBusy = false;
                 AppPageService.GoToFirstTimeReadyPage();
             }
-            catch
-            {
-                IsBusy = false;
-                DialogService.ShowConnectionErrorDlg();
-                return;
-            }
-        }
-
-        public Command ChangePINAccessCommand { get; }
-        public Command ChangeBiometricAccessCommand { get; }
-        public Command ProceedCommand { get; }
-
-        public FirstTimeSettingsPageVM(string PINCode)
-        {
-            this.PINCode = PINCode;
-            IsBiometricAccessActivated = false;
-
-            ChangePINAccessCommand = new Command(_ => ChangePINAccess());
-            ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
-            ProceedCommand = new Command(_ => Proceed());
-
-            CheckBiometricAccess();
+            IsBusy = false;
         }
     }
 }

@@ -43,22 +43,6 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private void ProductCategorySelected(ProductCategory selectedProductCategory)
-        {
-            List<Guid> filterGuids;
-            
-            if (selectedProductCategory.Name == "Все товары")
-            {
-                filterGuids = SubCategories.Select(sc => sc.Id).ToList();
-                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(SelectedMidCategory.Name, filterGuids));
-            }
-            else
-            {
-                filterGuids = new List<Guid> { selectedProductCategory.Id };
-                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(selectedProductCategory.Name, filterGuids));
-            }
-        }
-
         public Command CategorySelectedCommand { get; }
 
         public ProductCategoriesSubPageVM(MidCategory selectedMidCategory, List<ProductCategory> subCategories)
@@ -75,9 +59,20 @@ namespace ClientApp_Mobile.ViewModels.SubPages
 
         }
 
-        public ProductCategoriesSubPageVM()
+        private void ProductCategorySelected(ProductCategory selectedProductCategory)
         {
-
+            List<Guid> filterGuids;
+            
+            if (selectedProductCategory.Name == "Все товары")
+            {
+                filterGuids = SubCategories.Select(sc => sc.Id).ToList();
+                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(SelectedMidCategory.Name, filterGuids));
+            }
+            else
+            {
+                filterGuids = new List<Guid> { selectedProductCategory.Id };
+                Device.BeginInvokeOnMainThread(() => ShellPageService.GotoOffersPage(selectedProductCategory.Name, filterGuids));
+            }
         }
     }
 }

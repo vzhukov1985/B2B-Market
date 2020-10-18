@@ -11,13 +11,14 @@ using System.Collections.ObjectModel;
 using ClientApp_Mobile.Services;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Core.Models;
 
 namespace ClientApp_Mobile.ViewModels.SubPages
 {
     public class ArchivedRequestSubPageVM : BaseVM
     {
-        private ClientUser _user;
-        public ClientUser User
+        private CurrentUserInfo _user;
+        public CurrentUserInfo User
         {
             get { return _user; }
             set
@@ -27,8 +28,8 @@ namespace ClientApp_Mobile.ViewModels.SubPages
             }
         }
 
-        private ArchivedRequest _request;
-        public ArchivedRequest Request
+        private ArchivedRequestForClientDbView _request;
+        public ArchivedRequestForClientDbView Request
         {
             get { return _request; }
             set
@@ -63,41 +64,24 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public async void QueryDb()
         {
             IsBusy = true;
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    Request.ArchivedOrders = await db.ArchivedOrders.Where(o => o.ArchivedRequestId == Request.Id).ToListAsync(CTS.Token);
-                }
+            Request.ArchivedOrders =await ApiConnect.GetArchivedOrdersByRequest(Request.Id, CTS.Token);
 
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                OrdersGroup = Request.ArchivedOrders.GroupBy(o => o.ProductCategory).Select(g => new ArchivedOrdersByCategories(g.Key, new List<ArchivedOrder>(g))).ToList();
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            Request.ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>((await ApiConnect.GetArchivedRequestStatuses(Request.Id, CTS.Token)).OrderBy(s => s.DateTime));
 
-                if (CTS.IsCancellationRequested) { IsBusy = false; return; }
-                Request.ArchivedRequestsStatuses = Request.ArchivedRequestsStatuses.OrderBy(s => s.DateTime).ToList();
-                IsBusy = false;
-            }
-            catch (OperationCanceledException)
-            {
-                IsBusy = false;
-                return;
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
-                IsBusy = false;
-                return;
-            }
+            if (CTS.IsCancellationRequested) { IsBusy = false; return; }
+            OrdersGroup = Request.ArchivedOrders.GroupBy(o => o.ProductCategory).Select(g => new ArchivedOrdersByCategories(g.Key, new List<ArchivedOrder>(g))).ToList();
+
+            IsBusy = false;
         }
 
 
-        public ArchivedRequestSubPageVM(ArchivedRequest request)
+        public ArchivedRequestSubPageVM(ArchivedRequestForClientDbView request)
         {
             User = AppSettings.CurrentUser;
             Request = request;
 
-            Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplier.ShortName;
+            Title = request.DateTimeSent.ToString("d") + " - " + request.ArchivedSupplierName;
 
             Task.Run(() => QueryDb());
         }

@@ -13,7 +13,7 @@ using Xamarin.Forms;
 
 namespace ClientApp_Mobile.ViewModels
 {
-    class UserSettingsPageVM:BaseVM
+    class UserSettingsPageVM : BaseVM
     {
         public string ClientName { get; set; }
         public string Status { get; set; }
@@ -128,60 +128,89 @@ namespace ClientApp_Mobile.ViewModels
 
 
         private bool canBiometricAccessBeSet;
+        
+        private List<string> existingLogins;
+
+        public Command UpdateNameSurnameCommand { get; }
+        public Command UpdateLoginCommand { get; }
+        public Command ChangePasswordCommand { get; }
+        public Command ChangePINAccessCommand { get; }
+        public Command ChangePINCommand { get; }
+        public Command ChangeBiometricAccessCommand { get; }
+
+
+        public UserSettingsPageVM()
+        {
+            var user = AppSettings.CurrentUser;
+            ClientName = user.Client.ShortName;
+            Status = user.IsAdmin ? "Администратор" : "Пользователь";
+            Name = user.Name;
+            Surname = user.Surname;
+            Login = user.Login;
+            PasswordHash = user.PasswordHash;
+            UsePINAccess = !string.IsNullOrEmpty(user.PinHash);
+            PINHash = user.PinHash;
+            UseBiometricAccess = AppSettings.AppLocalUsers.CurrentUser.UseBiometricAccess;
+            existingLogins = new List<string>();
+
+            UpdateNameSurnameCommand = new Command(_ => UpdateNameSurname(), _ => !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Surname) && !(Name == AppSettings.CurrentUser.Name && Surname == AppSettings.CurrentUser.Surname));
+            UpdateLoginCommand = new Command(_ => UpdateLogin(), _ => IsLoginValid);
+            ChangePasswordCommand = new Command(_ => ShellPageService.GotoChangePasswordPage());
+            ChangePINAccessCommand = new Command(_ => ChangePINAccess());
+            ChangePINCommand = new Command(_ => { UsePINAccess = false; ChangePINAccess(); }, _ => UsePINAccess);
+            ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
+
+            CheckBiometricAccess();
+            QueryDb();
+        }
+
+
+        private async void QueryDb()
+        {
+            IsBusy = true;
+
+            existingLogins = await ApiConnect.GetAllClientsUsersLogins();
+            IsLoginValid = false;
+
+            IsBusy = false;
+        }
 
         private async void UpdateNameSurname()
         {
-            try
+            var oldName = AppSettings.CurrentUser.Name;
+            var oldSurname = AppSettings.CurrentUser.Surname = Surname;
+            AppSettings.CurrentUser.Name = Name;
+            AppSettings.CurrentUser.Surname = Surname;
+            UpdateNameSurnameCommand.ChangeCanExecute();
+            if (!await ApiConnect.UpdateUserNameAndSurname(Name, Surname))
             {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
-                    clientUserRecord.Name = Name;
-                    clientUserRecord.Surname = Surname;
-                    db.ClientsUsers.Update(clientUserRecord);
-                    await db.SaveChangesAsync();
-                }
-                AppSettings.CurrentUser.Name = Name;
-                AppSettings.CurrentUser.Surname = Surname;
-                AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Имя и фамилия пользователя успешно обновлены", "Сохранено"));
+                AppSettings.CurrentUser.Name = oldName;
+                AppSettings.CurrentUser.Surname = oldSurname;
                 UpdateNameSurnameCommand.ChangeCanExecute();
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Имя и фамилия пользователя не были изменены"));
                 return;
             }
 
+            AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
+            Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Имя и фамилия пользователя успешно обновлены", "Сохранено"));
         }
 
         private async void UpdateLogin()
         {
-            try
-            {
-                var oldLogin = AppSettings.CurrentUser.Login;
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
-                    clientUserRecord.Login = Login;
-                    db.ClientsUsers.Update(clientUserRecord);
-                    await db.SaveChangesAsync();
+            var oldLogin = AppSettings.CurrentUser.Login;
+            AppSettings.CurrentUser.Login = Login;
 
-                }
-                AppSettings.CurrentUser.Login = Login;
-                existingLogins[existingLogins.FindIndex(el => el == oldLogin)] = Login;
-                IsLoginValid = false;
-                AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Логин был успешно изменен", "Сохранено"));
-            }
-            catch
+            if (!await ApiConnect.UpdateUserLogin(Login))
             {
-                Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                AppSettings.CurrentUser.Login = oldLogin;
+                Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Логин не был изменен"));
                 return;
             }
 
+            existingLogins[existingLogins.FindIndex(el => el == oldLogin)] = Login;
+            IsLoginValid = false;
+            AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
+            Device.BeginInvokeOnMainThread(() => DialogService.ShowMessageDlg("Логин был успешно изменен", "Сохранено"));
         }
 
         private async void ChangePINAccess()
@@ -197,27 +226,16 @@ namespace ClientApp_Mobile.ViewModels
                 {
                     var PINHash = Authentication.HashPIN(PIN1);
 
-                    try
+                    if (!await ApiConnect.UpdateUserPinAndPassword(AppSettings.CurrentUser.PasswordHash, PINHash))
                     {
-                        using (MarketDbContext db = new MarketDbContext())
-                        {
-                            db.Database.OpenConnection();
-                            var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
-                            clientUserRecord.PinHash = PINHash;
-                            db.ClientsUsers.Update(clientUserRecord);
-                            await db.SaveChangesAsync();
-
-                        }
-                        AppSettings.CurrentUser.PinHash = PINHash;
-                        UsePINAccess = true;
-                        AppSettings.AppLocalUsers.CurrentUser.UsePINAccess = true;
-                        AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
-                    }
-                    catch
-                    {
-                        Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                        DialogService.ShowErrorDlg("Код быстрого доступа не был изменен.");
                         return;
                     }
+
+                    AppSettings.CurrentUser.PinHash = PINHash;
+                    UsePINAccess = true;
+                    AppSettings.AppLocalUsers.CurrentUser.UsePINAccess = true;
+                    AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
                 }
                 else
                 {
@@ -226,26 +244,17 @@ namespace ClientApp_Mobile.ViewModels
             }
             else
             {
-                try
+                if (!await ApiConnect.UpdateUserPinAndPassword(AppSettings.CurrentUser.PasswordHash, null))
                 {
-                    using (MarketDbContext db = new MarketDbContext())
-                    {
-                        db.Database.OpenConnection();
-                        var clientUserRecord = ClientUser.CloneForDb(AppSettings.CurrentUser);
-                        clientUserRecord.PinHash = null;
-                        db.ClientsUsers.Update(clientUserRecord);
-                        await db.SaveChangesAsync();
-
-                    }
-                    AppSettings.CurrentUser.PinHash = null;
-                    UsePINAccess = false;
-                    AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
-                }
-                catch
-                {
-                    Device.BeginInvokeOnMainThread(() => DialogService.ShowConnectionErrorDlg());
+                    DialogService.ShowErrorDlg("Параметры быстрого доступа не были изменены.");
                     return;
                 }
+
+                AppSettings.CurrentUser.PinHash = null;
+                UseBiometricAccess = false;
+                AppSettings.CurrentUser.UseBiometricAccess = false;
+                UsePINAccess = false;
+                AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
             }
         }
 
@@ -289,7 +298,11 @@ namespace ClientApp_Mobile.ViewModels
         {
             if (!UseBiometricAccess)
             {
-                UseBiometricAccess = await ShellPageService.GotoBiometricTestPage();
+                if (Device.RuntimePlatform == Device.Android)
+                    UseBiometricAccess = await ShellPageService.GotoBiometricTestPage();
+
+                if (Device.RuntimePlatform == Device.iOS)
+                    GetAuthResults();
             }
             else
             {
@@ -300,61 +313,15 @@ namespace ClientApp_Mobile.ViewModels
             AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
         }
 
-        private async void QueryDb()
+        private async void GetAuthResults()
         {
-            IsBusy = true;
-            try
+            var result = await DependencyService.Get<IBiometricAuthenticateService>().AuthenticateUserIDWithTouchID();
+            if (result)
             {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    existingLogins = await db.ClientsUsers.Select(cu => cu.Login).ToListAsync();
-                }
+                UseBiometricAccess = true;
+                AppSettings.CurrentUser.UseBiometricAccess = UseBiometricAccess;
+                AppSettings.AppLocalUsers.UpdateCurrentUserPreferences();
             }
-            catch
-            {
-                IsBusy = false;
-                DialogService.ShowConnectionErrorDlg();
-                return;
-            }
-            IsLoginValid = false;
-            IsBusy = false;
         }
-
-        private List<string> existingLogins;
-
-        public Command UpdateNameSurnameCommand { get; }
-        public Command UpdateLoginCommand { get; }
-        public Command ChangePasswordCommand { get; }
-        public Command ChangePINAccessCommand { get; }
-        public Command ChangePINCommand { get; }
-        public Command ChangeBiometricAccessCommand { get; }
-
-
-        public UserSettingsPageVM()
-        {
-            var user = AppSettings.CurrentUser;
-            ClientName = user.Client.ShortName;
-            Status = user.IsAdmin ? "Администратор" : "Пользователь";
-            Name = user.Name;
-            Surname = user.Surname;
-            Login = user.Login;
-            PasswordHash = user.PasswordHash;
-            UsePINAccess = !string.IsNullOrEmpty(user.PinHash);
-            PINHash = user.PinHash;
-            UseBiometricAccess = AppSettings.AppLocalUsers.CurrentUser.UseBiometricAccess;
-            existingLogins = new List<string>();
-
-            UpdateNameSurnameCommand = new Command(_ => UpdateNameSurname(), _ => !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Surname) && !(Name == AppSettings.CurrentUser.Name && Surname == AppSettings.CurrentUser.Surname));
-            UpdateLoginCommand = new Command(_ => UpdateLogin(), _ => IsLoginValid);
-            ChangePasswordCommand = new Command(_ => ShellPageService.GotoChangePasswordPage());
-            ChangePINAccessCommand = new Command(_ => ChangePINAccess());
-            ChangePINCommand = new Command(_ => { UsePINAccess = false; ChangePINAccess(); }, _ => UsePINAccess);
-            ChangeBiometricAccessCommand = new Command(_ => ChangeBiometricAccess());
-
-            CheckBiometricAccess();
-            QueryDb();
-        }
-
     }
 }

@@ -26,9 +26,6 @@
 
   <ItemGroup>
     <None Remove="Resources\Market_Logo.png" />
-    <None Remove="Resources\Order_Completed.png" />
-    <None Remove="Resources\Order_Pending.png" />
-    <None Remove="Resources\Order_Rejected.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,9 +39,6 @@
 
   <ItemGroup>
     <Resource Include="Resources\Market_Logo.png" />
-    <Resource Include="Resources\Order_Completed.png" />
-    <Resource Include="Resources\Order_Pending.png" />
-    <Resource Include="Resources\Order_Rejected.png" />
   </ItemGroup>
 
   <ItemGroup>

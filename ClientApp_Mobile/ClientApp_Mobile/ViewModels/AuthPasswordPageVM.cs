@@ -18,7 +18,6 @@ using Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using CoreServices.Models;
 
 namespace ClientApp_Mobile.ViewModels
 {
@@ -47,100 +46,76 @@ namespace ClientApp_Mobile.ViewModels
             }
         }
 
-        public void Authorize()
-        {
-            IsBusy = true;
-            bool LoginSuccessful = ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByPassword, Login = Login, PasswordOrPin = Password });
-            if (!LoginSuccessful)
-            {
-                IsBusy = false;
-                return;
-            }
-            try
-            {
-                using (MarketDbContext db = new MarketDbContext())
-                {
-                    db.Database.OpenConnection();
-                    ClientUser user = db.ClientsUsers.Where(o => o.Login == Login).FirstOrDefault();
-                    if ((user != null) && (Authentication.CheckPassword(Password, user.PasswordHash)))
-                    {
-
-                        AppSettings.GetUserInfoFromDb(user.Id);
-
-
-                        if (Password == user.InitialPassword)
-                        {
-                            IsBusy = false;
-                            Device.BeginInvokeOnMainThread(() => AppPageService.GoToFirstTimePasswordSetPage());
-                        }
-                        else
-                        {
-                            if (AppSettings.AppLocalUsers.UserExistsInApp())
-                            {
-                                AppSettings.AppLocalUsers.RegisterExistingUser();
-                                IsBusy = false;
-                                Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
-                            }
-                            else
-                            {
-                                bool biometricAvailable = false;
-                                if (Device.RuntimePlatform == Device.iOS)
-                                {
-                                    string AuthType = DependencyService.Get<IBiometricAuthenticateService>().GetAuthenticationType();
-                                    if (AuthType.Equals("TouchId") || (AuthType.Equals("FaceId")))
-                                    {
-                                        biometricAvailable = true;
-                                    }
-                                }
-
-                                if (Device.RuntimePlatform == Device.Android)
-                                {
-                                    bool res = DependencyService.Get<IBiometricAuthenticateService>().fingerprintEnabled();
-                                    if (res)
-                                    {
-                                        biometricAvailable = true;
-                                    }
-                                }
-
-                                IsBusy = false;
-                                if (biometricAvailable && user.PinHash != null)
-                                {
-                                    Device.BeginInvokeOnMainThread(() => AppPageService.GoToNewLocalUserBiometricSettingsPage());
-                                }
-                                else
-                                {
-                                    AppSettings.CurrentUser.UseBiometricAccess = false;
-                                    AppSettings.AppLocalUsers.RegisterNewUser();
-                                    Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        IsBusy = false;
-                        Device.BeginInvokeOnMainThread(() => DialogService.ShowErrorDlg("Неверные имя пользователя или пароль. Попробуйте снова."));
-                    }
-                }
-
-            }
-            catch
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    IsBusy = false;
-                    DialogService.ShowConnectionErrorDlg();
-                    // ShellDialogService.ShowMessageDlg(e.Message, "exc");
-                });
-                return;
-            }
-        }
-
         public Command AuthorizeCommand { get; }
 
         public AuthPasswordPageVM()
         {
             AuthorizeCommand = new Command(o => Task.Run(() => Authorize()), _ => !string.IsNullOrEmpty(Login));
+        }
+
+        public void Authorize()
+        {
+            IsBusy = true;
+            var LoginResult = ApiConnect.Login(new UserAuthParams { AuthType = AuthType.ByPassword, Login = Login, PasswordOrPin = Password });
+            if (LoginResult != ApiConnect.LoginResult.Ok)
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    DialogService.ShowErrorDlg("Неверный логин или пароль");
+                    IsBusy = false;
+                });
+                return;
+            }
+
+            AppSettings.CurrentUser = ApiConnect.GetUserInfo().Result;
+
+            if (Password == AppSettings.CurrentUser.InitialPassword)
+            {
+                IsBusy = false;
+                Device.BeginInvokeOnMainThread(() => AppPageService.GoToFirstTimePasswordSetPage());
+            }
+            else
+            {
+                if (AppSettings.AppLocalUsers.UserExistsInApp())
+                {
+                    AppSettings.AppLocalUsers.RegisterExistingUser();
+                    IsBusy = false;
+                    Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
+                }
+                else
+                {
+                    bool biometricAvailable = false;
+                    if (Device.RuntimePlatform == Device.iOS)
+                    {
+                        string AuthType = DependencyService.Get<IBiometricAuthenticateService>().GetAuthenticationType();
+                        if (AuthType.Equals("TouchId") || (AuthType.Equals("FaceId")))
+                        {
+                            biometricAvailable = true;
+                        }
+                    }
+
+                    if (Device.RuntimePlatform == Device.Android)
+                    {
+                        bool res = DependencyService.Get<IBiometricAuthenticateService>().fingerprintEnabled();
+                        if (res)
+                        {
+                            biometricAvailable = true;
+                        }
+                    }
+
+                    IsBusy = false;
+                    if (biometricAvailable && AppSettings.CurrentUser.PinHash != null)
+                    {
+                        Device.BeginInvokeOnMainThread(() => AppPageService.GoToNewLocalUserBiometricSettingsPage());
+                    }
+                    else
+                    {
+                        AppSettings.CurrentUser.UseBiometricAccess = false;
+                        AppSettings.AppLocalUsers.RegisterNewUser();
+                        Device.BeginInvokeOnMainThread(() => AppPageService.GoToMainMage());
+                    }
+                }
+            }
         }
     }
 }
