@@ -445,12 +445,17 @@ namespace Private_WebApi.Controllers
             }
         }
 
-        [HttpPost("archivedrequests/archivedorders")]
+        [HttpPost("archivedrequests/details")]
         public async Task<IActionResult> GetClientArchivedOrdersByRequest([FromBody] Guid requestId)
         {
             try
             {
-                var res = await db.ArchivedRequests.Where(ar => ar.Id == requestId).Select(ar => ar.ArchivedOrders).FirstOrDefaultAsync();
+                var res = await db.ArchivedRequests.Where(ar => ar.Id == requestId).Select(ar => new ArchivedRequestDetails
+                {
+                    ArchivedOrders = ar.ArchivedOrders,
+                    DeliveryDateTime = ar.DeliveryDateTime,
+                    Comments = ar.Comments
+                }).FirstOrDefaultAsync();
                 return Ok(res);
             }
             catch

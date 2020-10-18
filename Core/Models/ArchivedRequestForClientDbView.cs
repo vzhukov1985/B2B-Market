@@ -26,8 +26,32 @@ namespace Core.Models
         public int ItemsQuantity { get; set; }
         public int ProductsQuantity { get; set; }
         public decimal TotalPrice { get; set; }
+
+        private DateTime _deliveryDateTime;
+        public DateTime DeliveryDateTime
+        {
+            get { return _deliveryDateTime; }
+            set
+            {
+                _deliveryDateTime = value;
+                OnPropertyChanged("DeliveryDateTime");
+            }
+        }
+
+        private string _comments;
+        public string Comments
+        {
+            get { return _comments; }
+            set
+            {
+                _comments = value;
+                OnPropertyChanged("Comments");
+            }
+        }
+
         public List<ArchivedOrder> ArchivedOrders { get; set; }
         private ObservableCollection<ArchivedRequestsStatus> _archivedRequestStatuses;
+        
         public ObservableCollection<ArchivedRequestsStatus> ArchivedRequestsStatuses
         {
             get { return _archivedRequestStatuses; }

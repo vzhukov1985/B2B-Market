@@ -64,7 +64,10 @@ namespace ClientApp_Mobile.ViewModels.SubPages
         public async void QueryDb()
         {
             IsBusy = true;
-            Request.ArchivedOrders =await ApiConnect.GetArchivedOrdersByRequest(Request.Id, CTS.Token);
+            ArchivedRequestDetails details = await ApiConnect.GetArchivedRequestDetails(Request.Id, CTS.Token);
+            Request.ArchivedOrders = details.ArchivedOrders;
+            Request.DeliveryDateTime = details.DeliveryDateTime;
+            Request.Comments = details.Comments;
 
             if (CTS.IsCancellationRequested) { IsBusy = false; return; }
             Request.ArchivedRequestsStatuses = new ObservableCollection<ArchivedRequestsStatus>((await ApiConnect.GetArchivedRequestStatuses(Request.Id, CTS.Token)).OrderBy(s => s.DateTime));

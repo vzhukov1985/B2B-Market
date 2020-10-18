@@ -356,20 +356,21 @@ namespace ClientApp_Mobile.Services
             return new List<ArchivedRequestForClientDbView>();
         }
 
-        public static async Task<List<ArchivedOrder>> GetArchivedOrdersByRequest(Guid requestId, CancellationToken cancellationToken)
+        public static async Task<ArchivedRequestDetails> GetArchivedRequestDetails(Guid requestId, CancellationToken cancellationToken)
         {
             var response = await InvokeHTTPRequest(() =>
             {
-                return httpClient.PostAsJsonAsync($"{CoreSettings.PrivateAPIUrl}/api/clientsusers/current/archivedrequests/archivedorders", requestId, cancellationToken);
+                return httpClient.PostAsJsonAsync($"{CoreSettings.PrivateAPIUrl}/api/clientsusers/current/archivedrequests/details", requestId, cancellationToken);
             });
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return await response.Content.ReadAsAsync<List<ArchivedOrder>>();
+                return await response.Content.ReadAsAsync<ArchivedRequestDetails>();
             }
 
-            return new List<ArchivedOrder>();
+            return new ArchivedRequestDetails();
         }
+
 
         public static async Task<List<ArchivedRequestsStatus>> GetArchivedRequestStatuses(Guid requestId, CancellationToken cancellationToken)
         {

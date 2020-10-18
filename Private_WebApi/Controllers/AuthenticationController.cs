@@ -24,7 +24,7 @@ namespace Private_WebApi.Controllers
         }
 
 
-        [HttpPost()]
+        [HttpPost]
         public IActionResult Login(UserAuthParams authParams)
         {
             var userAuthInfo = new { Id = "", PasswordHash = "", PinHash = ""};
