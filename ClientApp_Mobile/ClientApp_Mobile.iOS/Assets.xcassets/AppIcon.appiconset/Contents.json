@@ -37,13 +37,13 @@
       "idiom": "iphone"
     },
     {
-      "filename": "Iphone_Icon-120-1.png",
+      "filename": "Iphone_Icon-120.png",
       "size": "60x60",
       "scale": "2x",
       "idiom": "iphone"
     },
     {
-      "filename": "Iphone_Icon-180-1.png",
+      "filename": "Iphone_Icon-180.png",
       "size": "60x60",
       "scale": "3x",
       "idiom": "iphone"
@@ -94,7 +94,7 @@
       "idiom": "ipad"
     },
     {
-      "filename": "Appstore.png",
+      "filename": "Appstore-1024.png",
       "size": "1024x1024",
       "scale": "1x",
       "idiom": "ios-marketing"

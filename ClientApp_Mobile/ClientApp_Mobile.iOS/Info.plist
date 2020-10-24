@@ -20,11 +20,11 @@
 	<key>MinimumOSVersion</key>
 	<string>8.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>B2BM HoReCa</string>
+	<string>B2B Market</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.zhukovtech.b2bmhoreca</string>
+	<string>com.zhukovtech.b2bmarket</string>
 	<key>CFBundleName</key>
-	<string>B2BMHoReCa</string>
+	<string>B2B Market</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UILaunchStoryboardName</key>

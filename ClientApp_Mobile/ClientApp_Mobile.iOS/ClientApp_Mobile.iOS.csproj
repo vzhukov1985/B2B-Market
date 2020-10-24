@@ -39,12 +39,13 @@
     <WarningLevel>4</WarningLevel>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>x86_64</MtouchArch>
-    <CodesignKey>iPhone Distribution</CodesignKey>
+    <CodesignKey>Apple Distribution: Viktor Zhukov (TPU46RG42N)</CodesignKey>
     <MtouchUseLlvm>true</MtouchUseLlvm>
-    <CodesignProvision>B2B Market HoReCa Mobile Distribution Profile</CodesignProvision>
+    <CodesignProvision>B2B Market Distribution</CodesignProvision>
     <OptimizePNGs>true</OptimizePNGs>
-    <MtouchDebug>true</MtouchDebug>
     <IOSDebugOverWiFi>true</IOSDebugOverWiFi>
+    <DeviceSpecificBuild>false</DeviceSpecificBuild>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,10 +70,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>Apple Development: v_zhukov1985@mail.ru (86MR24S7R8)</CodesignKey>
+    <CodesignKey>Apple Distribution: Viktor Zhukov (TPU46RG42N)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchExtraArgs>--linkskip=mscorlib</MtouchExtraArgs>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
+    <CodesignProvision>B2B Market Distribution</CodesignProvision>
     <MtouchUseLlvm>true</MtouchUseLlvm>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
@@ -85,7 +85,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <MtouchLink>None</MtouchLink>
@@ -99,7 +99,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <MtouchInterpreter>-all</MtouchInterpreter>
@@ -115,7 +115,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <MtouchLink>None</MtouchLink>
@@ -129,7 +129,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <MtouchLink>None</MtouchLink>
@@ -167,33 +167,15 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Icon-120-1.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Icon-180-1.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Spotlight-120.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Spotlight-80.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Settings-87.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Settings-58.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Notifications-60.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Notifications-40.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Appstore.png">
-      <Visible>false</Visible>
-    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Notifications-40.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Notifications-60.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Settings-58.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Settings-87.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Spotlight-80.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Spotlight-120.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Icon-120.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Iphone_Icon-180.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Appstore-1024.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -340,8 +322,8 @@
     <Folder Include="Assets.xcassets\AppIcon.appiconset\" />
   </ItemGroup>
   <ItemGroup>
-    <ITunesArtwork Include="iTunesArtwork%402x" />
     <ITunesArtwork Include="iTunesArtwork" />
+    <ITunesArtwork Include="iTunesArtwork%402x" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
